@@ -589,7 +589,9 @@
   .login-slot svg { width: 14px; height: 14px; color: var(--groen); flex: none; }
   .voorbeeld-strook { background: var(--oranje-zacht); color: #8a4a0c; font-size: 12.5px; border-bottom: 1px solid #f1d3ad; }
   .voorbeeld-strook .container { display: flex; justify-content: space-between; gap: 12px; align-items: center; min-height: 34px; flex-wrap: wrap; }
-  .voorbeeld-strook a { color: #8a4a0c; font-weight: 700; }
+  .voorbeeld-strook a, .voorbeeld-strook button { color: #8a4a0c; font-weight: 700; }
+  .voorbeeld-strook button { background: none; border: 0; padding: 0; font: inherit; text-decoration: underline; cursor: pointer; }
+  .voorbeeld-acties { display: flex; gap: 16px; flex-wrap: wrap; }
   .vk-gebruiker { font-size: 12.5px; color: #b9c4dd; }
   #verkoperView.geen-offerte .vk-analyse, #verkoperView.geen-offerte #naarKlant { display: none !important; }
   #verkoperView.geen-offerte .vk-grid { grid-template-columns: 1fr; max-width: 900px; }
@@ -772,7 +774,7 @@
 <!-- ======================= KLANTWEERGAVE ======================= -->
 <div id="klantView">
   <div class="voorbeeld-strook geen-print" id="voorbeeldStrook" hidden>
-    <div class="container"><span><strong>Voorbeeld als klant.</strong> Je bent ingelogd als verkoper; je klikken tellen niet mee.</span><a href="#verkoper">Naar verkoperweergave →</a></div>
+    <div class="container"><span id="voorbeeldTekst"></span><span class="voorbeeld-acties"><button type="button" id="knopTestKlant"></button><a href="#verkoper">Naar verkoperweergave →</a></span></div>
   </div>
   <div class="demo-strook geen-print">
     <div class="container">
@@ -1498,8 +1500,12 @@ if (online) {
     }
   }
 }
-// Ingelogde verkoper die een klantlink opent: voorbeeldweergave, klikken tellen niet mee
-const isVoorbeeld = () => online && !!onlineOfferte && !!api.sessie;
+// Ingelogde verkoper die een klantlink opent: voorbeeldweergave, klikken tellen niet mee.
+// Met "Test als klant" tellen ze wel mee (demo op één apparaat); onthouden per offerte.
+const sleutelTestKlant = 'wb-testklant:' + tokenInUrl;
+const isTestKlant = () => { try { return localStorage.getItem(sleutelTestKlant) === '1'; } catch (e) { return false; } };
+const isIngelogdOpKlantlink = () => online && !!onlineOfferte && !!api.sessie;
+const isVoorbeeld = () => isIngelogdOpKlantlink() && !isTestKlant();
 
 /* =====================================================================
    1. OFFERTEDATA
@@ -4226,7 +4232,7 @@ async function toonView() {
     renderVerkoper();
     window.scrollTo(0, 0);
   } else {
-    $('#voorbeeldStrook').hidden = !isVoorbeeld();
+    werkVoorbeeldStrookBij();
     if (!paginaGeopendGeregistreerd) {
       paginaGeopendGeregistreerd = true;
       registreer('pagina_geopend', { apparaat: matchMedia('(max-width: 900px)').matches ? 'mobiel' : 'desktop', taal });
@@ -4236,6 +4242,23 @@ async function toonView() {
   }
   werkMobieleBalkBij();
 }
+function werkVoorbeeldStrookBij() {
+  $('#voorbeeldStrook').hidden = !isIngelogdOpKlantlink();
+  const test = isTestKlant();
+  $('#voorbeeldTekst').innerHTML = test
+    ? '<strong>Test als klant.</strong> Je klikken tellen mee in de verkoperweergave, net als bij een echte klant.'
+    : '<strong>Voorbeeld als klant.</strong> Je bent ingelogd als verkoper; je klikken tellen niet mee.';
+  $('#knopTestKlant').textContent = test ? 'Stoppen met testen' : 'Test als klant';
+}
+$('#knopTestKlant').addEventListener('click', () => {
+  const aan = !isTestKlant();
+  try { if (aan) localStorage.setItem(sleutelTestKlant, '1'); else localStorage.removeItem(sleutelTestKlant); } catch (e) { /* niets */ }
+  werkVoorbeeldStrookBij();
+  if (aan) {
+    registreer('pagina_geopend', { apparaat: matchMedia('(max-width: 900px)').matches ? 'mobiel' : 'desktop', taal });
+    toonToast('Je klikken tellen nu mee als klant');
+  }
+});
 $('#naarKlant').addEventListener('click', e => { e.preventDefault(); history.pushState(null, '', location.pathname + location.search); toonView(); });
 window.addEventListener('hashchange', toonView);
 window.addEventListener('popstate', toonView);
