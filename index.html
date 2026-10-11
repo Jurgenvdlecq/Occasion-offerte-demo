@@ -675,6 +675,14 @@
     dialog .dialoog-scroll { max-height: calc(100vh - 150px); }
   }
 
+  .vz-voortgang { font-size: 13px; background: var(--oranje-zacht); color: #8a4a0c; border-radius: 8px; padding: 9px 12px; }
+  .vz-voortgang.compleet { background: var(--groen-zacht); color: #155c3d; }
+  .meldingen { display: grid; gap: 8px; margin: 0 0 18px; background: #fff; border: 1px solid #d8cbff; border-radius: 10px; padding: 12px 14px; box-shadow: var(--schaduw); }
+  .meldingen-kop { display: flex; justify-content: space-between; align-items: center; gap: 10px; flex-wrap: wrap; font-weight: 700; color: var(--navy); }
+  .meldingen ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 6px; }
+  .meldingen li { display: flex; justify-content: space-between; align-items: center; gap: 10px; flex-wrap: wrap; font-size: 13px; padding: 8px 10px; border-radius: 8px; background: var(--achtergrond); }
+  .meldingen li.belangrijk { background: #f1ebff; }
+  .meldingen li small { display: block; color: var(--muted); }
   /* ================= Telefoon (ronde mobiel) ================= */
   .persoonlijk-rechts details summary { cursor: pointer; font-size: 11.5px; text-transform: uppercase; letter-spacing: .1em; color: var(--muted); font-weight: 700; list-style: none; display: flex; align-items: center; gap: 6px; min-height: 28px; }
   .persoonlijk-rechts details summary::-webkit-details-marker { display: none; }
@@ -1055,26 +1063,55 @@
     <section id="paneel-verzekering" role="tabpanel" aria-labelledby="tab-verzekering" hidden>
       <div class="vz-grid">
         <div class="kaart" id="vzKaart">
-          <div id="vzStartBlok">
+          <div id="vzFormulierBlok">
             <h2 data-t="vzs.titel">Verzekering voor uw <span data-veld="voertuig.merkModel">SEAT Leon</span></h2>
-            <p class="intro" data-t="vzs.intro">Onze eigen verzekeringsafdeling, Demo Dealer Verzekeringen, maakt vrijblijvend een voorstel voor deze auto. Zo is alles geregeld als u de auto ophaalt.</p>
-            <div class="formulier" id="vzsFormulier">
+            <p class="intro" data-t="vzs.intro2">Onze eigen verzekeringsafdeling, Demo Dealer Verzekeringen, maakt vrijblijvend een voorstel voor deze auto. Vult u de gegevens hieronder in, dan kan zij direct een voorstel maken. Liever eerst contact? Dan is alleen uw contactvoorkeur genoeg.</p>
+            <form class="formulier" id="vzFormulier" novalidate>
+              <div class="veld" data-check="opt:leeftijd18">
+                <label for="vzGeboortedatum" data-t="alg.geboortedatum">Geboortedatum</label>
+                <input class="invoer" type="date" id="vzGeboortedatum" name="geboortedatum" autocomplete="bday">
+                <div class="foutmelding" data-t="alg.foutGeboortedatum">Vul een geldige geboortedatum in (minimaal 18 jaar).</div>
+              </div>
+              <div class="rij-2">
+                <div class="veld" data-check="opt:postcode">
+                  <label for="vzPostcode" data-t="alg.postcode">Postcode</label>
+                  <input class="invoer" type="text" id="vzPostcode" name="postcode" placeholder="1234 AB" autocomplete="postal-code" maxlength="7">
+                  <div class="foutmelding" data-t="alg.foutPostcode">Gebruik het formaat 1234 AB.</div>
+                </div>
+                <div class="veld" data-check="opt:huisnummer">
+                  <label for="vzHuisnummer" data-t="alg.huisnummer">Huisnummer</label>
+                  <input class="invoer" type="text" inputmode="numeric" id="vzHuisnummer" name="huisnummer" placeholder="12" maxlength="5">
+                  <div class="foutmelding" data-t="alg.foutHuisnummer">Vul een huisnummer in.</div>
+                </div>
+                <div class="veld">
+                  <label for="vzToevoeging"><span data-t="alg.toev">Toev.</span> <span class="hint" data-t="alg.opt">(opt.)</span></label>
+                  <input class="invoer" type="text" id="vzToevoeging" name="toevoeging" maxlength="6">
+                </div>
+              </div>
               <div class="veld">
-                <span class="veld-label" id="lblVzsDekking"><span data-t="vzs.dekking">Welke dekking wilt u ongeveer?</span> <span class="hint" data-t="alg.optioneel">(optioneel)</span></span>
-                <div class="segment drie" role="radiogroup" aria-labelledby="lblVzsDekking" id="vzsDekking"></div>
+                <label for="vzSchadevrij"><span data-t="vz.schadevrij">Schadevrije jaren</span> <span class="hint" data-t="vz.schadevrijHint">— zie uw huidige polis</span></label>
+                <select class="invoer" id="vzSchadevrij" name="schadevrijeJaren"></select>
+              </div>
+              <div class="veld">
+                <span class="veld-label" id="lblKm" data-t="vz.km">Verwacht aantal kilometers per jaar</span>
+                <div class="segment" role="radiogroup" aria-labelledby="lblKm" id="vzKm"></div>
+              </div>
+              <div class="veld">
+                <span class="veld-label" id="lblDekking"><span data-t="vz.dekking">Gewenste dekking</span> <span class="hint" data-t="alg.optioneel">(optioneel)</span></span>
+                <div class="segment" role="radiogroup" aria-labelledby="lblDekking" id="vzDekking"></div>
               </div>
               <div class="veld" data-check="keuze">
-                <span class="veld-label" id="lblVzsVoorkeur" data-t="int.voorkeur">Hoe wilt u het liefst benaderd worden?</span>
-                <div class="segment drie" role="radiogroup" aria-labelledby="lblVzsVoorkeur" id="vzsVoorkeur"></div>
+                <span class="veld-label" id="lblVzVoorkeur" data-t="int.voorkeur">Hoe wilt u het liefst benaderd worden?</span>
+                <div class="segment drie" role="radiogroup" aria-labelledby="lblVzVoorkeur" id="vzVoorkeur"></div>
                 <div class="foutmelding" data-t="alg.foutKeuze">Maak een keuze.</div>
               </div>
+              <div class="vz-voortgang" id="vzVoortgang" aria-live="polite"></div>
               <div class="veld" data-check="vink">
-                <label class="vinkje"><input type="checkbox" id="vzsToestemming"> <span data-t="vzs.toestemming">Ik ga ermee akkoord dat mijn naam, contactgegevens en de gegevens van deze auto worden doorgegeven aan Demo Dealer Verzekeringen voor een voorstel.</span></label>
+                <label class="vinkje"><input type="checkbox" id="vzAkkoord" name="akkoord"> <span data-t="vzs.toestemming2">Ik ga ermee akkoord dat mijn naam, contactgegevens, de gegevens hierboven en de gegevens van deze auto worden doorgegeven aan Demo Dealer Verzekeringen voor een voorstel.</span></label>
                 <div class="foutmelding" data-t="vz.foutToestemming">Geef toestemming om een voorstel te kunnen maken.</div>
               </div>
-              <button class="knop knop-primair knop-blok midden" type="button" id="knopVzVoorstel"><span data-t="vzs.knop">Vraag een verzekeringsvoorstel aan</span> <svg class="pijl"><use href="#i-pijl"/></svg></button>
-              <button class="knop knop-stil knop-blok midden" type="button" id="knopVzIndicatie" data-t="vzs.indicatie">Liever direct een indicatie? Vul uw gegevens in</button>
-            </div>
+              <button class="knop knop-primair knop-blok midden" type="submit" id="knopVzVoorstel"><span data-t="vzs.knop">Vraag een verzekeringsvoorstel aan</span> <svg class="pijl"><use href="#i-pijl"/></svg></button>
+            </form>
           </div>
 
           <div id="vzAangevraagdBlok" hidden>
@@ -1085,88 +1122,15 @@
                 <p class="intro" style="margin:0" id="vzsTijd"></p>
               </div>
             </div>
-            <h3 style="font-size:14px;margin:0 0 10px;color:var(--navy)" data-t="alg.watNu">Wat gebeurt er nu?</h3>
-            <ol class="genummerd">
-              <li><span id="vzsStap1"></span></li>
-              <li><span data-t="vzs.stap2">U krijgt een voorstel op maat voor deze auto.</span></li>
-              <li><span data-t="vz.stap3">Akkoord? Dan regelen wij dat de verzekering ingaat op de dag van aflevering.</span></li>
-            </ol>
-            <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:18px">
-              <button class="knop knop-stil" type="button" data-ga-naar-tab="offerte" data-t="vz.naarOfferte">Bekijk uw offerte</button>
-            </div>
-          </div>
-
-          <div id="vzFormulierBlok" hidden>
-            <button class="tekstlink" type="button" id="knopVzTerug" data-t="vzs.terug" style="margin-bottom:10px">← Liever dat we contact opnemen?</button>
-            <h2 data-t="vz.titel">Wat kost uw <span data-veld="voertuig.merkModel">SEAT Leon</span> verzekerd?</h2>
-            <p class="intro" data-t="vz.intro">Vul de gegevens hieronder aan en ontvang een persoonlijk voorstel van Demo Dealer Verzekeringen.</p>
-            <form class="formulier" id="vzFormulier" novalidate>
-              <div class="veld" data-check="leeftijd18">
-                <label for="vzGeboortedatum" data-t="alg.geboortedatum">Geboortedatum</label>
-                <input class="invoer" type="date" id="vzGeboortedatum" name="geboortedatum" autocomplete="bday">
-                <div class="foutmelding" data-t="alg.foutGeboortedatum">Vul een geldige geboortedatum in (minimaal 18 jaar).</div>
-              </div>
-              <div class="rij-2">
-                <div class="veld" data-check="postcode">
-                  <label for="vzPostcode" data-t="alg.postcode">Postcode</label>
-                  <input class="invoer" type="text" id="vzPostcode" name="postcode" placeholder="1234 AB" autocomplete="postal-code" maxlength="7">
-                  <div class="foutmelding" data-t="alg.foutPostcode">Gebruik het formaat 1234 AB.</div>
-                </div>
-                <div class="veld" data-check="huisnummer">
-                  <label for="vzHuisnummer" data-t="alg.huisnummer">Huisnummer</label>
-                  <input class="invoer" type="text" inputmode="numeric" id="vzHuisnummer" name="huisnummer" placeholder="12" maxlength="5">
-                  <div class="foutmelding" data-t="alg.foutHuisnummer">Vul een huisnummer in.</div>
-                </div>
-                <div class="veld">
-                  <label for="vzToevoeging"><span data-t="alg.toev">Toev.</span> <span class="hint" data-t="alg.opt">(opt.)</span></label>
-                  <input class="invoer" type="text" id="vzToevoeging" name="toevoeging" maxlength="6">
-                </div>
-              </div>
-              <div class="veld" data-check="verplicht">
-                <label for="vzSchadevrij"><span data-t="vz.schadevrij">Schadevrije jaren</span> <span class="hint" data-t="vz.schadevrijHint">— zie uw huidige polis</span></label>
-                <select class="invoer" id="vzSchadevrij" name="schadevrijeJaren"></select>
-                <div class="foutmelding" data-t="vz.foutSchadevrij">Kies het aantal schadevrije jaren.</div>
-              </div>
-              <div class="veld" data-check="keuze">
-                <span class="veld-label" id="lblKm" data-t="vz.km">Verwacht aantal kilometers per jaar</span>
-                <div class="segment" role="radiogroup" aria-labelledby="lblKm" id="vzKm"></div>
-                <div class="foutmelding" data-t="vz.foutKm">Kies het verwachte aantal kilometers.</div>
-              </div>
-              <div class="veld">
-                <span class="veld-label" id="lblDekking"><span data-t="vz.dekking">Gewenste dekking</span> <span class="hint" data-t="alg.optioneel">(optioneel)</span></span>
-                <div class="segment" role="radiogroup" aria-labelledby="lblDekking" id="vzDekking"></div>
-              </div>
-              <div class="veld" data-check="vink">
-                <label class="vinkje"><input type="checkbox" id="vzAkkoord" name="akkoord"> <span data-t="vz.toestemming">Ik ga ermee akkoord dat Demo Dealer Verzekeringen deze gegevens gebruikt om een persoonlijk verzekeringsvoorstel op te stellen.</span></label>
-                <div class="foutmelding" data-t="vz.foutToestemming">Geef toestemming om een voorstel te kunnen maken.</div>
-              </div>
-              <button class="knop knop-primair knop-blok midden" type="submit" id="knopBerekenVz"><span data-t="vz.bereken">Bereken mijn verzekering</span> <svg class="pijl"><use href="#i-pijl"/></svg></button>
-            </form>
-          </div>
-
-          <div id="vzLadenBlok" hidden>
-            <h2 data-t="vz.laden">Uw aanvraag wordt gestart…</h2>
-            <p class="intro" data-t="vz.geduld">Een ogenblik geduld.</p>
-            <div class="stappen-laden" id="vzStappen"></div>
-          </div>
-
-          <div id="vzResultaatBlok" hidden>
-            <div class="succes-kop">
-              <span class="rond"><svg><use href="#i-vink"/></svg></span>
-              <div>
-                <h2 data-t="vz.gestart">Uw verzekeringsaanvraag is gestart</h2>
-                <p class="intro" style="margin:0"><span data-t="vz.referentie">Referentie</span> <strong id="vzReferentie">—</strong> · <span id="vzTijd"></span></p>
-              </div>
-            </div>
             <div class="samenvatting-blok" id="vzSamenvatting" style="margin-bottom:16px"></div>
             <h3 style="font-size:14px;margin:0 0 10px;color:var(--navy)" data-t="alg.watNu">Wat gebeurt er nu?</h3>
             <ol class="genummerd">
-              <li><span data-t="vz.stap1">Wij vergelijken de premie bij onze verzekeringspartners op basis van uw gegevens en deze auto.</span></li>
-              <li><span data-t="vz.stap2">U ontvangt binnen 1 werkdag een persoonlijk voorstel van Demo Dealer Verzekeringen.</span></li>
+              <li><span id="vzsStap1"></span></li>
+              <li><span id="vzsStap2"></span></li>
               <li><span data-t="vz.stap3">Akkoord? Dan regelen wij dat de verzekering ingaat op de dag van aflevering.</span></li>
             </ol>
             <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:18px">
-              <button class="knop knop-secundair" type="button" id="knopVzWijzig" data-t="vz.wijzig">Gegevens wijzigen</button>
+              <button class="knop knop-secundair" type="button" id="knopVzWijzig" data-t="vz.wijzig2">Gegevens aanvullen of wijzigen</button>
               <button class="knop knop-stil" type="button" data-ga-naar-tab="offerte" data-t="vz.naarOfferte">Bekijk uw offerte</button>
             </div>
           </div>
@@ -1253,6 +1217,7 @@
     </div>
   </header>
   <main class="container vk-main">
+    <div class="meldingen" id="meldingen" hidden></div>
     <div class="vk-klant">
       <div>
         <h1 id="vkKlantNaam">Klantinteresse</h1>
@@ -1662,20 +1627,15 @@ const NL = {
   'mk.min': '− {bedrag}',
   
   
-  
-  
   'fin.maxAanbetaling': 'De maximale aanbetaling in dit rekenvoorbeeld is {pct}',
   'p/m': 'p/m',
   'rij.aanbetaling': 'Aanbetaling',
   'rij.looptijd': 'Looptijd',
   'rij.maandbedrag': 'Maandbedrag',
   'rij.inruil': 'Inruil (indicatief)',
-  
   'rij.totaal': 'Totaal van de termijnen',
   'rij.auto': 'Auto',
   'rij.prijs': 'Verkoopprijs incl. BTW',
-  
-  
   
   'rij.postcode': 'Postcode',
   'rij.schadevrij': 'Schadevrije jaren',
@@ -1693,9 +1653,7 @@ const NL = {
   'vz.beperkt': 'WA + Beperkt casco', 'vz.beperktSub': 'Ook ruit, storm, diefstal',
   'vz.allrisk': 'Allrisk', 'vz.allriskSub': 'Advies bij deze auto',
   'vz.geenVoorkeur': 'Geen voorkeur',
-  'vz.ladenStap1': 'Gegevens controleren',
-  'vz.ladenStap2': 'Voertuig koppelen ({auto})',
-  'vz.ladenStap3': 'Aanvraag klaarzetten bij onze verzekeringspartners',
+  
   'vz.gestartOp': 'gestart op {datum} om {tijd}',
   'off.titel': 'Offerte occasion',
   'off.nummer': 'Offertenummer', 'off.datum': 'Datum', 'off.geldig': 'Geldig t/m',
@@ -1708,8 +1666,6 @@ const NL = {
   'off.inruil': 'Inruil', 'off.inruilTaxatie': 'Taxatie aangevraagd', 'off.inruilWaarde': 'Verwachte waarde',
   'off.verzekering': 'Verzekering', 'off.akkoord': 'Akkoord',
   
-  
-  'off.vzGestart': 'Aanvraag gestart · referentie <strong style="color:var(--navy)">{ref}</strong> · {dekking}',
   'off.vzVolgt': 'Voorstel volgt',
   'off.vzGeen': 'Nog geen verzekering berekend.',
   'off.vzBereken': 'Bereken verzekering',
@@ -1734,14 +1690,10 @@ const NL = {
   'ak.aanbevolen': 'Uw berekening',
   'ak.akkoordGeven': 'Akkoord geven',
   'ak.ontvangenOp': 'Ontvangen op {datum} om {tijd}',
-  
   'ak.metFinKort': 'Met financiering ({bedrag} p/m)',
   'ak.zelfKort': 'Zelf betalen',
   'ak.nietFinancierbaar': 'Financiering is bij uw huidige berekening niet nodig.',
-  
   'aa.volgende': 'Volgende', 'aa.sluiten': 'Sluiten',
-  
-  
   
   'ct.titel.bericht': 'Stel uw vraag', 'ct.titel.afspraak': 'Plan een afspraak', 'ct.titel.terugbellen': 'Laat u terugbellen',
   'ct.knop.bericht': 'Verstuur bericht', 'ct.knop.afspraak': 'Afspraak aanvragen', 'ct.knop.terugbellen': 'Bel mij terug',
@@ -1810,7 +1762,13 @@ const NL = {
   'off.bwGeen': 'Nog geen betaalwijze gekozen. Laatst berekend: {bedrag} per maand.', 'off.bwKies': 'Kies uw betaalwijze',
   'off.vzVoorstel': 'Voorstel aangevraagd bij {afdeling} op {datum}',
   'ak.finVolgt': '{naam} neemt contact met u op om de financiering te regelen.',
-  'ak.vzVolgt': '{afdeling} stuurt u een verzekeringsvoorstel voor deze auto.'
+  'ak.vzVolgt': '{afdeling} stuurt u een verzekeringsvoorstel voor deze auto.',
+  // Verzekering: één formulier, compleet = genoeg voor een offerte
+  'vzm.geboortedatum': 'geboortedatum', 'vzm.postcode': 'postcode', 'vzm.huisnummer': 'huisnummer', 'vzm.schadevrij': 'schadevrije jaren', 'vzm.km': 'kilometers per jaar',
+  'vz.nogNodig': 'Nog nodig voor een directe offerte: <strong>{velden}</strong>. U kunt ook zonder versturen; dan vragen we het na.',
+  'vz.compleet': '<strong>Compleet.</strong> Hiermee kan Demo Dealer Verzekeringen direct een voorstel maken.',
+  'vzs.stap2compleet': 'Met uw gegevens maakt zij direct een voorstel op maat voor deze auto.',
+  'vzs.stap2onvolledig': 'Zij vraagt de ontbrekende gegevens bij u na ({velden}) en maakt daarna een voorstel.'
 };
 
 const EN = {
@@ -1841,15 +1799,12 @@ const EN = {
   'mk.disclaimer': 'This is an indicative example. Final terms and approval follow after assessment by the lender. Annuity loan without balloon payment.<span class="geld-lenen">Please note: borrowing money costs money.</span>',
   'usp1.t': 'Fixed monthly payment', 'usp1.s': 'You know exactly where you stand.', 'usp2.t': 'Quick and easy', 'usp2.s': 'Calculate online and apply straight away.',
   'usp3.t': 'Personal advice', 'usp3.s': 'Our specialists are happy to help.',
-  'vz.titel': 'What does insuring your <span data-veld="voertuig.merkModel">SEAT Leon</span> cost?',
-  'vz.intro': 'Complete the details below and receive a personal proposal from Demo Dealer Verzekeringen.',
-  'vz.schadevrij': 'No-claims years', 'vz.schadevrijHint': '— see your current policy', 'vz.foutSchadevrij': 'Choose your number of no-claims years.',
-  'vz.km': 'Expected kilometres per year', 'vz.foutKm': 'Choose the expected kilometres.', 'vz.dekking': 'Preferred cover',
-  'vz.toestemming': 'I agree that Demo Dealer Verzekeringen may use these details to prepare a personal insurance proposal.',
+  
+  'vz.schadevrij': 'No-claims years', 'vz.schadevrijHint': '— see your current policy', 
+  'vz.km': 'Expected kilometres per year', 'vz.dekking': 'Preferred cover',
   'vz.foutToestemming': 'Please give permission so we can prepare a proposal.', 'vz.bereken': 'Calculate my insurance',
-  'vz.laden': 'Starting your request…', 'vz.geduld': 'One moment please.', 'vz.gestart': 'Your insurance request has started', 'vz.referentie': 'Reference',
-  'vz.stap1': 'We compare premiums with our insurance partners based on your details and this car.',
-  'vz.stap2': 'Within 1 working day you will receive a personal proposal from Demo Dealer Verzekeringen.',
+  'vz.gestart': 'Your insurance request has started', 
+  
   'vz.stap3': 'Happy with it? We make sure the insurance starts on the day of delivery.',
   'vz.wijzig': 'Change details', 'vz.naarOfferte': 'View your quote', 'vz.voertuig': 'Vehicle details', 'vz.alIngevuld': 'Already filled in',
   'vz.waarom': 'Insurance through Demo Dealer Verzekeringen', 
@@ -1861,12 +1816,7 @@ const EN = {
   'ct.soort': 'Type of appointment', 'ct.proefrit': 'Test drive', 'ct.bezichtiging': 'Viewing', 'ct.video': 'Video call', 'ct.datum': 'Preferred date',
   'ct.dagdeel': 'Time of day', 'ct.ochtend': 'Morning', 'ct.middag': 'Afternoon', 'ct.avond': 'Evening (Thu)', 'ct.telefoon': 'Phone number',
   'ct.uwBericht': 'Your message', 'ct.placeholder': 'For example: I would like to trade in my current car.', 'ct.liever': 'Prefer WhatsApp',
-  
   'int.voorkeur': 'How would you like to be contacted?', 'int.tel': 'By phone', 'int.mail': 'Email', 
-  
-  
-  
-  
   
   
   
@@ -1890,7 +1840,6 @@ const EN = {
   'inr.toegevoegd': 'Trade-in added to your calculation', 'inr.getaxeerd': 'valued',
   'mk.minimum': 'The amount to finance is below the minimum of {bedrag}. Lower the down payment or contact us.',
   
-  
   'fin.maxAanbetaling': 'The maximum down payment in this example is {pct}',
   'p/m': 'per month',
   'rij.aanbetaling': 'Down payment', 'rij.looptijd': 'Term', 'rij.maandbedrag': 'Monthly payment', 'rij.inruil': 'Trade-in (estimate)',
@@ -1902,7 +1851,6 @@ const EN = {
   'vz.kies': 'Please choose', 'vz.jaar': '{n} years', 'vz.meer20': 'More than 20 years', 'vz.nooit': 'Never been insured',
   'vz.wa': 'Third party', 'vz.waSub': 'Legal minimum', 'vz.beperkt': 'Third party, fire & theft', 'vz.beperktSub': 'Also glass, storm, theft',
   'vz.allrisk': 'Comprehensive', 'vz.allriskSub': 'Recommended for this car', 'vz.geenVoorkeur': 'No preference',
-  'vz.ladenStap1': 'Checking your details', 'vz.ladenStap2': 'Linking the vehicle ({auto})', 'vz.ladenStap3': 'Preparing the request for our insurance partners',
   'vz.gestartOp': 'started on {datum} at {tijd}',
   'off.titel': 'Used car quote', 'off.nummer': 'Quote number', 'off.datum': 'Date', 'off.geldig': 'Valid until', 'off.klant': 'Customer',
   'off.voertuig': 'Vehicle', 'off.bouwjaar': 'Year', 'off.km': 'Mileage', 'off.brandstof': 'Fuel', 'off.transmissie': 'Transmission',
@@ -1911,7 +1859,6 @@ const EN = {
   'off.inruilRegel': 'Trade-in {auto} (estimate)', 'off.bijbetalen': 'Remaining to pay', 'off.inruil': 'Trade-in',
   'off.inruilTaxatie': 'Valuation requested', 'off.inruilWaarde': 'Expected value', 'off.verzekering': 'Insurance', 'off.akkoord': 'Acceptance',
   
-  'off.vzGestart': 'Request started · reference <strong style="color:var(--navy)">{ref}</strong> · {dekking}',
   'off.vzVolgt': 'Proposal to follow', 'off.vzGeen': 'No insurance calculated yet.', 'off.vzBereken': 'Calculate insurance',
   'off.akkoordDoor': 'Accepted by <strong>{naam}</strong> on {datum} at {tijd}', 'off.betaalwijze': 'Payment method',
   'off.pdfLeeg': '<strong style="color:var(--navy)">The PDF from our quoting system will appear here</strong><br>In the pilot the original quote is linked automatically.',
@@ -1925,7 +1872,6 @@ const EN = {
   'ak.metFinKort': 'With financing ({bedrag} per month)', 'ak.zelfKort': 'Pay myself',
   'ak.nietFinancierbaar': 'Financing is not needed with your current calculation.',
   'aa.volgende': 'Next', 'aa.sluiten': 'Close', 
-  
   
   'ct.titel.bericht': 'Ask your question', 'ct.titel.afspraak': 'Book an appointment', 'ct.titel.terugbellen': 'Request a call back',
   'ct.knop.bericht': 'Send message', 'ct.knop.afspraak': 'Request appointment', 'ct.knop.terugbellen': 'Call me back',
@@ -1993,18 +1939,25 @@ const EN = {
   'int.wa': 'WhatsApp',
   'vzs.titel': 'Insurance for your <span data-veld="voertuig.merkModel">SEAT Leon</span>',
   'vzs.intro': 'Our own insurance department, Demo Dealer Verzekeringen, will prepare a proposal for this car, without obligation. That way everything is arranged when you collect the car.',
-  'vzs.dekking': 'Which cover would you roughly like?',
   'vzs.toestemming': 'I agree that my name, contact details and the details of this car are passed on to Demo Dealer Verzekeringen for a proposal.',
-  'vzs.knop': 'Request an insurance proposal', 'vzs.indicatie': 'Prefer an estimate right away? Fill in your details',
+  'vzs.knop': 'Request an insurance proposal', 
   'vzs.ontvangen': 'Your request has been passed on', 'vzs.stap1': '{afdeling} will contact you ({voorkeur}).',
-  'vzs.stap2': 'You will receive a proposal tailored to this car.', 'vzs.terug': '← Rather have us contact you?',
+  'vzs.stap2': 'You will receive a proposal tailored to this car.', 
   'ft.privacy': 'We only use what you view and calculate on this page to help you better with this quote. We do not share or sell this.',
   'off.betaalwijzeKop': 'Payment method', 'off.bwKeuze': 'Your choice', 'off.bwContact': 'Contact by', 'off.indicatie': 'estimate',
   'off.bwVolgt': 'Sent on {datum}. {naam} will contact you to arrange everything.',
   'off.bwGeen': 'No payment method chosen yet. Last calculation: {bedrag} per month.', 'off.bwKies': 'Choose your payment method',
   'off.vzVoorstel': 'Proposal requested from {afdeling} on {datum}',
   'ak.finVolgt': '{naam} will contact you to arrange the financing.',
-  'ak.vzVolgt': '{afdeling} will send you an insurance proposal for this car.'
+  'ak.vzVolgt': '{afdeling} will send you an insurance proposal for this car.',
+  'vzs.intro2': 'Our own insurance department, Demo Dealer Verzekeringen, will prepare a proposal for this car, without obligation. If you fill in the details below, they can prepare a proposal straight away. Prefer to talk first? Your contact preference is enough.',
+  'vzs.toestemming2': 'I agree that my name, contact details, the details above and the details of this car are passed on to Demo Dealer Verzekeringen for a proposal.',
+  'vz.wijzig2': 'Complete or change details',
+  'vzm.geboortedatum': 'date of birth', 'vzm.postcode': 'postcode', 'vzm.huisnummer': 'house number', 'vzm.schadevrij': 'claim-free years', 'vzm.km': 'kilometres per year',
+  'vz.nogNodig': 'Still needed for an immediate quote: <strong>{velden}</strong>. You can also send without; we will ask you.',
+  'vz.compleet': '<strong>Complete.</strong> Demo Dealer Verzekeringen can prepare a proposal straight away.',
+  'vzs.stap2compleet': 'With your details they will prepare a tailored proposal for this car straight away.',
+  'vzs.stap2onvolledig': 'They will ask you for the missing details ({velden}) and then prepare a proposal.'
 };
 
 // Vaste waarden uit de offertedata (Nederlands) met hun Engelse vertaling
@@ -2109,6 +2062,7 @@ function valideerVelden(container, toonFouten = true, extra = {}) {
     let ok;
     if (soort === 'vink') ok = $('input[type=checkbox]', veld).checked;
     else if (soort === 'keuze') ok = !!$('input[type=radio]:checked', veld);
+    else if (soort.startsWith('opt:')) { const w = $('input, select, textarea', veld).value; ok = w.trim() === '' || CONTROLES[soort.slice(4)](w); }
     else if (extra[soort]) ok = extra[soort](veld);
     else ok = CONTROLES[soort]($('input:not([type=radio]):not([type=checkbox]), select, textarea', veld).value);
     if (toonFouten) veld.classList.toggle('fout', !ok);
@@ -2189,7 +2143,6 @@ const staat = {
   aanbetaling: typeof bewaard.aanbetaling === 'number' ? bewaard.aanbetaling : (voorstel ? voorstel.aanbetaling : prijs * fin.aanbetalingPct / 100),
   looptijd: fin.looptijden.includes(bewaard.looptijd) ? bewaard.looptijd : (voorstel ? voorstel.looptijd : fin.looptijd),
   betaalwijze: bewaard.betaalwijze || null,        // keuze van de klant: hoe wil hij de auto betalen
-  verzekeringAanvraag: bewaard.verzekeringAanvraag || null,
   vzVoorstel: bewaard.vzVoorstel || null,          // voorstel gevraagd bij de verzekeringsafdeling
   // Een in de showroom getaxeerde inruil staat vast in de offerte; anders telt wat de klant zelf invulde
   inruil: offerte.inruil && offerte.inruil.getaxeerd ? { ...offerte.inruil } : (bewaard.inruil !== undefined ? bewaard.inruil : null),
@@ -2582,93 +2535,75 @@ function bouwVerzekeringsopties() {
   $('#vzGeboortedatum').max = max; $('#vzGeboortedatum').min = '1920-01-01';
 })();
 
+// Eén formulier: alles wat de klant invult blijft in zijn eigen browser bewaard (concept) en gaat pas
+// met zijn toestemming naar de verkoper. Compleet = genoeg voor een verzekeringsofferte.
 const vzForm = $('#vzFormulier');
-let vzGestartGeregistreerd = false, vzIngevuldGeregistreerd = false;
+const VZ_AFDELING = { naam: 'Demo Dealer Verzekeringen', email: 'verzekeringen@voorbeeld.nl' };
+const VZ_VELDEN = [['geboortedatum', 'vzm.geboortedatum'], ['postcode', 'vzm.postcode'], ['huisnummer', 'vzm.huisnummer'], ['schadevrijeJaren', 'vzm.schadevrij'], ['kilometers', 'vzm.km']];
+const sleutelVzConcept = `${OPSLAG_PREFIX}:${offerte.id}:vz-concept`;
+let vzGestartGeregistreerd = false, vzWijzigen = false;
+function vzGegevens() {
+  const d = new FormData(vzForm);
+  const g = k => String(d.get(k) || '').trim();
+  return { geboortedatum: g('geboortedatum'), postcode: g('postcode').toUpperCase(), huisnummer: g('huisnummer'), toevoeging: g('toevoeging'),
+    schadevrijeJaren: g('schadevrijeJaren'), kilometers: g('kilometers'), dekking: g('dekking'), voorkeur: g('vzVoorkeur') };
+}
+const vzOntbreekt = g => VZ_VELDEN.filter(([k]) => !g[k]).map(([k]) => k);
+const vzVeldLabel = k => t((VZ_VELDEN.find(v => v[0] === k) || [k, k])[1]);
+function werkVzVoortgangBij() {
+  const ontbreekt = vzOntbreekt(vzGegevens());
+  $('#vzVoortgang').classList.toggle('compleet', !ontbreekt.length);
+  $('#vzVoortgang').innerHTML = ontbreekt.length ? t('vz.nogNodig', { velden: ontbreekt.map(vzVeldLabel).join(', ') }) : t('vz.compleet');
+}
 function vzOpWijziging(e) {
   if (!vzGestartGeregistreerd) { vzGestartGeregistreerd = true; registreer('verzekering_gestart', { veld: e.target.name || '' }); }
-  if (!vzIngevuldGeregistreerd && valideerVelden(vzForm, false)) { vzIngevuldGeregistreerd = true; registreer('verzekering_ingevuld'); }
+  opslag.schrijf(sleutelVzConcept, vzGegevens());
+  werkVzVoortgangBij();
 }
 vzForm.addEventListener('input', vzOpWijziging);
 vzForm.addEventListener('change', vzOpWijziging);
+function herstelVzConcept() {
+  const c = staat.vzVoorstel || opslag.lees(sleutelVzConcept, null);
+  if (!c) return;
+  [['#vzGeboortedatum', 'geboortedatum'], ['#vzPostcode', 'postcode'], ['#vzHuisnummer', 'huisnummer'], ['#vzToevoeging', 'toevoeging'], ['#vzSchadevrij', 'schadevrijeJaren']]
+    .forEach(([id, k]) => { if (c[k]) $(id).value = c[k]; });
+  [['kilometers', 'kilometers'], ['dekking', 'dekking'], ['vzVoorkeur', 'voorkeur']].forEach(([naam, k]) => {
+    const r = c[k] && $(`[name=${naam}][value="${c[k]}"]`);
+    if (r) r.checked = true;
+  });
+}
 vzForm.addEventListener('submit', e => {
   e.preventDefault();
   if (!valideerVelden(vzForm)) { registreer('verzekering_bereken_onvolledig'); return; }
-  const d = new FormData(vzForm);
-  const aanvraag = {
-    referentie: 'WB-VZ-' + Math.floor(100000 + Math.random() * 900000), t: Date.now(),
-    postcode: String(d.get('postcode')).toUpperCase(), schadevrijeJaren: d.get('schadevrijeJaren'),
-    kilometers: d.get('kilometers'), dekking: d.get('dekking') || ''
-  };
-  registreer('verzekering_berekend', { dekking: aanvraag.dekking, kilometers: aanvraag.kilometers, schadevrijeJaren: aanvraag.schadevrijeJaren });
-  simuleerVerzekeringsaanvraag(aanvraag);
-});
-function simuleerVerzekeringsaanvraag(aanvraag) {
-  const stappen = [t('vz.ladenStap1'), t('vz.ladenStap2', { auto: `${offerte.voertuig.merk} ${offerte.voertuig.model}` }), t('vz.ladenStap3')];
-  $('#vzFormulierBlok').hidden = true;
-  $('#vzLadenBlok').hidden = false;
-  $('#vzStappen').innerHTML = stappen.map(s => `<div class="stap-laden"><span class="bol"></span>${escapeHtml(s)}</div>`).join('');
-  $('#vzKaart').scrollIntoView({ behavior: 'smooth', block: 'start' });
-  const elementen = $$('#vzStappen .stap-laden');
-  elementen.forEach((el, i) => setTimeout(() => {
-    if (i > 0) { elementen[i - 1].classList.replace('bezig', 'klaar'); elementen[i - 1].querySelector('.bol').innerHTML = icoon('i-vink'); }
-    el.classList.add('bezig');
-  }, i * 800));
-  setTimeout(() => { staat.verzekeringAanvraag = aanvraag; bewaarKeuze(); toonVerzekeringsresultaat(); }, stappen.length * 800 + 300);
-}
-function toonVerzekeringsresultaat() {
-  const a = staat.verzekeringAanvraag;
-  if (!a) return;
-  $('#vzFormulierBlok').hidden = true;
-  $('#vzStartBlok').hidden = true;
-  $('#vzLadenBlok').hidden = true;
-  $('#vzResultaatBlok').hidden = false;
-  $('#vzReferentie').textContent = a.referentie;
-  $('#vzTijd').textContent = t('vz.gestartOp', { datum: fmtDatum(a.t), tijd: fmtTijd(a.t) });
-  $('#vzSamenvatting').innerHTML = `<table class="samenvatting-tabel">
-    ${rij(t('rij.auto'), escapeHtml(offerte.voertuig.merk + ' ' + offerte.voertuig.model))}
-    ${rij(t('rij.postcode'), escapeHtml(a.postcode))}
-    ${rij(t('rij.schadevrij'), escapeHtml(schadevrijLabel(a.schadevrijeJaren)))}
-    ${rij(t('rij.km'), kmLabel(a.kilometers))}
-    ${rij(t('rij.dekking'), escapeHtml(dekkingLabel(a.dekking)))}</table>`;
-}
-$('#knopVzWijzig').addEventListener('click', () => { $('#vzResultaatBlok').hidden = true; $('#vzFormulierBlok').hidden = false; });
-
-// Eerste stap: in één keer een voorstel vragen bij de verzekeringsafdeling; zelf berekenen is optioneel
-const VZ_AFDELING = { naam: 'Demo Dealer Verzekeringen', email: 'verzekeringen@voorbeeld.nl' };
-let vzIndicatieOpen = false;
-function renderVzStart() {
-  const v = staat.vzVoorstel;
-  const gekozenDekking = ($('[name=vzsDekking]:checked') || {}).value || '';
-  const voorkeur = ($('[name=vzsVoorkeur]:checked') || {}).value || (staat.betaalwijze && staat.betaalwijze.voorkeur) || '';
-  $('#vzsDekking').innerHTML = DEKKINGEN.map(([w, l]) => `<label><input type="radio" name="vzsDekking" value="${w}" ${w === gekozenDekking ? 'checked' : ''}><span>${t(l)}</span></label>`).join('');
-  bouwVoorkeur('#vzsVoorkeur', 'vzsVoorkeur', voorkeur);
-  const resultaat = !!staat.verzekeringAanvraag && !$('#vzResultaatBlok').hidden;
-  $('#vzAangevraagdBlok').hidden = !v;
-  $('#vzStartBlok').hidden = !!v || vzIndicatieOpen || resultaat;
-  if (!vzIndicatieOpen || v) $('#vzFormulierBlok').hidden = true;
-  if (v) {
-    $('#vzsTijd').textContent = t('vz.gestartOp', { datum: fmtDatum(v.t), tijd: fmtTijd(v.t) });
-    $('#vzsStap1').textContent = t('vzs.stap1', { afdeling: VZ_AFDELING.naam, voorkeur: voorkeurLabel(v.voorkeur).toLowerCase() });
-  }
-}
-$('#knopVzVoorstel').addEventListener('click', () => {
-  if (!valideerVelden($('#vzsFormulier'))) return;
-  const dekking = ($('[name=vzsDekking]:checked') || {}).value || '';
-  const voorkeur = $('[name=vzsVoorkeur]:checked').value;
-  staat.vzVoorstel = { dekking, voorkeur, t: Date.now() };
+  const g = vzGegevens(), ontbreekt = vzOntbreekt(g);
+  staat.vzVoorstel = { ...g, compleet: !ontbreekt.length, t: Date.now() };
+  vzWijzigen = false;
   bewaarKeuze();
-  registreer('verzekering_aangevraagd', { dekking, voorkeur });
+  registreer('verzekering_aangevraagd', { ...g, compleet: !ontbreekt.length, ontbreekt });
   renderVzStart();
   renderAkkoordKaart();
   $('#vzKaart').scrollIntoView({ behavior: 'smooth', block: 'start' });
 });
-$('#knopVzIndicatie').addEventListener('click', () => {
-  vzIndicatieOpen = true;
-  $('#vzStartBlok').hidden = true; $('#vzFormulierBlok').hidden = false;
-  registreer('verzekering_gestart', { veld: 'indicatie' });
-  vzGestartGeregistreerd = true;
-});
-$('#knopVzTerug').addEventListener('click', () => { vzIndicatieOpen = false; renderVzStart(); });
+$('#knopVzWijzig').addEventListener('click', () => { vzWijzigen = true; renderVzStart(); });
+function renderVzStart() {
+  const v = staat.vzVoorstel;
+  const voorkeur = ($('[name=vzVoorkeur]:checked') || {}).value || (v && v.voorkeur) || (opslag.lees(sleutelVzConcept, null) || {}).voorkeur || (staat.betaalwijze && staat.betaalwijze.voorkeur) || '';
+  bouwVoorkeur('#vzVoorkeur', 'vzVoorkeur', voorkeur);
+  $('#vzAangevraagdBlok').hidden = !v || vzWijzigen;
+  $('#vzFormulierBlok').hidden = !!v && !vzWijzigen;
+  werkVzVoortgangBij();
+  if (!v) return;
+  $('#vzsTijd').textContent = t('vz.gestartOp', { datum: fmtDatum(v.t), tijd: fmtTijd(v.t) });
+  $('#vzsStap1').textContent = t('vzs.stap1', { afdeling: VZ_AFDELING.naam, voorkeur: voorkeurLabel(v.voorkeur).toLowerCase() });
+  $('#vzsStap2').textContent = v.compleet ? t('vzs.stap2compleet') : t('vzs.stap2onvolledig', { velden: vzOntbreekt(v).map(vzVeldLabel).join(', ') });
+  $('#vzSamenvatting').innerHTML = `<table class="samenvatting-tabel">
+    ${rij(t('rij.auto'), escapeHtml(`${offerte.voertuig.merk} ${offerte.voertuig.model}`))}
+    ${rij(t('rij.dekking'), escapeHtml(dekkingLabel(v.dekking)))}
+    ${v.schadevrijeJaren ? rij(t('rij.schadevrij'), escapeHtml(schadevrijLabel(v.schadevrijeJaren))) : ''}
+    ${v.kilometers ? rij(t('rij.km'), kmLabel(v.kilometers)) : ''}
+    ${v.postcode ? rij(t('rij.postcode'), escapeHtml(`${v.postcode} ${v.huisnummer}${v.toevoeging ? ' ' + v.toevoeging : ''}`)) : ''}
+    ${rij(t('off.bwContact'), escapeHtml(voorkeurLabel(v.voorkeur)))}</table>`;
+}
 
 /* =====================================================================
    9. UW OFFERTE + DIGITAAL AKKOORD
@@ -2693,11 +2628,9 @@ function renderOfferteDocument() {
     const b = huidigeBerekening();
     bwBlok = `<div class="leeg-blok"><span>${t('off.bwGeen', { bedrag: fmtEuro(b.maandbedrag) })}</span><button class="knop knop-secundair knop-klein geen-print" type="button" data-ga-naar-tab="financiering">${t('off.bwKies')}</button></div>`;
   }
-  const a = staat.verzekeringAanvraag, vv = staat.vzVoorstel;
+  const vv = staat.vzVoorstel;
   const vzBlok = vv
     ? `<div class="leeg-blok"><span>${t('off.vzVoorstel', { afdeling: VZ_AFDELING.naam, datum: fmtDatum(vv.t) })}${vv.dekking ? ` · ${escapeHtml(dekkingLabel(vv.dekking))}` : ''}</span><span class="badge blauw">${t('off.vzVolgt')}</span></div>`
-    : a
-    ? `<div class="leeg-blok"><span>${t('off.vzGestart', { ref: escapeHtml(a.referentie), dekking: escapeHtml(dekkingLabel(a.dekking)) })}</span><span class="badge blauw">${t('off.vzVolgt')}</span></div>`
     : `<div class="leeg-blok"><span>${t('off.vzGeen')}</span><button class="knop knop-secundair knop-klein geen-print" type="button" data-ga-naar-tab="verzekering">${t('off.vzBereken')}</button></div>`;
   const ak = staat.akkoord;
   const akBlok = ak
@@ -2822,7 +2755,7 @@ function openAkkoord(bron) {
   $('#akBetaalwijze').innerHTML = (kanFin ? `
     <label class="keuzekaart"><input type="radio" name="akBetaal" value="financiering" ${voorkeurFin ? 'checked' : ''}><span><span>${t('ak.metFin')} ${voorkeurFin ? `<span class="aanbevolen">· ${t('ak.aanbevolen')}</span>` : ''}<small>${t('ak.metFinSub', { pct: fmtPct(aanbetalingPct()), looptijd: staat.looptijd })}</small></span><b>${fmtEuro(b.maandbedrag)} ${t('p/m')}</b></span></label>` : `<p class="uitleg vast">${t('ak.nietFinancierbaar')}</p>`)
     + `<label class="keuzekaart"><input type="radio" name="akBetaal" value="zelf" ${!kanFin || bwKeuze === 'zelf' ? 'checked' : ''}><span><span>${t('ak.zelf')}<small>${t('ak.zelfSub')}</small></span><b>${fmtEuro(prijs - inruilWaarde(), 0)}</b></span></label>`;
-  $('#akVzRij').hidden = !!(staat.verzekeringAanvraag || staat.vzVoorstel);
+  $('#akVzRij').hidden = !!staat.vzVoorstel;
   const k = offerte.klant;
   if (!$('#akNaam').value) $('#akNaam').value = [k.voorletters, k.achternaam].filter(Boolean).join(' ');
   $$('#akFormulier .veld').forEach(el => el.classList.remove('fout'));
@@ -2859,7 +2792,7 @@ $('#akFormulier').addEventListener('submit', e => {
   const geldig = valideerVelden($('[data-ak-stap="2"]'), true, { handtekening: () => !handtekening.leeg() });
   if (!geldig) return;
   const betaalwijze = $('[name=akBetaal]:checked').value;
-  const verzekeringsvoorstel = !staat.verzekeringAanvraag && !staat.vzVoorstel && $('#akVerzekering').checked;
+  const verzekeringsvoorstel = !staat.vzVoorstel && $('#akVerzekering').checked;
   staat.akkoord = {
     t: Date.now(), naam: $('#akNaam').value.trim(), betaalwijze, verzekeringsvoorstel,
     stand: betaalwijze === 'financiering' ? momentopname() : null, handtekening: handtekening.data()
@@ -3117,7 +3050,6 @@ function pasTaalToe() {
   renderInruil();
   renderAkkoordKaart();
   if (staat.actieveTab === 'offerte') renderOfferteDocument();
-  if (!$('#vzResultaatBlok').hidden) toonVerzekeringsresultaat();
   zetContactModus(contactModus);
   renderVzStart();
   if ($('#dlgAkkoord').open) $('#akStapLabel').textContent = t('ak.stap' + akkoordStap);
@@ -3143,8 +3075,8 @@ const WEGING = {
   inruilTaxatie:  { punten: 2,   max: 2,  omschrijving: 'Taxatie gevraagd' },
   vzBekeken:      { punten: 1,   max: 3,  omschrijving: 'Verzekering bekeken (per keer)' },
   vzGestart:      { punten: 2,   max: 2,  omschrijving: 'Verzekeringsformulier gestart' },
-  vzIngevuld:     { punten: 3,   max: 3,  omschrijving: 'Verzekeringsformulier volledig ingevuld' },
-  vzBerekend:     { punten: 7,   max: 7,  omschrijving: 'Verzekeringsvoorstel aangevraagd of berekening gestart' },
+  vzIngevuld:     { punten: 3,   max: 3,  omschrijving: 'Verzekeringsgegevens compleet (genoeg voor een offerte)' },
+  vzBerekend:     { punten: 7,   max: 7,  omschrijving: 'Verzekeringsvoorstel aangevraagd' },
   offBekeken:     { punten: 1,   max: 3,  omschrijving: 'Offerte bekeken (per keer)' },
   offActie:       { punten: 2,   max: 4,  omschrijving: 'PDF geopend, afgedrukt, gedeeld of specificaties bekeken' },
   akkoord:        { punten: 15,  max: 15, omschrijving: 'Digitaal akkoord gegeven' },
@@ -3199,7 +3131,7 @@ function berekenInzichten(evs) {
   inr.max = maxVan(['inruil', 'inruilTaxatie']);
 
   const z = { views: tel('tab_bekeken', e => e.tab === 'verzekering'), gestart: tel('verzekering_gestart') > 0, ingevuld: tel('verzekering_ingevuld') > 0, berekend: laatste(evs, 'verzekering_berekend'), voorstel: laatste(evs, 'verzekering_aangevraagd') };
-  z.score = punten('vzBekeken', z.views) + (z.gestart || z.voorstel ? WEGING.vzGestart.punten : 0) + (z.ingevuld || z.voorstel ? WEGING.vzIngevuld.punten : 0) + (z.berekend || z.voorstel ? WEGING.vzBerekend.punten : 0);
+  z.score = punten('vzBekeken', z.views) + (z.gestart || z.voorstel ? WEGING.vzGestart.punten : 0) + (z.ingevuld || (z.voorstel && z.voorstel.compleet) ? WEGING.vzIngevuld.punten : 0) + (z.berekend || z.voorstel ? WEGING.vzBerekend.punten : 0);
   z.max = maxVan(['vzBekeken', 'vzGestart', 'vzIngevuld', 'vzBerekend']);
 
   const o = {
@@ -3261,7 +3193,9 @@ function maakAdvies(inz) {
   } else if (f.aanbAantal && s && s.aanbetalingPct < fin.aanbetalingPct && !(offerte.inruil && offerte.inruil.getaxeerd)) {
     a.push(`Klant zocht een lagere aanbetaling (tot ${fmtPct(Math.min(...f.pctGeprobeerd))}). Vraag naar inruil: dat verlaagt het te financieren bedrag.`);
   }
-  if (inz.vz.voorstel) a.push(`Klant vroeg een verzekeringsvoorstel aan${inz.vz.voorstel.dekking ? ` (${dekkingLabel(inz.vz.voorstel.dekking)})` : ''}. Zet het vandaag door naar ${VZ_AFDELING.naam}.`);
+  const vzv = inz.vz.voorstel;
+  if (vzv && vzv.compleet) a.push(`Verzekeringsaanvraag is compleet (${dekkingLabel(vzv.dekking)}, ${schadevrijLabel(vzv.schadevrijeJaren)} schadevrij, ${kmLabel(vzv.kilometers)} km/jaar). Zet hem met één klik door naar ${VZ_AFDELING.naam}.`);
+  else if (vzv) a.push(`Klant vroeg een verzekeringsvoorstel aan, maar nog niet compleet (ontbreekt: ${vzOntbrekendNL(vzv)}). Zet hem door; ${VZ_AFDELING.naam} vraagt de rest na. Of vraag het zelf even na.`);
   else if (inz.vz.berekend) a.push(`Klant vulde de verzekeringsgegevens in. Zet het door naar ${VZ_AFDELING.naam}, zodat het voorstel binnen 1 werkdag bij de klant is.`);
   else if (inz.vz.gestart) a.push('Klant begon aan het verzekeringsformulier maar rondde het niet af. Goed aanknopingspunt voor een belletje.');
   else if (inz.off.akkoord && inz.off.akkoord.verzekeringsvoorstel) a.push(`Klant vroeg bij het akkoord om een verzekeringsvoorstel. Zet het door naar ${VZ_AFDELING.naam}.`);
@@ -3278,7 +3212,7 @@ function waaromSignalen(inz) {
   const mnd = st => st ? `${fmtPct(st.aanbetalingPct)} / ${st.looptijd} mnd · ${fmtEuro(st.maandbedrag)} p/m` : '';
   if (o.akkoord) uit.push(`Akkoord gegeven (${o.akkoord.betaalwijze === 'financiering' ? 'met financiering' : 'zelf betalen'})`);
   if (f.betaalwijze) uit.push(`Betaalwijze gekozen: ${f.betaalwijze.keuze === 'financiering' ? 'met financiering' : f.betaalwijze.keuze === 'zelf' ? 'zelf betalen' : 'wil advies'} · ${String(f.betaalwijze.voorkeur || '').toLowerCase()}`);
-  if (z.voorstel) uit.push('Verzekeringsvoorstel aangevraagd');
+  if (z.voorstel) uit.push(z.voorstel.compleet ? 'Verzekeringsaanvraag compleet ingevuld' : 'Verzekeringsvoorstel aangevraagd (nog niet compleet)');
   if (f.aanbAantal + f.ltAantal) uit.push(`${f.aanbAantal ? `Aanbetaling ${f.aanbAantal}×` : ''}${f.aanbAantal && f.ltAantal ? ' en ' : ''}${f.ltAantal ? `looptijd ${f.ltAantal}×` : ''} aangepast · laatst ${mnd(f.laatsteStand)}`);
   if (inz.sessies.length >= 2) uit.push(`${inz.sessies.length} bezoeken · laatst ${inz.laatsteActiviteit ? relatieveTijd(inz.laatsteActiviteit) : ''}`);
   if (inz.inr.laatste) uit.push(`Inruil toegevoegd: ${inz.inr.laatste.omschrijving}`);
@@ -3312,20 +3246,54 @@ function waNummer(tel) {
   else if (n.startsWith('0')) n = '31' + n.slice(1);
   return n.length >= 10 ? n : '';
 }
-// Mail naar de verzekeringsafdeling met de gegevens waarvoor de klant toestemming gaf
-function vzOverdrachtUrl(inz) {
+// Ontbrekende verzekeringsgegevens in het Nederlands (verkoperweergave)
+const vzOntbrekendNL = v => (v.ontbreekt || vzOntbreekt(v)).map(k => NL[(VZ_VELDEN.find(x => x[0] === k) || [k, k])[1]] || k).join(', ');
+// Verzekeringsaanvraag voor de verzekeringsafdeling: altijd hetzelfde format, met de gegevens waarvoor de klant toestemming gaf
+function vzAanvraagTekst(inz) {
   const k = offerte.klant, v = offerte.voertuig, vk = offerte.verkoper;
-  const vz = inz.vz.voorstel, b = inz.vz.berekend;
-  const regels = [
-    `Klant: ${klantNaam(offerte, false)}`, k.telefoon ? `Telefoon: ${k.telefoon}` : '', k.email ? `E-mail: ${k.email}` : '',
-    k.postcode ? `Postcode/huisnummer: ${k.postcode} ${k.huisnummer || ''}`.trim() : '',
-    '', `Auto: ${v.merk} ${v.model} ${v.uitvoering}`, v.kenteken ? `Kenteken: ${v.kenteken}` : '', v.bouwjaar ? `Bouwjaar: ${v.bouwjaar}` : '',
-    `Offerte: ${offerte.nummer} · aflevering: ${offerte.aflevering || 'in overleg'}`,
-    '', `Gewenste dekking: ${dekkingLabel((vz && vz.dekking) || (b && b.dekking) || '')}`,
-    vz ? `Contactvoorkeur: ${vz.voorkeur}` : '', b ? `Km per jaar: ${kmLabel(b.kilometers)} · schadevrije jaren: ${schadevrijLabel(b.schadevrijeJaren)}` : '',
-    '', `Verkoper: ${vk.naam}${vk.telefoon ? ' · ' + vk.telefoon : ''}`
-  ].filter((r, i, a) => r || (a[i - 1] && a[i - 1] !== ''));
-  return `mailto:${VZ_AFDELING.email}?subject=${encodeURIComponent(`Verzekeringsvoorstel ${v.merk} ${v.model} · ${klantNaam(offerte, false)}`)}&body=${encodeURIComponent(regels.join('\n'))}`;
+  const vz = inz.vz.voorstel || {}, ak = inz.off.akkoord;
+  const rij = (label, waarde) => `${(label + ':').padEnd(22)}${waarde || '—'}`;
+  const datum = d => d ? new Date(d).toLocaleDateString('nl-NL', { day: '2-digit', month: '2-digit', year: 'numeric' }) : '';
+  const compleet = !!vz.compleet;
+  return [
+    'VERZEKERINGSAANVRAAG · interactieve offerte (format 1)',
+    `Status: ${compleet ? 'COMPLEET, klaar voor een offerte' : `ONVOLLEDIG, ontbreekt: ${vz.t ? vzOntbrekendNL(vz) : 'alle verzekeringsgegevens (gevraagd bij akkoord)'}`}`,
+    '',
+    'KLANT',
+    rij('Naam', klantNaam(offerte, false)),
+    rij('Geboortedatum', datum(vz.geboortedatum)),
+    rij('Adres', vz.postcode ? `${vz.postcode} ${vz.huisnummer}${vz.toevoeging ? ' ' + vz.toevoeging : ''}` : [k.postcode, k.huisnummer].filter(Boolean).join(' ')),
+    rij('Telefoon', k.telefoon),
+    rij('E-mail', k.email),
+    rij('Contactvoorkeur', vz.voorkeur),
+    '',
+    'VOERTUIG',
+    rij('Merk en model', `${v.merk} ${v.model} ${v.uitvoering || ''}`.trim()),
+    rij('Kenteken', v.kenteken),
+    rij('Bouwjaar', v.bouwjaar),
+    rij('Brandstof', v.brandstof),
+    rij('Vermogen', v.vermogenPk ? `${v.vermogenPk} pk` : ''),
+    rij('Kilometerstand', v.kilometerstand ? `${fmtGetal(v.kilometerstand)} km` : ''),
+    rij('Aankoopprijs', fmtEuro(prijs, 0)),
+    rij('Aflevering', offerte.aflevering),
+    '',
+    'VERZEKERING',
+    rij('Gewenste dekking', vz.dekking ? dekkingLabel(vz.dekking) : 'advies gewenst'),
+    rij('Schadevrije jaren', vz.schadevrijeJaren ? schadevrijLabel(vz.schadevrijeJaren) : ''),
+    rij('Km per jaar', vz.kilometers ? kmLabel(vz.kilometers) : ''),
+    rij('Ingangsdatum', 'op de afleverdatum'),
+    rij('Toestemming klant', vz.t ? `ja, ${datum(vz.t)} ${fmtTijd(vz.t)}` : ak && ak.verzekeringsvoorstel ? `ja, bij akkoord op ${datum(ak.t)}` : ''),
+    '',
+    'OFFERTE',
+    rij('Offertenummer', offerte.nummer),
+    rij('Verkoper', `${vk.naam}${vk.telefoon ? ' · ' + vk.telefoon : ''}`),
+    rij('Vestiging', vk.vestiging)
+  ].join('\n');
+}
+function vzOverdrachtUrl(inz) {
+  const v = offerte.voertuig, vz = inz.vz.voorstel || {};
+  const onderwerp = `Verzekeringsaanvraag${vz.compleet ? '' : ' (onvolledig)'} | ${v.merk} ${v.model}${v.kenteken ? ' | ' + v.kenteken : ''} | ${klantNaam(offerte, false)}`;
+  return `mailto:${VZ_AFDELING.email}?subject=${encodeURIComponent(onderwerp)}&body=${encodeURIComponent(vzAanvraagTekst(inz))}`;
 }
 
 // Leesbare omschrijving per event voor de tijdlijn (Nederlands, intern)
@@ -3352,7 +3320,7 @@ function omschrijfEvent(e, index, alle) {
     case 'inruil_toegevoegd': return { tekst: `Inruil toegevoegd: ${e.omschrijving}`, sub: `${e.kenteken} · ${fmtGetal(e.km)} km${e.waarde ? ` · verwacht ${fmtEuro(e.waarde, 0)}` : ''}${e.taxatie ? ' · taxatie gevraagd' : ''}`, cat: 'fin sterk' };
     case 'inruil_verwijderd': return { tekst: 'Inruil verwijderd', sub: '', cat: 'fin' };
     case 'verzekering_gestart': return { tekst: e.veld === 'indicatie' ? 'Verzekeringsindicatie geopend' : 'Verzekeringsformulier gestart', sub: '', cat: 'vz' };
-    case 'verzekering_aangevraagd': return { tekst: `Verzekeringsvoorstel aangevraagd bij ${VZ_AFDELING.naam}`, sub: `${e.dekking ? dekkingLabel(e.dekking) + ' · ' : ''}contact ${String(e.voorkeur || '').toLowerCase()}`, cat: 'vz sterk' };
+    case 'verzekering_aangevraagd': return { tekst: e.compleet ? 'Verzekeringsaanvraag compleet ingevuld' : 'Verzekeringsvoorstel aangevraagd (nog niet compleet)', sub: `${e.dekking ? dekkingLabel(e.dekking) + ' · ' : ''}contact ${String(e.voorkeur || '').toLowerCase()}${e.compleet ? '' : ` · ontbreekt: ${vzOntbrekendNL(e)}`}`, cat: 'vz sterk' };
     case 'verzekering_ingevuld': return { tekst: 'Verzekeringsformulier volledig ingevuld', sub: '', cat: 'vz' };
     case 'verzekering_bereken_onvolledig': return { tekst: "Klikte op 'Bereken mijn verzekering' (formulier onvolledig)", sub: '', cat: 'vz' };
     case 'verzekering_berekend': return { tekst: "Klikte op 'Bereken mijn verzekering'", sub: `${dekkingLabel(e.dekking)} · ${kmLabel(e.kilometers)} km/jaar · ${schadevrijLabel(e.schadevrijeJaren)} schadevrij`, cat: 'vz sterk' };
@@ -3435,12 +3403,13 @@ function renderVerkoper() {
   const vzGevraagd = inz.vz.voorstel || inz.vz.berekend || (inz.off.akkoord && inz.off.akkoord.verzekeringsvoorstel);
   $('#vkActies').innerHTML = `<a class="knop knop-wa knop-klein" href="https://wa.me/${waNummer(k.telefoon)}?text=${encodeURIComponent(opening)}" target="_blank" rel="noopener">${icoon('i-whatsapp')}Stuur als WhatsApp</a>`
     + `<button class="knop knop-stil knop-klein" type="button" id="kopieerOpening">Kopieer openingszin</button>`
-    + (vzGevraagd ? `<a class="knop knop-fi knop-klein" href="${escapeHtml(vzOverdrachtUrl(inz))}">${icoon('i-schild')}Doorzetten naar ${escapeHtml(VZ_AFDELING.naam)}</a>` : '');
+    + (vzGevraagd ? `<a class="knop knop-fi knop-klein" href="${escapeHtml(vzOverdrachtUrl(inz))}">${icoon('i-schild')}Doorzetten naar ${escapeHtml(VZ_AFDELING.naam)}</a><button class="knop knop-stil knop-klein" type="button" id="kopieerVzAanvraag">Kopieer aanvraag</button>` : '');
+  if (vzGevraagd) $('#kopieerVzAanvraag').onclick = () => kopieer(vzAanvraagTekst(inz), 'Verzekeringsaanvraag gekopieerd');
   $('#kopieerOpening').onclick = () => kopieer(opening, 'Openingszin gekopieerd');
 
   const f = inz.fin, z = inz.vz, o = inz.off, r = inz.inr;
   const nf = f.betaalwijze ? { label: { financiering: 'Wil financieren', zelf: 'Betaalt zelf', twijfel: 'Wil advies over betalen' }[f.betaalwijze.keuze] || 'Betaalwijze gekozen', kleur: f.betaalwijze.keuze === 'zelf' ? 'blauw' : 'groen' } : niveau(f.score, [3, 6, 10]);
-  const nz = z.voorstel ? { label: 'Voorstel aangevraagd', kleur: 'groen' } : niveau(z.score, [2, 5, 10]);
+  const nz = z.voorstel ? (z.voorstel.compleet ? { label: 'Aanvraag compleet', kleur: 'groen' } : { label: 'Aangevraagd, nog niet compleet', kleur: 'oranje' }) : niveau(z.score, [2, 5, 10]);
   const getaxeerd = offerte.inruil && offerte.inruil.getaxeerd ? offerte.inruil : null;
   const nr = getaxeerd ? { label: 'Getaxeerd in de showroom', kleur: 'groen' } : r.laatste ? { label: r.laatste.taxatie ? 'Inruil + taxatie gevraagd' : 'Inruil toegevoegd', kleur: 'blauw' } : r.gestart ? { label: 'Begonnen, niet afgerond', kleur: 'oranje' } : { label: 'Geen inruil opgegeven', kleur: 'grijs' };
   const no = o.akkoord ? { label: 'Akkoord gegeven', kleur: 'groen' } : o.akkoordGestart ? { label: 'Akkoord-scherm geopend', kleur: 'oranje' } : o.views ? { label: o.score >= 4 ? 'Actief bekeken' : 'Bekeken', kleur: 'blauw' } : { label: 'Nog niet bekeken', kleur: 'grijs' };
@@ -3487,11 +3456,12 @@ function renderVerkoper() {
       <ul>
         <li><span>Bekeken</span><span>${z.views}×</span></li>
         <li><span>Voorstel aangevraagd</span><span>${z.voorstel ? ja(z.voorstel.t) : 'Nee'}</span></li>
-        ${z.voorstel ? `<li><span>Dekking · contact</span><span>${escapeHtml(dekkingLabel(z.voorstel.dekking))} · ${escapeHtml(z.voorstel.voorkeur)}</span></li>` : ''}
-        <li><span>Indicatie-formulier</span><span>${z.gestart ? 'Geopend' : 'Nee'}</span></li>
-        <li><span>Volledig ingevuld</span><span>${z.ingevuld ? 'Ja' : 'Nee'}</span></li>
-        <li><span>Indicatie berekend</span><span>${z.berekend ? ja(z.berekend.t) : 'Nee'}</span></li>
-        ${z.berekend ? `<li><span>Gewenste dekking</span><span>${escapeHtml(dekkingLabel(z.berekend.dekking))}</span></li><li><span>Km per jaar</span><span>${kmLabel(z.berekend.kilometers)}</span></li>` : ''}
+        ${z.voorstel ? `<li><span>Gegevens</span><span>${z.voorstel.compleet ? '<span class="badge">Compleet</span>' : `<span class="badge oranje">Ontbreekt: ${escapeHtml(vzOntbrekendNL(z.voorstel))}</span>`}</span></li>
+        <li><span>Dekking</span><span>${escapeHtml(dekkingLabel(z.voorstel.dekking))}</span></li>
+        <li><span>Schadevrije jaren</span><span>${z.voorstel.schadevrijeJaren ? escapeHtml(schadevrijLabel(z.voorstel.schadevrijeJaren)) : '—'}</span></li>
+        <li><span>Km per jaar</span><span>${z.voorstel.kilometers ? kmLabel(z.voorstel.kilometers) : '—'}</span></li>
+        <li><span>Geboortedatum</span><span>${z.voorstel.geboortedatum ? fmtDatum(z.voorstel.geboortedatum) : '—'}</span></li>
+        <li><span>Contactvoorkeur</span><span>${escapeHtml(z.voorstel.voorkeur || '—')}</span></li>` : `<li><span>Formulier gestart</span><span>${z.gestart ? 'Ja' : 'Nee'}</span></li>`}
         ${o.akkoord && o.akkoord.verzekeringsvoorstel ? '<li><span>Voorstel gevraagd bij akkoord</span><span>Ja</span></li>' : ''}
       </ul>
     </div>
@@ -4183,6 +4153,70 @@ $('#flowMaak').addEventListener('click', async () => {
   renderOfferteLijst();
 });
 
+// Meldingen voor de verkoper: nieuwe sterke signalen in al zijn offertes (ook als hij een andere offerte bekijkt)
+const MELDING_TYPES = ['verzekering_aangevraagd', 'betaalwijze_gekozen', 'akkoord_gegeven', 'contact_verstuurd'];
+const sleutelGezien = 'wb-meldingen-gezien';
+let meldingen = [], meldingenGemeld = 0;
+function meldingenGezienTot() {
+  try { const w = Number(localStorage.getItem(sleutelGezien)); if (w) return w; } catch (e) { /* niets */ }
+  const start = Date.now() - 3 * 864e5;   // eerste keer: de afgelopen drie dagen
+  try { localStorage.setItem(sleutelGezien, String(start)); } catch (e) { /* niets */ }
+  return start;
+}
+function meldingTekst(e) {
+  if (e.type === 'verzekering_aangevraagd') return e.compleet
+    ? { tekst: 'Verzekeringsaanvraag compleet', sub: `Klaar om door te zetten naar ${VZ_AFDELING.naam}`, belangrijk: true }
+    : { tekst: 'Verzekeringsvoorstel gevraagd', sub: `Nog niet compleet, ontbreekt: ${vzOntbrekendNL(e)}` };
+  if (e.type === 'betaalwijze_gekozen') return { tekst: { financiering: 'Wil financieren', zelf: 'Wil zelf betalen', twijfel: 'Wil advies over betalen' }[e.keuze] || 'Betaalwijze gekozen', sub: `Contact ${String(e.voorkeur || '').toLowerCase()}`, belangrijk: e.keuze !== 'zelf' };
+  if (e.type === 'akkoord_gegeven') return { tekst: 'Akkoord gegeven', sub: e.betaalwijze === 'financiering' ? 'Met financiering' : 'Zelf betalen', belangrijk: true };
+  return { tekst: { bericht: 'Bericht ontvangen', afspraak: 'Afspraakverzoek', terugbellen: 'Terugbelverzoek' }[e.modus] || 'Contactverzoek', sub: '' };
+}
+async function haalMeldingen() {
+  const sinds = meldingenGezienTot();
+  if (online) {
+    const rijen = await api.verzoek(`/rest/v1/events?select=offerte_id,t,type,data&type=in.(${MELDING_TYPES.join(',')})&t=gt.${new Date(sinds).toISOString()}&order=t.desc&limit=50`);
+    if (!rijen.length) return [];
+    const offertes = onlineLijst || await api.verzoek('/rest/v1/offertes?select=id,token,data');
+    return rijen.map(r => {
+      const o = offertes.find(x => x.id === r.offerte_id);
+      return o ? { ...(r.data || {}), type: r.type, t: Date.parse(r.t), o: o.data || {}, token: o.token } : null;
+    }).filter(Boolean);
+  }
+  const eigen = Object.values(opslag.lees(`${OPSLAG_PREFIX}:offertes`, {}));
+  return [DEMO_OFFERTE, DEMO_LEAD, ...eigen]
+    .flatMap(o => opslag.lees(`${OPSLAG_PREFIX}:${o.id}:events`, []).filter(e => MELDING_TYPES.includes(e.type) && e.t > sinds).map(e => ({ ...e, o, token: o.id })))
+    .sort((a, b) => b.t - a.t);
+}
+async function werkMeldingenBij() {
+  if (huidigeView !== 'verkoper') return;
+  try { meldingen = await haalMeldingen(); } catch (e) { return; }
+  renderMeldingen();
+  // Melding op het apparaat (als de verkoper dat aanzette) voor wat er sinds de vorige keer bij kwam
+  const nieuw = meldingenGemeld ? meldingen.filter(m => m.t > meldingenGemeld) : [];
+  if (nieuw.length && 'Notification' in window && Notification.permission === 'granted') {
+    const m = nieuw[0], mt = meldingTekst(m), v = m.o.voertuig || {};
+    try { new Notification(`${mt.tekst} · ${klantNaam(m.o, false)}`, { body: `${v.merk || ''} ${v.model || ''} · ${mt.sub}`, tag: 'offerte-' + m.token }); } catch (e) { /* niet ondersteund */ }
+  }
+  meldingenGemeld = Math.max(Date.now(), ...meldingen.map(m => m.t));
+}
+function renderMeldingen() {
+  const el = $('#meldingen');
+  document.title = document.title.replace(/^\(\d+\) /, '');
+  if (!meldingen.length) { el.hidden = true; return; }
+  document.title = `(${meldingen.length}) ${document.title}`;
+  el.hidden = false;
+  const kanAanzetten = 'Notification' in window && Notification.permission === 'default';
+  el.innerHTML = `<div class="meldingen-kop"><span>${meldingen.length} nieuwe ${meldingen.length === 1 ? 'melding' : 'meldingen'}</span><span style="display:flex;gap:6px;flex-wrap:wrap">${kanAanzetten ? '<button class="knop knop-stil knop-klein" type="button" id="meldingenAan">Meldingen op dit apparaat</button>' : ''}<button class="knop knop-stil knop-klein" type="button" id="meldingenGezien">Alles gezien</button></span></div>
+    <ul>${meldingen.slice(0, 8).map(m => {
+      const mt = meldingTekst(m), v = m.o.voertuig || {};
+      return `<li class="${mt.belangrijk ? 'belangrijk' : ''}"><span><strong>${escapeHtml(mt.tekst)}</strong> · ${escapeHtml(m.o.klant ? klantNaam(m.o, false) : '')} (${escapeHtml(`${v.merk || ''} ${v.model || ''}`.trim())})<small>${escapeHtml(mt.sub)}${mt.sub ? ' · ' : ''}${relatieveTijd(m.t)}</small></span><button class="knop knop-primair knop-klein" type="button" data-melding-open="${escapeHtml(m.token)}">Open</button></li>`;
+    }).join('')}</ul>`;
+  $$('[data-melding-open]').forEach(k => { k.onclick = () => openOfferte(k.dataset.meldingOpen, true); });
+  $('#meldingenGezien').onclick = () => { try { localStorage.setItem(sleutelGezien, String(Date.now())); } catch (e) { /* niets */ } meldingen = []; renderMeldingen(); };
+  const aan = $('#meldingenAan');
+  if (aan) aan.onclick = async () => { try { await Notification.requestPermission(); } catch (e) { /* niets */ } renderMeldingen(); };
+}
+
 // Werkvoorraad: per offerte een status, de laatste actie en een advies, afgeleid uit de ruwe events
 function offerteStatus(evs, aangemaakt) {
   const nu = Date.now();
@@ -4191,7 +4225,7 @@ function offerteStatus(evs, aangemaakt) {
   const contact = evs.filter(e => e.type === 'contact_verstuurd' || e.type === 'whatsapp_geklikt');
   const aanpassingen = evs.filter(e => e.type === 'aanbetaling_gewijzigd' || e.type === 'looptijd_gewijzigd').length;
   const fi = !!((bw && bw.keuze !== 'zelf') || aanpassingen >= 3 || vz || evs.some(e => e.type === 'verzekering_berekend') || (ak && (ak.betaalwijze === 'financiering' || ak.verzekeringsvoorstel)));
-  const basis = { fi, laatsteEv, sessies: uniekeSessies(evs).length };
+  const basis = { fi, laatsteEv, sessies: uniekeSessies(evs).length, vzCompleet: !!(vz && vz.compleet) };
   if (!laatsteEv) {
     const oud = aangemaakt && nu - aangemaakt > 864e5;
     return { ...basis, status: 'Nog niet geopend', kleur: 'grijs', prio: oud ? 2 : 0, advies: oud ? 'Stuur een kort bericht of de link is aangekomen' : 'Nog even afwachten' };
@@ -4199,7 +4233,7 @@ function offerteStatus(evs, aangemaakt) {
   if (ak) return { ...basis, status: 'Akkoord', kleur: 'groen', prio: 3, advies: `Bevestig de koop en plan de aflevering${ak.verzekeringsvoorstel ? `; zet de verzekering door naar ${VZ_AFDELING.naam}` : ''}` };
   if (bw || vz || contact.length) {
     const advies = bw ? `${{ financiering: 'Neem contact op en regel de financiering', twijfel: 'Neem contact op en leg de betaalopties uit', zelf: 'Neem contact op over de afronding' }[bw.keuze]} (${String(bw.voorkeur || '').toLowerCase()})`
-      : vz ? `Zet de verzekering door naar ${VZ_AFDELING.naam}` : 'Reageer op het bericht van de klant';
+      : vz ? (vz.compleet ? `Verzekering compleet: zet door naar ${VZ_AFDELING.naam}` : `Zet de verzekering door naar ${VZ_AFDELING.naam} (nog niet compleet)`) : 'Reageer op het bericht van de klant';
     return { ...basis, status: 'Actie nodig', kleur: 'rood', prio: 3, advies };
   }
   if (nu - laatsteEv.t < 2 * 864e5 && evs.length >= 4) return { ...basis, status: 'Actief', kleur: 'blauw', prio: 2, advies: fi ? 'Bel over het maandbedrag' : 'Bel en vraag of er nog vragen zijn' };
@@ -4210,7 +4244,7 @@ function werkRij(item, knoppen) {
   const laatsteTekst = st.laatsteEv ? `${omschrijfEvent(st.laatsteEv, evs.length - 1, evs).tekst} (${relatieveTijd(st.laatsteEv.t)})` : '';
   const sub = [aangemaakt ? `Verstuurd ${new Date(aangemaakt).toLocaleDateString('nl-NL', { day: 'numeric', month: 'short' })}` : '', st.sessies ? `${st.sessies} ${st.sessies === 1 ? 'bezoek' : 'bezoeken'}` : ''].filter(Boolean).join(' · ');
   return `<li class="werk"><div class="wr-naam"><strong>${escapeHtml(`${v.merk || ''} ${v.model || ''}`)}</strong> · ${escapeHtml(o.klant ? klantNaam(o, false) : '')}${item.actief ? ' <span class="badge blauw">deze offerte</span>' : ''}<small>${sub || '&nbsp;'}</small></div>
-    <div class="wr-status"><span class="badge ${st.kleur}">${st.status}</span>${st.fi ? '<span class="badge fi">F&amp;I-kans</span>' : ''}</div>
+    <div class="wr-status"><span class="badge ${st.kleur}">${st.status}</span>${st.fi ? '<span class="badge fi">F&amp;I-kans</span>' : ''}${st.vzCompleet ? '<span class="badge">Verzekering compleet</span>' : ''}</div>
     <div class="wr-actie">${laatsteTekst ? `<span><b>Laatst:</b> ${escapeHtml(laatsteTekst)}</span>` : ''}<span><b>Advies:</b> ${escapeHtml(st.advies)}</span></div>
     <div class="wr-knoppen">${knoppen}</div></li>`;
 }
@@ -4371,6 +4405,7 @@ async function toonView() {
     volgAanbetaling.flush(); volgLooptijd.flush();
     if (online) await laadVerkoperData();
     renderVerkoper();
+    werkMeldingenBij();
     window.scrollTo(0, 0);
   } else {
     werkVoorbeeldStrookBij();
@@ -4414,6 +4449,7 @@ setInterval(async () => {
 }, online ? 5000 : 30000);
 setInterval(() => {
   if (huidigeView === 'verkoper' && online && !onlineOfferte) { onlineLijst = null; renderOfferteLijst(); }
+  werkMeldingenBij();
 }, 30000);
 
 // Demo: wisselen tussen de showroom- en de leadvariant
@@ -4433,7 +4469,7 @@ sliderAanb.min = fin.minPct; sliderAanb.max = fin.maxPct;
 sliderAanb.value = Math.round(aanbetalingPct());
 sliderLt.value = fin.looptijden.indexOf(staat.looptijd);
 pasTaalToe();
-if (staat.verzekeringAanvraag) toonVerzekeringsresultaat();
+herstelVzConcept();
 renderVzStart();
 // Na een lead opent de pagina op de offerte (prijs nog niet besproken); na een showroombezoek op de financiering
 if (aanleidingType() === 'lead') zetStartTab('offerte');
