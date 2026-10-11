@@ -674,6 +674,46 @@
     .kenteken { width: auto; flex: 1; }
     dialog .dialoog-scroll { max-height: calc(100vh - 150px); }
   }
+
+  /* ================= Telefoon (ronde mobiel) ================= */
+  .persoonlijk-rechts details summary { cursor: pointer; font-size: 11.5px; text-transform: uppercase; letter-spacing: .1em; color: var(--muted); font-weight: 700; list-style: none; display: flex; align-items: center; gap: 6px; min-height: 28px; }
+  .persoonlijk-rechts details summary::-webkit-details-marker { display: none; }
+  .persoonlijk-rechts details summary::after { content: "▾"; font-size: 13px; margin-left: auto; transition: transform .15s; }
+  .persoonlijk-rechts details[open] summary { margin-bottom: 10px; }
+  .persoonlijk-rechts details[open] summary::after { transform: rotate(180deg); }
+  .persoonlijk-rechts details.tweede { margin-top: 12px; }
+  .info-knop { position: relative; }
+  .info-knop::after { content: ""; position: absolute; inset: -12px; }
+  @media (max-width: 900px) {
+    /* iOS zoomt in bij invoervelden kleiner dan 16px */
+    input:not([type=radio]):not([type=checkbox]):not([type=range]), select, textarea, .invoer { font-size: 16px; }
+    .tabbalk { position: sticky; top: 0; z-index: 20; box-shadow: 0 6px 14px -12px rgba(13,26,58,.35); }
+    .mobiele-balk { padding-bottom: calc(10px + env(safe-area-inset-bottom, 0px)); }
+    .site-footer { padding-bottom: calc(28px + 76px + env(safe-area-inset-bottom, 0px)); }
+  }
+  @media (max-width: 680px) {
+    .hero-foto { min-height: 150px; }
+    .hero-foto img, .hero-foto svg.auto { max-height: 170px; width: auto; max-width: 100%; }
+    .tekstlink { padding: 8px 0; }
+    .klein-links { grid-template-columns: 1fr; }
+    .tab { padding: 8px 4px 7px; }
+    .tab svg { width: 20px; height: 20px; }
+    .prijs-tabel td:last-child { white-space: nowrap; padding-left: 10px; }
+    /* Vensters schermvullend, met de knoppen altijd in beeld */
+    dialog, dialog.groot { width: 100%; max-width: 100%; height: 100%; max-height: 100%; margin: 0; border-radius: 0; }
+    @supports (height: 100dvh) { dialog, dialog.groot { height: 100dvh; max-height: 100dvh; } }
+    dialog[open] { display: flex; flex-direction: column; }
+    dialog > form { display: flex; flex-direction: column; flex: 1; min-height: 0; }
+    dialog .dialoog-scroll { flex: 1; min-height: 0; max-height: none; overflow: auto; }
+    dialog > form > .dialoog-inhoud { flex: 1; overflow: auto; }
+    .dialoog-kop { padding-top: calc(16px + env(safe-area-inset-top, 0px)); }
+    .dialoog-voet { padding-bottom: calc(14px + env(safe-area-inset-bottom, 0px)); }
+    /* Overzicht met lijsten (afspraken, inbegrepen) onder elkaar in plaats van in twee smalle kolommen */
+    .samenvatting-tabel tr:has(ul) { display: grid; }
+    .samenvatting-tabel tr:has(ul) td { width: 100%; text-align: left; border-bottom: 0; padding: 4px 0 0; }
+    .samenvatting-tabel tr:has(ul) td:last-child { padding: 2px 0 8px; border-bottom: 1px dashed var(--rand); font-weight: 500; }
+    .samenvatting-tabel ul { margin: 0; padding-left: 18px; }
+  }
 </style>
 </head>
 <body>
@@ -1021,7 +1061,7 @@
             <div class="formulier" id="vzsFormulier">
               <div class="veld">
                 <span class="veld-label" id="lblVzsDekking"><span data-t="vzs.dekking">Welke dekking wilt u ongeveer?</span> <span class="hint" data-t="alg.optioneel">(optioneel)</span></span>
-                <div class="segment" role="radiogroup" aria-labelledby="lblVzsDekking" id="vzsDekking"></div>
+                <div class="segment drie" role="radiogroup" aria-labelledby="lblVzsDekking" id="vzsDekking"></div>
               </div>
               <div class="veld" data-check="keuze">
                 <span class="veld-label" id="lblVzsVoorkeur" data-t="int.voorkeur">Hoe wilt u het liefst benaderd worden?</span>
@@ -2862,6 +2902,12 @@ function activeerTab(tab, bron = 'klik') {
   if (tab === 'financiering') requestAnimationFrame(() => { bouwLooptijdSchaal(); renderFinanciering(); });
   if (tab === 'offerte') { renderOfferteDocument(); renderAkkoordKaart(); }
   if (tab === 'verzekering') renderVzStart();
+  const balk = $('.tabbalk');
+  if (bron === 'klik' && balk.getBoundingClientRect().top <= 1) {
+    // Tabbalk plakt bovenaan: naar het begin van het nieuwe tabblad, direct onder de balk
+    const doel = $(`#paneel-${tab}`).getBoundingClientRect().top + window.scrollY - balk.offsetHeight - 8;
+    window.scrollTo({ top: Math.max(0, doel), behavior: 'smooth' });
+  }
   registreer('tab_bekeken', { tab, bron, ...(tab === 'financiering' ? { stand: momentopname() } : {}) });
   werkMobieleBalkBij();
 }
@@ -2976,7 +3022,8 @@ function vulKlantpagina() {
   if (soort === 'lead') rechts = `<h3>${t('rechts.leadTitel')}</h3><p>${t('rechts.leadTekst')}</p><button class="knop knop-primair knop-klein" type="button" data-open-contact="afspraak">${icoon('i-kalender')}${t('rechts.leadKnop')}</button>`;
   else if (afspraken.length) rechts = `<h3>${t('rechts.afspraken')}</h3><ul class="vink-lijst">${afspraken.map(a => `<li>${icoon('i-vink')}<span>${escapeHtml(tw(a))}</span></li>`).join('')}</ul>`;
   const inbegrepen = offerte.inbegrepen || [];
-  if (inbegrepen.length) rechts += `<h3${rechts ? ' class="tweede"' : ''}>${t('rechts.inbegrepen')}</h3><ul class="vink-lijst compact">${inbegrepen.map(a => `<li>${icoon('i-vink')}<span>${escapeHtml(tw(a))}</span></li>`).join('')}</ul>`;
+  // Op de telefoon ingeklapt, zodat de klant sneller bij prijs en maandbedrag is
+  if (inbegrepen.length) rechts += `<details class="inbegrepen-lijst${rechts ? ' tweede' : ''}" ${matchMedia('(max-width: 680px)').matches ? '' : 'open'}><summary>${t('rechts.inbegrepen')} <span class="aantal">(${inbegrepen.length})</span></summary><ul class="vink-lijst compact">${inbegrepen.map(a => `<li>${icoon('i-vink')}<span>${escapeHtml(tw(a))}</span></li>`).join('')}</ul></details>`;
   $('#persoonlijkRechts').innerHTML = rechts;
   $('#persoonlijkRechts').hidden = !rechts;
   $('#persoonlijkBinnen').classList.toggle('enkel', !rechts);
