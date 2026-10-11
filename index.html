@@ -683,6 +683,78 @@
   .meldingen li { display: flex; justify-content: space-between; align-items: center; gap: 10px; flex-wrap: wrap; font-size: 13px; padding: 8px 10px; border-radius: 8px; background: var(--achtergrond); }
   .meldingen li.belangrijk { background: #f1ebff; }
   .meldingen li small { display: block; color: var(--muted); }
+  /* ================= Overzichtspagina (variant 1) ================= */
+  .ov { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 440px); gap: 28px; align-items: start; padding-top: 20px; padding-bottom: 40px; }
+  .ov-links, .ov-rechts { display: grid; gap: 16px; min-width: 0; }
+  .ov-titel h1 { font-size: 32px; margin: 0; }
+  .ov-titel .uitvoering { margin: 2px 0 8px; font-size: 16px; color: var(--tekst); }
+  .ov-titel .status-regel { margin-bottom: 10px; }
+  .ov-titel .specs { margin: 0; }
+  .ov-foto { min-height: 0; margin: 0; border-radius: 14px; overflow: hidden; background: linear-gradient(180deg, #eef1f7, #f8f9fc); display: flex; justify-content: center; align-items: flex-end; padding: 10px 10px 0; }
+  .ov-foto img, .ov-foto svg.auto { max-height: 300px; width: 100%; object-fit: contain; }
+  .ov-bericht { display: grid; grid-template-columns: 40px 1fr; gap: 12px; align-items: center; }
+  .ov-bericht .avatar { width: 40px; height: 40px; font-size: 14px; }
+  .ov-bericht p { margin: 0; font-size: 14.5px; }
+  .ov-bericht strong { color: var(--navy); }
+  .ov-klappers { background: #fff; border: 1px solid var(--rand); border-radius: 14px; padding: 0 16px; }
+  .klap { border-top: 1px solid var(--rand); }
+  .ov-klappers > .klap:first-child, .ov-klappers #persoonlijkRechts > .klap:first-child { border-top: 0; }
+  .ov-klappers #persoonlijkRechts:empty + .klap { border-top: 0; }
+  .klap > summary { list-style: none; cursor: pointer; display: flex; justify-content: space-between; align-items: center; gap: 10px; padding: 14px 2px; font-weight: 600; color: var(--navy); min-height: 52px; }
+  .klap > summary::-webkit-details-marker { display: none; }
+  .klap > summary::after { content: "+"; font-size: 20px; line-height: 1; color: var(--muted); font-weight: 400; }
+  .klap[open] > summary::after { content: "−"; }
+  .klap > summary .aantal { color: var(--muted); font-weight: 500; }
+  .klap-inhoud { padding: 0 2px 16px; }
+  .klap-inhoud > p { margin: 0 0 12px; font-size: 14px; }
+  .ov-klappers .offerte-document { box-shadow: none; border: 1px solid var(--rand); padding: 0; }
+  .ov-pdf { display: grid; gap: 8px; margin-top: 12px; }
+  .ov-kaart { background: #fff; border: 1px solid var(--rand); border-radius: 16px; box-shadow: 0 18px 40px -24px rgba(13,26,58,.35); overflow: hidden; }
+  .ov-prijs { padding: 18px 20px 10px; }
+  .ov-regel { display: flex; justify-content: space-between; align-items: baseline; gap: 14px; padding: 9px 0; font-size: 15px; }
+  .ov-regel > span { min-width: 0; }
+  .ov-regel small { display: block; font-size: 12.5px; color: var(--muted); }
+  .ov-regel strong { white-space: nowrap; color: var(--navy); font-variant-numeric: tabular-nums; font-size: 16px; }
+  .ov-totaal { border-top: 2px solid var(--navy); margin-top: 4px; padding-top: 12px; font-weight: 800; color: var(--navy); }
+  .ov-totaal strong { font-size: 24px; font-weight: 800; }
+  .ov-inruil { margin: 0; padding: 9px 0; border: 0; background: none; }
+  .ov-inruil .inruil-kop { align-items: flex-start; flex-wrap: nowrap; }
+  .ov-inruil .inruil-kop > div:first-child { min-width: 0; }
+  .ov-inruil .inruil-kop .label { font-weight: 400; font-size: 15px; color: var(--tekst); text-transform: none; letter-spacing: 0; }
+  .ov-inruil .inruil-acties { flex-direction: column; align-items: flex-end; gap: 6px; flex: none; }
+  .ov-inruil .inruil-acties strong { color: var(--groen); font-size: 16px; white-space: nowrap; }
+  .ov-feiten { list-style: none; margin: 8px 0 0; padding: 0; display: grid; gap: 4px; font-size: 12.5px; color: var(--muted); }
+  .ov-feiten li { display: flex; gap: 6px; align-items: center; }
+  .ov-feiten svg { width: 14px; height: 14px; flex: none; }
+  .ov-maand { background: var(--blauw-zacht); border-top: 1px solid var(--blauw-rand); padding: 18px 20px; display: grid; gap: 12px; }
+  .ov-maand-kop { display: flex; justify-content: space-between; align-items: center; gap: 8px; flex-wrap: wrap; }
+  .ov-maand .voorstel-rij { margin: 0; }
+  .ov-maand .maandbedrag { margin: 0; }
+  .ov-maand .slider-blok { margin: 0; }
+  .lt-chips { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 6px; margin-top: 8px; }
+  .lt-chips button { border: 1px solid var(--rand); background: #fff; border-radius: 8px; min-height: 40px; font-size: 13.5px; font-weight: 600; color: var(--tekst); padding: 0; }
+  .lt-chips button[aria-pressed="true"] { background: var(--blauw); border-color: var(--blauw); color: #fff; }
+  .lt-chips button:focus-visible { outline: 3px solid rgba(29,71,191,.3); outline-offset: 2px; }
+  .ov-wettelijk { margin: 0; font-size: 12px; color: var(--muted); }
+  .ov-wettelijk strong { color: var(--navy); }
+  .ov-berekening { border-top: 1px solid var(--blauw-rand); }
+  .ov-berekening > summary { min-height: 40px; padding: 10px 0 0; font-size: 13.5px; }
+  .ov-berekening .overzicht { margin-top: 4px; }
+  .ov-acties { padding: 16px 20px 20px; display: grid; gap: 10px; }
+  .ov-acties .interesse-bevestiging { align-items: center; }
+  .ov-blok h2 { font-size: 17px; margin: 0 0 4px; }
+  .ov-blok .betaal-keuze { margin-top: 0; }
+  #vzTeaser { display: grid; gap: 10px; }
+  #vzTeaser .intro { margin: 0; }
+  @media (min-width: 901px) { .ov-kaart { position: sticky; top: 16px; } }
+  @media (max-width: 900px) {
+    .ov { grid-template-columns: 1fr; gap: 16px; padding-top: 14px; }
+    .ov-links { display: contents; }
+    .ov-titel { order: 1; } .ov-foto { order: 2; } .ov-rechts { order: 3; } #betaalKaart { order: 4; } #vzKaart { order: 5; } .ov-bericht { order: 6; } .ov-klappers { order: 7; }
+    .ov-foto img, .ov-foto svg.auto { max-height: 190px; }
+    .ov-titel h1 { font-size: 26px; }
+  }
+  @media (max-width: 420px) { .lt-chips button { font-size: 12.5px; } .ov-prijs, .ov-maand, .ov-acties { padding-left: 16px; padding-right: 16px; } }
   /* ================= Telefoon (ronde mobiel) ================= */
   .persoonlijk-rechts details summary { cursor: pointer; font-size: 11.5px; text-transform: uppercase; letter-spacing: .1em; color: var(--muted); font-weight: 700; list-style: none; display: flex; align-items: center; gap: 6px; min-height: 28px; }
   .persoonlijk-rechts details summary::-webkit-details-marker { display: none; }
@@ -882,159 +954,38 @@
 
   <div class="container"><div class="verlopen-melding" id="verlopenMelding" hidden style="margin:14px 0 0"></div></div>
 
-  <section class="hero">
-    <div class="container hero-binnen">
-      <div class="hero-info">
-        <p class="status-regel" id="statusRegel"><strong data-t="st.titel">Uw persoonlijke offerte</strong><span>· <span data-t="st.geldig">geldig t/m</span> <span data-veld="offerte.geldigTotTekst"></span></span></p>
-        <p class="eyebrow"><span data-t="hero.persoonlijk">Persoonlijke offerte</span> · <span data-veld="offerte.nummer">WB-OCC-24871</span></p>
+  <!-- Eén overzichtspagina: links de auto en de details (ingeklapt), rechts prijs, inruil en maandbedrag in één kaart -->
+  <main class="container ov" id="overzicht">
+    <div class="ov-links">
+      <div class="ov-titel">
+        <p class="status-regel" id="statusRegel"><strong data-t="st.titel">Uw persoonlijke offerte</strong> <span>· <span data-t="st.geldig">geldig t/m</span> <span data-veld="offerte.geldigTotTekst"></span></span></p>
         <h1 id="autoTitel">SEAT Leon</h1>
         <p class="uitvoering" id="autoUitvoering">1.5 eTSI DSG FR Business</p>
         <p class="uitrusting" id="autoUitrusting" hidden></p>
         <ul class="specs" id="heroSpecs"></ul>
-        <button class="tekstlink" type="button" id="knopSpecificaties" data-t="hero.specs">Bekijk alle specificaties →</button>
       </div>
-      <div class="hero-foto" id="heroFoto">
+      <div class="hero-foto ov-foto" id="heroFoto">
         <img id="autoFoto" alt="" hidden>
         <svg class="auto" id="autoPlaceholder" viewBox="0 0 800 320" role="img" aria-label="Illustratie van de auto"><use href="#auto-placeholder"/></svg>
       </div>
-      <aside class="prijskaart">
-        <div class="label" data-t="prijs.label">Uw offerteprijs</div>
-        <div class="prijs"><strong id="heroPrijs">€ 34.950</strong><span data-t="prijs.btw">Incl. BTW</span></div>
-        <div class="prijs-korting" id="heroKorting" hidden></div>
-        <button class="vanaf-link" type="button" id="heroVanaf"></button>
-        <button class="knop knop-primair knop-blok" type="button" data-open-akkoord="prijskaart"><span data-t="prijs.akkoordKnop">Akkoord met deze offerte</span> <svg><use href="#i-pen"/></svg></button>
-        <button class="knop knop-secundair knop-blok" type="button" data-open-contact="bericht"><span data-t="prijs.vraag">Stel <span data-veld="verkoper.voornaam">Mark</span> een vraag</span> <svg><use href="#i-pijl"/></svg></button>
-        <ul class="usp-lijst feiten" id="uspLijst"></ul>
-      </aside>
-    </div>
-  </section>
-
-  <section class="persoonlijk-band" aria-label="Persoonlijk bericht">
-    <div class="container persoonlijk-binnen" id="persoonlijkBinnen">
-      <div class="persoonlijk-bericht">
-        <span class="avatar groot" data-verkoper-initialen>MJ</span>
-        <div><p id="persoonlijkBericht"></p><p class="ondertekening"><strong data-veld="verkoper.naam">Mark Jansen</strong> · <span data-veld="verkoper.functie">Verkoopadviseur</span></p></div>
+      <div class="ov-bericht">
+        <span class="avatar" data-verkoper-initialen>MJ</span>
+        <p><span id="persoonlijkBericht"></span> <strong data-veld="verkoper.voornaam">Mark</strong></p>
       </div>
-      <div class="persoonlijk-rechts" id="persoonlijkRechts"></div>
-    </div>
-  </section>
-
-  <div class="tabbalk">
-    <div class="container">
-      <div class="tabs" role="tablist" aria-label="Offerte">
-        <button class="tab" role="tab" id="tab-financiering" aria-controls="paneel-financiering" aria-selected="true" data-tab="financiering">
-          <svg><use href="#i-euro"/></svg><span><span class="tab-titel" data-t="tab.fin">Financiering</span><span class="tab-sub" data-t="tab.finSub">Bereken uw maandbedrag</span></span>
-        </button>
-        <button class="tab" role="tab" id="tab-verzekering" aria-controls="paneel-verzekering" aria-selected="false" data-tab="verzekering" tabindex="-1">
-          <svg><use href="#i-schild"/></svg><span><span class="tab-titel" data-t="tab.vz">Verzekering</span><span class="tab-sub" data-t="tab.vzSub">Wat kost uw auto verzekerd?</span></span>
-        </button>
-        <button class="tab" role="tab" id="tab-offerte" aria-controls="paneel-offerte" aria-selected="false" data-tab="offerte" tabindex="-1">
-          <svg><use href="#i-document"/></svg><span><span class="tab-titel" data-t="tab.off">Uw offerte</span><span class="tab-sub" data-t="tab.offSub">Bekijken en akkoord geven</span></span>
-        </button>
+      <div class="ov-klappers">
+        <div id="persoonlijkRechts"></div>
+        <details class="klap" id="klapSpecs"><summary><span data-t="kl.specs">Specificaties</span></summary><div class="klap-inhoud" id="specsInhoud"></div></details>
+        <details class="klap" id="klapOfferte"><summary><span data-t="kl.offerte">Volledige offerte en PDF</span></summary><div class="klap-inhoud">
+          <article class="offerte-document" id="offerteDocument"></article>
+          <div class="ov-pdf">
+              <button class="knop knop-secundair knop-blok" type="button" id="knopPdf"><span data-t="off.pdf">Open PDF-offerte</span> <svg><use href="#i-document"/></svg></button>
+              <button class="knop knop-stil knop-blok" type="button" id="knopPrint"><span data-t="off.print">Download offerte (PDF)</span> <svg><use href="#i-printer"/></svg></button>
+          </div>
+        </div></details>
       </div>
-    </div>
-  </div>
-
-  <main class="container">
-    <!-- ---------------- FINANCIERING ---------------- -->
-    <section id="paneel-financiering" role="tabpanel" aria-labelledby="tab-financiering">
-      <div class="fin-grid">
-        <div class="kaart">
-          <h2 data-t="fin.titel">Stel uw financiering samen</h2>
-          <p class="intro" data-t="fin.intro">Pas eenvoudig de aanbetaling en looptijd aan en zie direct wat dit voor uw maandbedrag betekent.</p>
-
-          <div class="aanschaf-rij">
-            <span class="label" data-t="fin.aanschaf">Aanschafprijs</span>
-            <div class="readonly-veld" id="finAanschaf">€ 34.950</div>
-          </div>
-
-          <div class="inruil-blok" id="inruilBlok">
-            <div class="inruil-kop">
-              <div><span class="label" data-t="inr.label">Inruil</span><span class="inruil-samenvatting" id="inruilSamenvatting"></span></div>
-              <div class="inruil-acties"><strong id="inruilBedrag"></strong><button class="knop knop-secundair knop-klein" type="button" id="knopInruil"></button></div>
-            </div>
-            <form class="inruil-paneel" id="inruilPaneel" hidden novalidate>
-              <div class="veld" data-check="kenteken">
-                <label for="inrKenteken" data-t="inr.kenteken">Kenteken van uw huidige auto</label>
-                <div class="kenteken-rij">
-                  <div class="kenteken"><span>NL</span><input id="inrKenteken" maxlength="9" autocomplete="off" autocapitalize="characters" placeholder="AB-123-C"></div>
-                  <button class="knop knop-secundair" type="button" id="knopKenteken" data-t="inr.zoek">Zoek op</button>
-                </div>
-                <div class="hint-regel" id="kentekenStatus"></div>
-                <div class="foutmelding" data-t="inr.foutKenteken">Vul een geldig Nederlands kenteken in.</div>
-              </div>
-              <div class="rij-3">
-                <div class="veld" data-check="verplicht"><label for="inrMerk" data-t="inr.merk">Merk</label><input class="invoer" id="inrMerk"><div class="foutmelding" data-t="alg.verplicht">Verplicht veld.</div></div>
-                <div class="veld" data-check="verplicht"><label for="inrModel" data-t="inr.model">Model</label><input class="invoer" id="inrModel"><div class="foutmelding" data-t="alg.verplicht">Verplicht veld.</div></div>
-                <div class="veld"><label for="inrBouwjaar" data-t="inr.bouwjaar">Bouwjaar</label><input class="invoer" id="inrBouwjaar" inputmode="numeric" maxlength="4"></div>
-              </div>
-              <div class="rij-2b">
-                <div class="veld" data-check="bedrag"><label for="inrKm" data-t="inr.km">Kilometerstand</label><input class="invoer" id="inrKm" inputmode="numeric" placeholder="85.000"><div class="foutmelding" data-t="inr.foutKm">Vul de kilometerstand in.</div></div>
-                <div class="veld" data-check="bedrag0"><label for="inrWaarde"><span data-t="inr.waarde">Verwachte waarde</span> <span class="hint" data-t="alg.optioneel">(optioneel)</span></label><input class="invoer" id="inrWaarde" inputmode="decimal" placeholder="€ 6.000"><div class="foutmelding" data-t="inr.foutWaarde">Vul een bedrag in, of laat dit veld leeg.</div></div>
-              </div>
-              <label class="vinkje"><input type="checkbox" id="inrTaxatie" checked> <span data-t="inr.taxatie">Ja, ik wil een gratis taxatie van mijn auto</span></label>
-              <p class="uitleg vast" data-t="inr.uitleg">De verwachte waarde telt indicatief mee in uw berekening. De definitieve inruilprijs krijgt u na taxatie door ons.</p>
-              <div class="knoppen-rij">
-                <button type="button" class="knop knop-stil knop-klein" id="inrVerwijder" data-t="inr.verwijder">Inruil verwijderen</button>
-                <button type="button" class="knop knop-stil knop-klein" id="inrAnnuleer" data-t="alg.annuleren">Annuleren</button>
-                <button type="submit" class="knop knop-primair knop-klein" data-t="inr.opslaan">Inruil toevoegen</button>
-              </div>
-            </form>
-          </div>
-
-          <div class="slider-blok">
-            <div class="veld-rij">
-              <span class="label" id="lblAanbetaling"><span data-t="fin.aanbetaling">Aanbetaling</span> <button type="button" class="info-knop" data-uitleg="uitlegAanbetaling" aria-label="i">i</button></span>
-              <span class="waarde"><span id="aanbetalingPct">25%</span><span id="aanbetalingBedragKop">€ 8.737,50</span></span>
-            </div>
-            <div class="uitleg" id="uitlegAanbetaling" hidden data-t="fin.uitlegAanbetaling">Het bedrag dat u zelf direct betaalt, bijvoorbeeld uit spaargeld. Een inruilauto komt daar nog bij. Hoe hoger de aanbetaling, hoe lager het bedrag dat u financiert.</div>
-            <div class="slider-wrap" id="wrapAanbetaling">
-              <input type="range" class="slider" id="sliderAanbetaling" min="0" max="50" step="1" value="25" aria-labelledby="lblAanbetaling">
-              <div class="slider-schaal uiteinden"><span>0%</span><span>50%</span></div>
-              <div class="bel" id="belAanbetaling"><input class="bel-veld" id="invoerAanbetaling" type="text" inputmode="decimal" aria-labelledby="lblAanbetaling" value="€ 8.737,50"></div>
-            </div>
-          </div>
-
-          <div class="slider-blok" style="margin-bottom:6px">
-            <div class="veld-rij">
-              <span class="label" id="lblLooptijd"><span data-t="fin.looptijd">Looptijd</span> <button type="button" class="info-knop" data-uitleg="uitlegLooptijd" aria-label="i">i</button></span>
-              <span class="waarde" id="looptijdKop">60 maanden</span>
-            </div>
-            <div class="uitleg" id="uitlegLooptijd" hidden data-t="fin.uitlegLooptijd">Het aantal maanden waarin u het geleende bedrag terugbetaalt. Een langere looptijd geeft een lager maandbedrag, maar u betaalt in totaal meer rente. Er is geen slottermijn: aan het einde is de auto volledig afbetaald.</div>
-            <div class="slider-wrap" id="wrapLooptijd">
-              <input type="range" class="slider" id="sliderLooptijd" min="0" max="6" step="1" value="4" aria-labelledby="lblLooptijd">
-              <div class="slider-schaal" id="schaalLooptijd"></div>
-              <div class="bel" id="belLooptijd"><span class="bel-label" id="looptijdBel">60 maanden</span></div>
-            </div>
-          </div>
-        </div>
-
-        <div class="kaart maandkaart" id="maandkaart">
-          <div class="maandkaart-kop">
-            <h2 data-t="mk.titel">Uw maandbedrag</h2>
-            <span class="chip"><span><span data-t="mk.rente">Rente</span>: <span id="renteChip">8,99%</span></span></span>
-          </div>
-          <div class="maandbedrag" aria-live="polite">
-            <span class="bedrag" id="maandBedrag">€ 544<small>,00</small></span><span class="per" data-t="mk.per">per maand</span>
-          </div>
-          <div class="voorstel-rij" id="voorstelRij" hidden></div>
-          <div class="minimum-melding" id="minimumMelding" hidden></div>
-          <div class="overzicht">
-            <div class="rij"><span data-t="mk.aanschaf">Aanschafprijs</span><span id="ovAanschaf"></span></div>
-            <div class="rij" id="ovInruilRij" hidden><span id="ovInruilLabel">Inruil (indicatief)</span><span id="ovInruil"></span></div>
-            <div class="rij"><span><span data-t="mk.aanbetaling">Aanbetaling</span> (<span id="ovAanbetalingPct">25%</span>)</span><span id="ovAanbetaling"></span></div>
-            <div class="scheiding"></div>
-            <div class="rij nadruk"><span data-t="mk.hoofdsom">Te financieren bedrag</span><span id="ovHoofdsom"></span></div>
-            <div class="scheiding"></div>
-            <div class="rij"><span data-t="mk.looptijd">Looptijd</span><span id="ovLooptijd"></span></div>
-            <div class="rij"><span data-t="mk.renteVast">Rente (vast, nominaal per jaar)</span><span id="ovRente"></span></div>
-            <div class="rij totaal"><span data-t="mk.totaal">Totaal van de termijnen</span><span id="ovTotaal"></span></div>
-          </div>
-          <div class="kosten-regel"><span><span data-t="mk.kosten">Totale kredietkosten</span>: <strong id="ovKosten"></strong></span><span><span data-t="mk.jkp">Effectieve rente (JKP)</span>: <strong id="ovJkp"></strong></span></div>
-
-          <div class="cta-groep">
+      <section class="kaart ov-blok" id="betaalKaart" aria-labelledby="betaalKeuze">
             <div class="betaal-keuze" id="betaalKeuze">
-              <h3 data-t="bw.titel">Hoe wilt u de auto betalen?</h3>
+              <h2 data-t="bw.titel">Hoe wilt u de auto betalen?</h2>
               <p data-t="bw.intro">Kies wat u het beste past. <span data-veld="verkoper.voornaam">Uw verkoper</span> neemt contact met u op en regelt de rest. U zit nergens aan vast.</p>
               <div class="veld" data-check="keuze">
                 <div class="keuzekaarten" id="bwOpties" role="radiogroup" aria-labelledby="betaalKeuze"></div>
@@ -1052,19 +1003,15 @@
               <a class="knop knop-wa knop-klein" href="#" data-whatsapp="financiering" target="_blank" rel="noopener"><svg><use href="#i-whatsapp"/></svg><span data-t="mk.wa">Vraag via WhatsApp</span></a>
               <button class="knop knop-stil knop-klein" type="button" id="knopDelen"><svg><use href="#i-delen"/></svg><span data-t="mk.delen">Opslaan of delen</span></button>
             </div>
-          </div>
-          <p class="disclaimer"><span class="i">i</span><span data-t="mk.disclaimer">Dit is een indicatief rekenvoorbeeld. Definitieve voorwaarden en acceptatie volgen na beoordeling door de financier. Annuïtaire lening zonder slottermijn.<span class="geld-lenen">Let op! Geld lenen kost geld.</span></span></p>
+      </section>
+
+      <section class="kaart ov-blok" id="vzKaart">
+        <div id="vzTeaser">
+          <h2 data-t="vzt.titel">Ook de verzekering regelen?</h2>
+          <p class="intro" data-t="vzt.tekst">Onze verzekeringsafdeling maakt vrijblijvend een voorstel, zodat de auto verzekerd is bij aflevering.</p>
+          <button class="knop knop-secundair knop-blok midden" type="button" id="knopVzOpen" data-t="vzt.knop">Ja, maak een voorstel</button>
         </div>
-      </div>
-
-    </section>
-
-    <!-- ---------------- VERZEKERING ---------------- -->
-    <section id="paneel-verzekering" role="tabpanel" aria-labelledby="tab-verzekering" hidden>
-      <div class="vz-grid">
-        <div class="kaart" id="vzKaart">
           <div id="vzFormulierBlok">
-            <h2 data-t="vzs.titel">Verzekering voor uw <span data-veld="voertuig.merkModel">SEAT Leon</span></h2>
             <p class="intro" data-t="vzs.intro2">Onze eigen verzekeringsafdeling, Demo Dealer Verzekeringen, maakt vrijblijvend een voorstel voor deze auto. Vult u de gegevens hieronder in, dan kan zij direct een voorstel maken. Liever eerst contact? Dan is alleen uw contactvoorkeur genoeg.</p>
             <form class="formulier" id="vzFormulier" novalidate>
               <div class="veld" data-check="opt:leeftijd18">
@@ -1134,56 +1081,98 @@
               <button class="knop knop-stil" type="button" data-ga-naar-tab="offerte" data-t="vz.naarOfferte">Bekijk uw offerte</button>
             </div>
           </div>
-        </div>
+      </section>
+    </div>
 
-        <div class="zijbalk" style="position:static">
-          <div class="kaart">
-            <div class="auto-mini">
-              <div class="thumb" data-auto-thumb></div>
-              <div><strong data-veld="voertuig.merkModel">SEAT Leon</strong><span data-veld="voertuig.uitvoering">1.5 eTSI DSG FR Business</span></div>
+    <div class="ov-rechts">
+      <section class="ov-kaart" id="maandkaart" aria-labelledby="ovKaartTitel">
+        <div class="ov-prijs">
+          <div class="label" id="ovKaartTitel" data-t="ov.titel">Uw offerte</div>
+          <div class="ov-regel"><span><span data-t="ov.aankoop">Aankoopprijs</span><small id="heroKorting"></small></span><strong id="heroPrijs">€ 34.950</strong></div>
+          <div class="inruil-blok ov-inruil" id="inruilBlok">
+            <div class="inruil-kop">
+              <div><span class="label" data-t="inr.label">Inruil</span><span class="inruil-samenvatting" id="inruilSamenvatting"></span></div>
+              <div class="inruil-acties"><strong id="inruilBedrag"></strong><button class="knop knop-secundair knop-klein" type="button" id="knopInruil"></button></div>
             </div>
-            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
-              <strong style="font-size:13.5px;color:var(--navy)" data-t="vz.voertuig">Voertuiggegevens</strong>
-              <span class="badge"><svg width="11" height="11"><use href="#i-vink"/></svg><span data-t="vz.alIngevuld">Al ingevuld</span></span>
-            </div>
-            <dl class="dl" id="vzVoertuig"></dl>
+            <form class="inruil-paneel" id="inruilPaneel" hidden novalidate>
+              <div class="veld" data-check="kenteken">
+                <label for="inrKenteken" data-t="inr.kenteken">Kenteken van uw huidige auto</label>
+                <div class="kenteken-rij">
+                  <div class="kenteken"><span>NL</span><input id="inrKenteken" maxlength="9" autocomplete="off" autocapitalize="characters" placeholder="AB-123-C"></div>
+                  <button class="knop knop-secundair" type="button" id="knopKenteken" data-t="inr.zoek">Zoek op</button>
+                </div>
+                <div class="hint-regel" id="kentekenStatus"></div>
+                <div class="foutmelding" data-t="inr.foutKenteken">Vul een geldig Nederlands kenteken in.</div>
+              </div>
+              <div class="rij-3">
+                <div class="veld" data-check="verplicht"><label for="inrMerk" data-t="inr.merk">Merk</label><input class="invoer" id="inrMerk"><div class="foutmelding" data-t="alg.verplicht">Verplicht veld.</div></div>
+                <div class="veld" data-check="verplicht"><label for="inrModel" data-t="inr.model">Model</label><input class="invoer" id="inrModel"><div class="foutmelding" data-t="alg.verplicht">Verplicht veld.</div></div>
+                <div class="veld"><label for="inrBouwjaar" data-t="inr.bouwjaar">Bouwjaar</label><input class="invoer" id="inrBouwjaar" inputmode="numeric" maxlength="4"></div>
+              </div>
+              <div class="rij-2b">
+                <div class="veld" data-check="bedrag"><label for="inrKm" data-t="inr.km">Kilometerstand</label><input class="invoer" id="inrKm" inputmode="numeric" placeholder="85.000"><div class="foutmelding" data-t="inr.foutKm">Vul de kilometerstand in.</div></div>
+                <div class="veld" data-check="bedrag0"><label for="inrWaarde"><span data-t="inr.waarde">Verwachte waarde</span> <span class="hint" data-t="alg.optioneel">(optioneel)</span></label><input class="invoer" id="inrWaarde" inputmode="decimal" placeholder="€ 6.000"><div class="foutmelding" data-t="inr.foutWaarde">Vul een bedrag in, of laat dit veld leeg.</div></div>
+              </div>
+              <label class="vinkje"><input type="checkbox" id="inrTaxatie" checked> <span data-t="inr.taxatie">Ja, ik wil een gratis taxatie van mijn auto</span></label>
+              <p class="uitleg vast" data-t="inr.uitleg">De verwachte waarde telt indicatief mee in uw berekening. De definitieve inruilprijs krijgt u na taxatie door ons.</p>
+              <div class="knoppen-rij">
+                <button type="button" class="knop knop-stil knop-klein" id="inrVerwijder" data-t="inr.verwijder">Inruil verwijderen</button>
+                <button type="button" class="knop knop-stil knop-klein" id="inrAnnuleer" data-t="alg.annuleren">Annuleren</button>
+                <button type="submit" class="knop knop-primair knop-klein" data-t="inr.opslaan">Inruil toevoegen</button>
+              </div>
+            </form>
           </div>
-          <div class="kaart">
-            <strong style="display:block;font-size:14px;color:var(--navy);margin-bottom:12px" data-t="vz.waarom">Verzekering via Demo Dealer Verzekeringen</strong>
-            <ul class="vink-lijst" id="vzVoordelen"></ul>
-          </div>
+          <div class="ov-regel ov-totaal"><span data-t="ov.bijbetalen">Bij te betalen</span><strong id="ovBijTeBetalen">€ 34.950</strong></div>
+          <ul class="ov-feiten" id="uspLijst"></ul>
         </div>
-      </div>
-    </section>
+        <div class="ov-maand">
+          <div class="ov-maand-kop"><span class="label" data-t="ov.perMaand">Of per maand</span><div class="voorstel-rij" id="voorstelRij" hidden></div></div>
+          <div class="maandbedrag" aria-live="polite"><span class="bedrag" id="maandBedrag">€ 544<small>,00</small></span><span class="per" data-t="mk.per">per maand</span></div>
+          <div class="minimum-melding" id="minimumMelding" hidden></div>
+          <div class="slider-blok">
+            <div class="veld-rij">
+              <span class="label" id="lblAanbetaling"><span data-t="fin.aanbetaling">Aanbetaling</span> <button type="button" class="info-knop" data-uitleg="uitlegAanbetaling" aria-label="i">i</button></span>
+              <span class="waarde"><span id="aanbetalingPct">25%</span><span id="aanbetalingBedragKop">€ 8.737,50</span></span>
+            </div>
+            <div class="uitleg" id="uitlegAanbetaling" hidden data-t="fin.uitlegAanbetaling">Het bedrag dat u zelf direct betaalt, bijvoorbeeld uit spaargeld. Een inruilauto komt daar nog bij. Hoe hoger de aanbetaling, hoe lager het bedrag dat u financiert.</div>
+            <div class="slider-wrap" id="wrapAanbetaling">
+              <input type="range" class="slider" id="sliderAanbetaling" min="0" max="50" step="1" value="25" aria-labelledby="lblAanbetaling">
+              <div class="slider-schaal uiteinden"><span>0%</span><span>50%</span></div>
+              <div class="bel" id="belAanbetaling"><input class="bel-veld" id="invoerAanbetaling" type="text" inputmode="decimal" aria-labelledby="lblAanbetaling" value="€ 8.737,50"></div>
+            </div>
+          </div>
+          <div class="slider-blok">
+            <div class="veld-rij">
+              <span class="label" id="lblLooptijd"><span data-t="fin.looptijd">Looptijd</span> <button type="button" class="info-knop" data-uitleg="uitlegLooptijd" aria-label="i">i</button></span>
+              <span class="waarde" id="looptijdKop">60 maanden</span>
+            </div>
+            <div class="uitleg" id="uitlegLooptijd" hidden data-t="fin.uitlegLooptijd">Het aantal maanden waarin u het geleende bedrag terugbetaalt. Een langere looptijd geeft een lager maandbedrag, maar u betaalt in totaal meer rente. Er is geen slottermijn: aan het einde is de auto volledig afbetaald.</div>
+            <div class="lt-chips" id="looptijdChips" role="group" aria-labelledby="lblLooptijd"></div>
+          </div>
+          <p class="ov-wettelijk"><span data-t="mk.rente">Rente</span> <span id="renteChip">8,99%</span> · <span data-t="ov.jkp">JKP</span> <span id="ovJkpKort"></span> · <span data-t="ov.totaalKort">totaal</span> <span id="ovTotaalKort"></span>. <span data-t="ov.indicatie">Indicatie, onder voorbehoud van acceptatie.</span> <strong data-t="ov.geldLenen">Let op! Geld lenen kost geld.</strong></p>
+          <details class="klap ov-berekening"><summary><span data-t="ov.berekening">Hoe is dit berekend?</span></summary><div class="klap-inhoud">
+          <div class="overzicht">
+            <div class="rij"><span data-t="mk.aanschaf">Aanschafprijs</span><span id="ovAanschaf"></span></div>
+            <div class="rij" id="ovInruilRij" hidden><span id="ovInruilLabel">Inruil (indicatief)</span><span id="ovInruil"></span></div>
+            <div class="rij"><span><span data-t="mk.aanbetaling">Aanbetaling</span> (<span id="ovAanbetalingPct">25%</span>)</span><span id="ovAanbetaling"></span></div>
+            <div class="scheiding"></div>
+            <div class="rij nadruk"><span data-t="mk.hoofdsom">Te financieren bedrag</span><span id="ovHoofdsom"></span></div>
+            <div class="scheiding"></div>
+            <div class="rij"><span data-t="mk.looptijd">Looptijd</span><span id="ovLooptijd"></span></div>
+            <div class="rij"><span data-t="mk.renteVast">Rente (vast, nominaal per jaar)</span><span id="ovRente"></span></div>
+            <div class="rij totaal"><span data-t="mk.totaal">Totaal van de termijnen</span><span id="ovTotaal"></span></div>
+          </div>
+          <div class="kosten-regel"><span><span data-t="mk.kosten">Totale kredietkosten</span>: <strong id="ovKosten"></strong></span><span><span data-t="mk.jkp">Effectieve rente (JKP)</span>: <strong id="ovJkp"></strong></span></div>
+          <p class="disclaimer"><span class="i">i</span><span data-t="mk.disclaimer">Dit is een indicatief rekenvoorbeeld. Definitieve voorwaarden en acceptatie volgen na beoordeling door de financier. Annuïtaire lening zonder slottermijn.<span class="geld-lenen">Let op! Geld lenen kost geld.</span></span></p>
+          </div></details>
+        </div>
+        <div class="ov-acties">
+          <div id="akkoordKaart"></div>
+          <button class="knop knop-secundair knop-blok midden" type="button" data-open-contact="bericht"><span data-t="prijs.vraag">Stel <span data-veld="verkoper.voornaam">Mark</span> een vraag</span></button>
+        </div>
+      </section>
 
-    <!-- ---------------- UW OFFERTE ---------------- -->
-    <section id="paneel-offerte" role="tabpanel" aria-labelledby="tab-offerte" hidden>
-      <div class="offerte-grid">
-        <article class="kaart offerte-document" id="offerteDocument"></article>
-        <div class="zijbalk geen-print">
-          <div class="kaart akkoord-kaart" id="akkoordKaart"></div>
-          <div class="kaart">
-            <strong style="display:block;font-size:14px;color:var(--navy);margin-bottom:12px" data-t="off.verkoper">Uw verkoper</strong>
-            <div class="verkoper-kaart">
-              <div class="avatar" data-verkoper-initialen>MJ</div>
-              <div><strong style="color:var(--navy)" data-veld="verkoper.naam">Mark Jansen</strong><div style="font-size:12.5px;color:var(--muted)" data-veld="verkoper.functieVestiging"></div></div>
-            </div>
-            <div class="cta-groep">
-              <a class="knop knop-wa knop-blok" href="#" data-whatsapp="offerte" target="_blank" rel="noopener"><span data-t="off.wa">Stuur een WhatsApp</span> <svg><use href="#i-whatsapp"/></svg></a>
-              <button class="knop knop-secundair knop-blok" type="button" data-open-contact="afspraak"><span id="offAfspraakTekst">Plan een vervolgafspraak</span> <svg><use href="#i-kalender"/></svg></button>
-            </div>
-          </div>
-          <div class="kaart">
-            <strong style="display:block;font-size:14px;color:var(--navy);margin-bottom:6px" data-t="off.origineel">Originele offerte</strong>
-            <p style="font-size:12.5px;color:var(--muted);margin:0 0 12px" data-t="off.origineelTekst">De offerte zoals opgesteld in ons offertesysteem.</p>
-            <div class="cta-groep" style="margin-top:0">
-              <button class="knop knop-secundair knop-blok" type="button" id="knopPdf"><span data-t="off.pdf">Open PDF-offerte</span> <svg><use href="#i-document"/></svg></button>
-              <button class="knop knop-stil knop-blok" type="button" id="knopPrint"><span data-t="off.print">Download offerte (PDF)</span> <svg><use href="#i-printer"/></svg></button>
-            </div>
-          </div>
-        </div>
-      </div>
-    </section>
+    </div>
   </main>
 
   <footer class="site-footer">
@@ -1610,7 +1599,6 @@ let taal = opslag.lees(sleutelTaal, null) || offerte.taal || 'nl';
 
 const NL = {
   'lever': 'Direct leverbaar',
-  'hero.vanaf': 'of <strong>{bedrag}</strong> per maand →',
   'maanden': '{n} maanden',
   'mnd': 'mnd',
   'inr.geen': 'Heeft u een auto om in te ruilen?',
@@ -1626,7 +1614,6 @@ const NL = {
   'mk.minimum': 'Het te financieren bedrag is lager dan het minimum van {bedrag}. Verlaag de aanbetaling of neem contact op.',
   'mk.min': '− {bedrag}',
   
-  
   'fin.maxAanbetaling': 'De maximale aanbetaling in dit rekenvoorbeeld is {pct}',
   'p/m': 'p/m',
   'rij.aanbetaling': 'Aanbetaling',
@@ -1636,7 +1623,6 @@ const NL = {
   'rij.totaal': 'Totaal van de termijnen',
   'rij.auto': 'Auto',
   'rij.prijs': 'Verkoopprijs incl. BTW',
-  
   'rij.postcode': 'Postcode',
   'rij.schadevrij': 'Schadevrije jaren',
   'rij.km': 'Kilometers per jaar',
@@ -1653,7 +1639,6 @@ const NL = {
   'vz.beperkt': 'WA + Beperkt casco', 'vz.beperktSub': 'Ook ruit, storm, diefstal',
   'vz.allrisk': 'Allrisk', 'vz.allriskSub': 'Advies bij deze auto',
   'vz.geenVoorkeur': 'Geen voorkeur',
-  
   'vz.gestartOp': 'gestart op {datum} om {tijd}',
   'off.titel': 'Offerte occasion',
   'off.nummer': 'Offertenummer', 'off.datum': 'Datum', 'off.geldig': 'Geldig t/m',
@@ -1665,7 +1650,6 @@ const NL = {
   'off.inruilRegel': 'Inruil {auto} (indicatief)', 'off.bijbetalen': 'Bij te betalen',
   'off.inruil': 'Inruil', 'off.inruilTaxatie': 'Taxatie aangevraagd', 'off.inruilWaarde': 'Verwachte waarde',
   'off.verzekering': 'Verzekering', 'off.akkoord': 'Akkoord',
-  
   'off.vzVolgt': 'Voorstel volgt',
   'off.vzGeen': 'Nog geen verzekering berekend.',
   'off.vzBereken': 'Bereken verzekering',
@@ -1694,7 +1678,6 @@ const NL = {
   'ak.zelfKort': 'Zelf betalen',
   'ak.nietFinancierbaar': 'Financiering is bij uw huidige berekening niet nodig.',
   'aa.volgende': 'Volgende', 'aa.sluiten': 'Sluiten',
-  
   'ct.titel.bericht': 'Stel uw vraag', 'ct.titel.afspraak': 'Plan een afspraak', 'ct.titel.terugbellen': 'Laat u terugbellen',
   'ct.knop.bericht': 'Verstuur bericht', 'ct.knop.afspraak': 'Afspraak aanvragen', 'ct.knop.terugbellen': 'Bel mij terug',
   'ct.ok.bericht': 'Uw bericht is verstuurd (demo)', 'ct.ok.afspraak': 'Uw afspraakverzoek is verstuurd (demo)', 'ct.ok.terugbellen': 'Wij bellen u zo snel mogelijk terug (demo)',
@@ -1703,24 +1686,19 @@ const NL = {
   'wa.berekening': 'Mijn berekening: {pct} aanbetaling, {looptijd} maanden = {bedrag} per maand.',
   'wa.inruil': 'Ik wil graag mijn {auto} ({kenteken}) inruilen.',
   'tab.titel': 'Uw offerte: {auto} — Demo Dealer',
-  'bericht.showroom': '{aanhef}, bedankt voor uw bezoek op {datum}. Zoals besproken stuur ik u hierbij de offerte voor de {auto}. {hiernaast} Hieronder kunt u zelf het maandbedrag bekijken en laten weten hoe u de auto wilt betalen, of direct akkoord geven. Vragen? App of bel me gerust.',
-  'bericht.hiernaastAfspraken': 'Hiernaast ziet u wat we hebben afgesproken.',
-  'bericht.hiernaastInbegrepen': 'Hiernaast ziet u wat er bij deze occasion is inbegrepen.',
-  'bericht.lead': '{aanhef}, bedankt voor uw aanvraag via onze website. Hierbij uw persoonlijke offerte voor de {auto}. Hieronder kunt u zelf uw maandbedrag berekenen en laten weten hoe u de auto wilt betalen. Ik zet de auto graag voor u klaar voor een proefrit.',
+  'bericht.showroom': '{aanhef}, zoals besproken: uw offerte voor de {auto}. Vragen? App me gerust.',
+  'bericht.lead': '{aanhef}, bedankt voor uw aanvraag. Hier is uw offerte voor de {auto}; ik zet de auto graag klaar voor een proefrit.',
   'rechts.afspraken': 'Wat we hebben afgesproken',
   'rechts.inbegrepen': 'Inbegrepen bij deze occasion',
   'rij.inbegrepen': 'Inbegrepen',
   'rechts.leadTitel': 'Uw volgende stap',
   'rechts.leadTekst': 'Kom de auto bekijken en maak een proefrit. Kies een moment dat u past, dan staat de auto voor u klaar.',
   'rechts.leadKnop': 'Plan een proefrit',
-  'feit.geldig': 'Offerte geldig t/m {datum}',
   'feit.aflevering': 'Aflevering: {tekst}',
   'feit.garantie': 'Inclusief {garantie}',
-  'feit.inruil': 'Uw inruil: {auto}, getaxeerd op {bedrag}',
-  'prijs.korting': 'inclusief {bedrag} korting',
+  
   'verlopen': '<strong>Deze offerte is verlopen</strong> (geldig t/m {datum}). Vraag {naam} om een nieuwe offerte; prijs en beschikbaarheid kunnen gewijzigd zijn.',
   'verlopenToast': 'Deze offerte is verlopen. Vraag uw verkoper om een nieuwe offerte.',
-  'tab.finVoorstel': 'Uw voorstel: {bedrag} per maand',
   'vs.besproken': 'Besproken voorstel',
   'vs.aangepast': 'Aangepast · voorstel was {pct} / {looptijd} mnd',
   'vs.terug': 'Terug naar het voorstel',
@@ -1729,14 +1707,11 @@ const NL = {
   'inr.label.indicatief': 'Inruil (indicatief)',
   'inr.tochInruilen': 'Toch een auto inruilen?',
   'inr.taxatieAanvragen': 'Vraag een taxatie aan',
-  'off.afspraak.showroom': 'Plan een vervolgafspraak',
-  'off.afspraak.lead': 'Plan een proefrit',
+  
   'ct.s.vervolg': 'Vervolgafspraak', 'ct.s.aflevering': 'Aflevering bespreken', 'ct.s.proefritNog': 'Nog een proefrit',
   'ct.s.proefrit': 'Proefrit', 'ct.s.bezichtiging': 'Bezichtiging', 'ct.s.video': 'Videobellen',
-  'vz.v1': 'Verzekerd vanaf het moment dat u de auto ophaalt',
-  'vz.v2': '{naam} regelt het samen met de aflevering: één aanspreekpunt',
-  'vz.v3': 'Wij helpen met het overzetten of opzeggen van de polis van uw {auto}',
-  'vz.v4': 'Schadeherstel bij onze eigen erkende schadebedrijven',
+  
+  
   'ak.juridisch': 'Uw digitale akkoord geldt als akkoord op deze offerte. Uw verkoper bevestigt daarna de koop en de afleverdatum. Een financiering is onder voorbehoud van acceptatie.',
   'ak.juridischInruil': ' Een inruil is onder voorbehoud van taxatie.',
   'rij.afspraken': 'Afspraken',
@@ -1768,18 +1743,18 @@ const NL = {
   'vz.nogNodig': 'Nog nodig voor een directe offerte: <strong>{velden}</strong>. U kunt ook zonder versturen; dan vragen we het na.',
   'vz.compleet': '<strong>Compleet.</strong> Hiermee kan Demo Dealer Verzekeringen direct een voorstel maken.',
   'vzs.stap2compleet': 'Met uw gegevens maakt zij direct een voorstel op maat voor deze auto.',
-  'vzs.stap2onvolledig': 'Zij vraagt de ontbrekende gegevens bij u na ({velden}) en maakt daarna een voorstel.'
+  'vzs.stap2onvolledig': 'Zij vraagt de ontbrekende gegevens bij u na ({velden}) en maakt daarna een voorstel.',
+  // Overzichtspagina
+  'ov.inclBtw': 'incl. btw', 'ov.inclKorting': 'incl. btw en {bedrag} korting', 'feit.garantieKort': 'Garantie',
+  'ak.klaarKort': 'Akkoord gegeven op {datum}.', 'ak.bekijkKort': 'Bekijk', 'ak.hoofdKnop': 'Akkoord met deze offerte'
 };
 
 const EN = {
   // Statisch (data-t)
   'h.verkoper': 'Your consultant', 'h.app': 'Message <span data-veld="verkoper.voornaam">Mark</span>',
-  'hero.persoonlijk': 'Personal quote', 'hero.specs': 'View all specifications →',
-  'prijs.label': 'Your quoted price', 'prijs.btw': 'Incl. VAT', 'prijs.akkoordKnop': 'Accept this quote', 'prijs.vraag': 'Ask <span data-veld="verkoper.voornaam">Mark</span>',
-  'tab.fin': 'Financing', 'tab.finSub': 'Calculate your monthly payment', 'tab.vz': 'Insurance', 'tab.vzSub': 'What does insuring your car cost?',
-  'tab.off': 'Your quote', 'tab.offSub': 'Review and accept',
-  'fin.titel': 'Build your financing', 'fin.intro': 'Adjust the down payment and term and instantly see what it means for your monthly payment.',
-  'fin.aanschaf': 'Price', 'inr.label': 'Trade-in', 'inr.kenteken': 'Licence plate of your current car', 'inr.zoek': 'Look up',
+  'prijs.btw': 'Incl. VAT', 'prijs.vraag': 'Ask <span data-veld="verkoper.voornaam">Mark</span>',
+  
+  'inr.label': 'Trade-in', 'inr.kenteken': 'Licence plate of your current car', 'inr.zoek': 'Look up',
   'inr.foutKenteken': 'Enter a valid Dutch licence plate.', 'inr.merk': 'Make', 'inr.model': 'Model', 'inr.bouwjaar': 'Year',
   'inr.km': 'Mileage (km)', 'inr.foutKm': 'Enter the mileage.', 'inr.waarde': 'Expected value', 'inr.foutWaarde': 'Enter an amount, or leave this field empty.',
   'inr.taxatie': 'Yes, I would like a free valuation of my car',
@@ -1793,20 +1768,18 @@ const EN = {
   'fin.aanbetaling': 'Down payment', 'fin.looptijd': 'Term',
   'fin.uitlegAanbetaling': 'The amount you pay yourself up front, for example from savings. A trade-in car comes on top of this. The higher the down payment, the less you need to finance.',
   'fin.uitlegLooptijd': 'The number of months over which you repay the loan. A longer term means a lower monthly payment, but more interest in total. There is no balloon payment: at the end the car is fully paid off.',
-  'mk.titel': 'Your monthly payment', 'mk.rente': 'Interest', 'mk.per': 'per month', 'mk.aanschaf': 'Price', 'mk.inruil': 'Trade-in (estimate)',
+  'mk.rente': 'Interest', 'mk.per': 'per month', 'mk.aanschaf': 'Price', 'mk.inruil': 'Trade-in (estimate)',
   'mk.aanbetaling': 'Down payment', 'mk.hoofdsom': 'Amount to finance', 'mk.looptijd': 'Term', 'mk.renteVast': 'Interest (fixed, nominal per year)',
   'mk.totaal': 'Total of all payments', 'mk.kosten': 'Total cost of credit', 'mk.jkp': 'APR', 'mk.wa': 'Ask via WhatsApp', 'mk.delen': 'Save or share',
   'mk.disclaimer': 'This is an indicative example. Final terms and approval follow after assessment by the lender. Annuity loan without balloon payment.<span class="geld-lenen">Please note: borrowing money costs money.</span>',
   'usp1.t': 'Fixed monthly payment', 'usp1.s': 'You know exactly where you stand.', 'usp2.t': 'Quick and easy', 'usp2.s': 'Calculate online and apply straight away.',
   'usp3.t': 'Personal advice', 'usp3.s': 'Our specialists are happy to help.',
-  
   'vz.schadevrij': 'No-claims years', 'vz.schadevrijHint': '— see your current policy', 
   'vz.km': 'Expected kilometres per year', 'vz.dekking': 'Preferred cover',
   'vz.foutToestemming': 'Please give permission so we can prepare a proposal.', 'vz.bereken': 'Calculate my insurance',
   'vz.gestart': 'Your insurance request has started', 
-  
   'vz.stap3': 'Happy with it? We make sure the insurance starts on the day of delivery.',
-  'vz.wijzig': 'Change details', 'vz.naarOfferte': 'View your quote', 'vz.voertuig': 'Vehicle details', 'vz.alIngevuld': 'Already filled in',
+  'vz.wijzig': 'Change details', 'vz.naarOfferte': 'View your quote', 'vz.alIngevuld': 'Already filled in',
   'vz.waarom': 'Insurance through Demo Dealer Verzekeringen', 
   'off.verkoper': 'Your consultant', 'off.wa': 'Send a WhatsApp', 'off.afspraak': 'Book a test drive or appointment', 'off.origineel': 'Original quote',
   'off.origineelTekst': 'The quote as prepared in our quoting system.', 'off.pdf': 'Open PDF quote', 'off.print': 'Download quote (PDF)',
@@ -1819,8 +1792,6 @@ const EN = {
   'int.voorkeur': 'How would you like to be contacted?', 'int.tel': 'By phone', 'int.mail': 'Email', 
   
   
-  
-  
   'ak.titel': 'Accept your quote digitally', 'ak.betaalwijze': 'How would you like to pay for the car?', 'ak.verzekering': 'Have Demo Dealer Verzekeringen also send me an insurance proposal for this car',
   'ak.naam': 'Full name', 'ak.handtekening': 'Your signature', 'ak.tekenHier': 'Sign here with your finger or mouse', 'ak.wis': 'Clear',
   'ak.foutHandtekening': 'Please sign in the box.', 'ak.voorwaarden': 'I accept this quote and the general terms and conditions (BOVAG).',
@@ -1831,7 +1802,6 @@ const EN = {
   'ak.na2': 'You will receive the purchase agreement by email.',
   // Dynamisch (t())
   'lever': 'Available now',
-  'hero.vanaf': 'or <strong>{bedrag}</strong> per month →',
   'maanden': '{n} months', 'mnd': 'mo',
   'inr.geen': 'Do you have a car to trade in?', 'inr.toevoegen': '+ Trade in a car', 'inr.wijzig': 'Change', 'inr.naTaxatie': 'Value after valuation',
   'inr.zoeken': 'Looking up licence plate…', 'inr.gevonden': 'Found in the RDW vehicle register. Please check the details.',
@@ -1839,7 +1809,6 @@ const EN = {
   'inr.handmatig': 'Automatic lookup is not available right now. Please enter make and model yourself.',
   'inr.toegevoegd': 'Trade-in added to your calculation', 'inr.getaxeerd': 'valued',
   'mk.minimum': 'The amount to finance is below the minimum of {bedrag}. Lower the down payment or contact us.',
-  
   'fin.maxAanbetaling': 'The maximum down payment in this example is {pct}',
   'p/m': 'per month',
   'rij.aanbetaling': 'Down payment', 'rij.looptijd': 'Term', 'rij.maandbedrag': 'Monthly payment', 'rij.inruil': 'Trade-in (estimate)',
@@ -1858,7 +1827,6 @@ const EN = {
   'off.apk': 'MOT (APK)', 'off.prijsopbouw': 'Price breakdown', 'off.inbegrepen': 'Included', 'off.verkoopprijs': 'Price incl. VAT',
   'off.inruilRegel': 'Trade-in {auto} (estimate)', 'off.bijbetalen': 'Remaining to pay', 'off.inruil': 'Trade-in',
   'off.inruilTaxatie': 'Valuation requested', 'off.inruilWaarde': 'Expected value', 'off.verzekering': 'Insurance', 'off.akkoord': 'Acceptance',
-  
   'off.vzVolgt': 'Proposal to follow', 'off.vzGeen': 'No insurance calculated yet.', 'off.vzBereken': 'Calculate insurance',
   'off.akkoordDoor': 'Accepted by <strong>{naam}</strong> on {datum} at {tijd}', 'off.betaalwijze': 'Payment method',
   'off.pdfLeeg': '<strong style="color:var(--navy)">The PDF from our quoting system will appear here</strong><br>In the pilot the original quote is linked automatically.',
@@ -1872,7 +1840,6 @@ const EN = {
   'ak.metFinKort': 'With financing ({bedrag} per month)', 'ak.zelfKort': 'Pay myself',
   'ak.nietFinancierbaar': 'Financing is not needed with your current calculation.',
   'aa.volgende': 'Next', 'aa.sluiten': 'Close', 
-  
   'ct.titel.bericht': 'Ask your question', 'ct.titel.afspraak': 'Book an appointment', 'ct.titel.terugbellen': 'Request a call back',
   'ct.knop.bericht': 'Send message', 'ct.knop.afspraak': 'Request appointment', 'ct.knop.terugbellen': 'Call me back',
   'ct.ok.bericht': 'Your message has been sent (demo)', 'ct.ok.afspraak': 'Your appointment request has been sent (demo)', 'ct.ok.terugbellen': 'We will call you back as soon as possible (demo)',
@@ -1881,24 +1848,19 @@ const EN = {
   'wa.berekening': 'My calculation: {pct} down payment, {looptijd} months = {bedrag} per month.',
   'wa.inruil': 'I would like to trade in my {auto} ({kenteken}).',
   'tab.titel': 'Your quote: {auto} — Demo Dealer',
-  'bericht.showroom': '{aanhef}, thank you for visiting us on {datum}. As discussed, here is the quote for the {auto}. {hiernaast} Below you can view the monthly payment, let me know how you would like to pay for the car, or accept the quote right away. Any questions? Feel free to message or call me.',
-  'bericht.hiernaastAfspraken': 'Alongside you will find what we agreed.',
-  'bericht.hiernaastInbegrepen': 'Alongside you will find what is included with this car.',
-  'bericht.lead': '{aanhef}, thank you for your enquiry via our website. Here is your personal quote for the {auto}. Below you can calculate your monthly payment and let me know how you would like to pay for the car. I would be happy to have the car ready for a test drive.',
+  'bericht.showroom': '{aanhef}, as discussed: your quote for the {auto}. Any questions? Just send me a message.',
+  'bericht.lead': '{aanhef}, thank you for your enquiry. Here is your quote for the {auto}; I would be happy to have it ready for a test drive.',
   'rechts.afspraken': 'What we agreed',
   'rechts.inbegrepen': 'Included with this car',
   'rij.inbegrepen': 'Included',
   'rechts.leadTitel': 'Your next step',
   'rechts.leadTekst': 'Come and see the car and take a test drive. Choose a time that suits you and the car will be ready.',
   'rechts.leadKnop': 'Book a test drive',
-  'feit.geldig': 'Quote valid until {datum}',
   'feit.aflevering': 'Delivery: {tekst}',
   'feit.garantie': 'Including {garantie}',
-  'feit.inruil': 'Your trade-in: {auto}, valued at {bedrag}',
-  'prijs.korting': 'including {bedrag} discount',
+  
   'verlopen': '<strong>This quote has expired</strong> (valid until {datum}). Ask {naam} for a new quote; price and availability may have changed.',
   'verlopenToast': 'This quote has expired. Ask your consultant for a new quote.',
-  'tab.finVoorstel': 'Your proposal: {bedrag} per month',
   'vs.besproken': 'Proposal as discussed',
   'vs.aangepast': 'Adjusted · proposal was {pct} / {looptijd} mo',
   'vs.terug': 'Back to the proposal',
@@ -1907,14 +1869,11 @@ const EN = {
   'inr.label.indicatief': 'Trade-in (estimate)',
   'inr.tochInruilen': 'Would you like to trade in a car after all?',
   'inr.taxatieAanvragen': 'Request a valuation',
-  'off.afspraak.showroom': 'Book a follow-up appointment',
-  'off.afspraak.lead': 'Book a test drive',
+  
   'ct.s.vervolg': 'Follow-up appointment', 'ct.s.aflevering': 'Discuss delivery', 'ct.s.proefritNog': 'Another test drive',
   'ct.s.proefrit': 'Test drive', 'ct.s.bezichtiging': 'Viewing', 'ct.s.video': 'Video call',
-  'vz.v1': 'Insured the moment you collect the car',
-  'vz.v2': '{naam} arranges it together with the delivery: one point of contact',
-  'vz.v3': 'We help you transfer or cancel the policy of your {auto}',
-  'vz.v4': 'Repairs at our own certified body shops',
+  
+  
   'ak.juridisch': 'Your digital acceptance counts as acceptance of this quote. Your consultant will then confirm the purchase and delivery date. Financing is subject to approval.',
   'ak.juridischInruil': ' A trade-in is subject to valuation.',
   'rij.afspraken': 'Agreements',
@@ -1957,7 +1916,13 @@ const EN = {
   'vz.nogNodig': 'Still needed for an immediate quote: <strong>{velden}</strong>. You can also send without; we will ask you.',
   'vz.compleet': '<strong>Complete.</strong> Demo Dealer Verzekeringen can prepare a proposal straight away.',
   'vzs.stap2compleet': 'With your details they will prepare a tailored proposal for this car straight away.',
-  'vzs.stap2onvolledig': 'They will ask you for the missing details ({velden}) and then prepare a proposal.'
+  'vzs.stap2onvolledig': 'They will ask you for the missing details ({velden}) and then prepare a proposal.',
+  'ov.titel': 'Your quote', 'ov.aankoop': 'Purchase price', 'ov.bijbetalen': 'Amount to pay', 'ov.perMaand': 'Or per month',
+  'ov.jkp': 'APR', 'ov.totaalKort': 'total', 'ov.indicatie': 'Estimate, subject to approval.', 'ov.geldLenen': 'Please note: borrowing money costs money.',
+  'ov.berekening': 'How is this calculated?', 'kl.specs': 'Specifications', 'kl.offerte': 'Full quote and PDF',
+  'vzt.titel': 'Arrange the insurance too?', 'vzt.tekst': 'Our insurance department will prepare a proposal without obligation, so the car is insured at delivery.', 'vzt.knop': 'Yes, prepare a proposal',
+  'ov.inclBtw': 'incl. VAT', 'ov.inclKorting': 'incl. VAT and {bedrag} discount', 'feit.garantieKort': 'Warranty',
+  'ak.klaarKort': 'Accepted on {datum}.', 'ak.bekijkKort': 'View', 'ak.hoofdKnop': 'Accept this quote'
 };
 
 // Vaste waarden uit de offertedata (Nederlands) met hun Engelse vertaling
@@ -2163,7 +2128,6 @@ const momentopname = () => ({
 });
 
 const sliderAanb = $('#sliderAanbetaling');
-const sliderLt = $('#sliderLooptijd');
 const invoerAanb = $('#invoerAanbetaling');
 
 // Positie van de duim in px (voor vulling, bel en schaalverdeling)
@@ -2176,10 +2140,8 @@ function plaatsBel(slider, belInhoud, fractie) {
   const belBreedte = belInhoud.offsetWidth || 110;
   belInhoud.style.left = begrens(duimPositie(slider, fractie).px, belBreedte / 2, breedte - belBreedte / 2) + 'px';
 }
-function bouwLooptijdSchaal() {
-  $('#schaalLooptijd').innerHTML = fin.looptijden.map((m, i) =>
-    `<span style="left:${duimPositie(sliderLt, i / (fin.looptijden.length - 1)).css}" data-i="${i}">${m}</span>`).join('');
-  sliderLt.max = fin.looptijden.length - 1;
+function bouwLooptijdChips() {
+  $('#looptijdChips').innerHTML = fin.looptijden.map(m => `<button type="button" data-lt="${m}" aria-pressed="${m === staat.looptijd}" aria-label="${t('maanden', { n: m })}">${m}</button>`).join('');
 }
 
 function waUrl() {
@@ -2202,21 +2164,14 @@ function renderFinanciering() {
   const fAanb = (sliderAanb.value - sliderAanb.min) / (sliderAanb.max - sliderAanb.min);
   sliderAanb.style.setProperty('--vul', duimPositie(sliderAanb, fAanb).css);
   sliderAanb.setAttribute('aria-valuetext', `${fmtPct(pct)}, ${fmtEuro(staat.aanbetaling)}`);
-  const iLt = fin.looptijden.indexOf(staat.looptijd);
-  const fLt = iLt / (fin.looptijden.length - 1);
-  sliderLt.style.setProperty('--vul', duimPositie(sliderLt, fLt).css);
-  sliderLt.setAttribute('aria-valuetext', t('maanden', { n: staat.looptijd }));
-  $$('#schaalLooptijd span').forEach(s => s.classList.toggle('actief', Number(s.dataset.i) === iLt));
+  $$('#looptijdChips [data-lt]').forEach(b => b.setAttribute('aria-pressed', String(Number(b.dataset.lt) === staat.looptijd)));
 
   // Teksten
-  $('#finAanschaf').textContent = fmtEuro(prijs, 0);
   $('#aanbetalingPct').textContent = fmtPct(pct);
   $('#aanbetalingBedragKop').textContent = fmtEuro(staat.aanbetaling);
   if (document.activeElement !== invoerAanb) invoerAanb.value = fmtEuro(staat.aanbetaling);
   $('#looptijdKop').textContent = t('maanden', { n: staat.looptijd });
-  $('#looptijdBel').textContent = t('maanden', { n: staat.looptijd });
   plaatsBel(sliderAanb, invoerAanb, fAanb);
-  plaatsBel(sliderLt, $('#looptijdBel'), fLt);
 
   const bedragEl = $('#maandBedrag');
   if (kanFinancieren) {
@@ -2247,14 +2202,11 @@ function renderFinanciering() {
   $('#ovKosten').textContent = kanFinancieren ? fmtEuro(b.kredietkosten) : '—';
   $('#ovJkp').textContent = fmtGetal(b.jkp, 2) + '%';
   $('#mbBedrag').textContent = kanFinancieren ? `${fmtEuro(b.maandbedrag)} ${t('p/m')}` : '—';
-  const vanaf = $('#heroVanaf');
-  vanaf.hidden = !kanFinancieren;
-  vanaf.innerHTML = t('hero.vanaf', { bedrag: fmtEuro(Math.ceil(b.maandbedrag), 0) });
+  $('#ovBijTeBetalen').textContent = fmtEuro(prijs - inruilWaarde(), 0);
+  $('#ovJkpKort').textContent = fmtGetal(b.jkp, 2) + '%';
+  $('#ovTotaalKort').textContent = kanFinancieren ? fmtEuro(b.totaalTermijnen) : '—';
 
   $('#ovInruilLabel').textContent = staat.inruil && staat.inruil.getaxeerd ? t('inr.label.getaxeerd') : t('inr.label.indicatief');
-  $('#tab-financiering .tab-sub').textContent = voorstel
-    ? t('tab.finVoorstel', { bedrag: fmtEuro(Math.ceil(berekenFinanciering(prijs - inruilWaarde(), voorstel.aanbetaling, voorstel.looptijd, fin.rentePct).maandbedrag), 0) })
-    : t('tab.finSub');
   renderVoorstel();
   renderBetaalKeuze();
   werkWhatsappLinksBij();
@@ -2277,7 +2229,6 @@ function herstelVoorstel() {
   staat.aanbetaling = Math.min(voorstel.aanbetaling, maxAanbetaling());
   staat.looptijd = voorstel.looptijd;
   sliderAanb.value = Math.round(aanbetalingPct());
-  sliderLt.value = fin.looptijden.indexOf(staat.looptijd);
   renderFinanciering();
   bewaarKeuze();
   volgAanbetaling.flush(); volgLooptijd.flush();
@@ -2340,14 +2291,15 @@ sliderAanb.addEventListener('input', () => {
 });
 sliderAanb.addEventListener('change', () => { bewaarKeuze(); volgAanbetaling.plan(); });
 
-sliderLt.addEventListener('pointerdown', () => volgLooptijd.begin());
-sliderLt.addEventListener('keydown', () => volgLooptijd.begin());
-sliderLt.addEventListener('input', () => {
+$('#looptijdChips').addEventListener('click', e => {
+  const knop = e.target.closest('[data-lt]');
+  if (!knop || Number(knop.dataset.lt) === staat.looptijd) return;
   volgLooptijd.begin();
-  staat.looptijd = fin.looptijden[Number(sliderLt.value)];
+  staat.looptijd = Number(knop.dataset.lt);
   renderFinanciering();
+  bewaarKeuze();
+  volgLooptijd.flush();
 });
-sliderLt.addEventListener('change', () => { bewaarKeuze(); volgLooptijd.plan(); });
 
 invoerAanb.addEventListener('focus', () => { invoerAanb.value = fmtGetal(staat.aanbetaling, 2); invoerAanb.select(); });
 invoerAanb.addEventListener('keydown', e => {
@@ -2382,7 +2334,8 @@ $('#knopBetaalwijze').addEventListener('click', () => {
   bewaarKeuze();
   registreer('betaalwijze_gekozen', { keuze, voorkeur, ...(stand ? { stand } : {}) });
   renderBetaalKeuze();
-  if (staat.actieveTab === 'offerte') renderOfferteDocument();
+  renderVzStart();   // contactvoorkeur ook voor de verzekering overnemen
+  if ($('#klapOfferte').open) renderOfferteDocument();
   toonToast(t('bw.toast', { naam: verkoperVoornaam() }));
 });
 
@@ -2419,7 +2372,6 @@ function renderInruil() {
   knop.className = `knop knop-klein ${!i && showroom ? 'knop-stil' : 'knop-secundair'}`;
   knop.hidden = paneelOpen || !!(i && i.getaxeerd);
   $('#inrVerwijder').hidden = !i;
-  renderVzVoordelen();
 }
 function openInruilPaneel() {
   const i = staat.inruil || {};
@@ -2541,7 +2493,12 @@ const vzForm = $('#vzFormulier');
 const VZ_AFDELING = { naam: 'Demo Dealer Verzekeringen', email: 'verzekeringen@voorbeeld.nl' };
 const VZ_VELDEN = [['geboortedatum', 'vzm.geboortedatum'], ['postcode', 'vzm.postcode'], ['huisnummer', 'vzm.huisnummer'], ['schadevrijeJaren', 'vzm.schadevrij'], ['kilometers', 'vzm.km']];
 const sleutelVzConcept = `${OPSLAG_PREFIX}:${offerte.id}:vz-concept`;
-let vzGestartGeregistreerd = false, vzWijzigen = false;
+let vzGestartGeregistreerd = false, vzWijzigen = false, vzOpen = false;
+function openVerzekering(bron = 'klik') {
+  if (!vzOpen && !staat.vzVoorstel) registreer('tab_bekeken', { tab: 'verzekering', bron });
+  vzOpen = true;
+  renderVzStart();
+}
 function vzGegevens() {
   const d = new FormData(vzForm);
   const g = k => String(d.get(k) || '').trim();
@@ -2565,6 +2522,7 @@ vzForm.addEventListener('change', vzOpWijziging);
 function herstelVzConcept() {
   const c = staat.vzVoorstel || opslag.lees(sleutelVzConcept, null);
   if (!c) return;
+  vzOpen = true;   // de klant was er al mee bezig
   [['#vzGeboortedatum', 'geboortedatum'], ['#vzPostcode', 'postcode'], ['#vzHuisnummer', 'huisnummer'], ['#vzToevoeging', 'toevoeging'], ['#vzSchadevrij', 'schadevrijeJaren']]
     .forEach(([id, k]) => { if (c[k]) $(id).value = c[k]; });
   [['kilometers', 'kilometers'], ['dekking', 'dekking'], ['vzVoorkeur', 'voorkeur']].forEach(([naam, k]) => {
@@ -2585,12 +2543,14 @@ vzForm.addEventListener('submit', e => {
   $('#vzKaart').scrollIntoView({ behavior: 'smooth', block: 'start' });
 });
 $('#knopVzWijzig').addEventListener('click', () => { vzWijzigen = true; renderVzStart(); });
+$('#knopVzOpen').addEventListener('click', () => openVerzekering('klik'));
 function renderVzStart() {
   const v = staat.vzVoorstel;
   const voorkeur = ($('[name=vzVoorkeur]:checked') || {}).value || (v && v.voorkeur) || (opslag.lees(sleutelVzConcept, null) || {}).voorkeur || (staat.betaalwijze && staat.betaalwijze.voorkeur) || '';
   bouwVoorkeur('#vzVoorkeur', 'vzVoorkeur', voorkeur);
+  $('#vzTeaser').hidden = !!v || vzOpen || vzWijzigen;
   $('#vzAangevraagdBlok').hidden = !v || vzWijzigen;
-  $('#vzFormulierBlok').hidden = !!v && !vzWijzigen;
+  $('#vzFormulierBlok').hidden = v ? !vzWijzigen : !vzOpen;
   werkVzVoortgangBij();
   if (!v) return;
   $('#vzsTijd').textContent = t('vz.gestartOp', { datum: fmtDatum(v.t), tijd: fmtTijd(v.t) });
@@ -2692,8 +2652,8 @@ function renderAkkoordKaart() {
   const kaart = $('#akkoordKaart');
   kaart.classList.toggle('klaar', !!ak);
   kaart.innerHTML = ak
-    ? `<h3>${icoon('i-vink').replace('<svg class=""', '<svg style="width:16px;height:16px;color:var(--groen);vertical-align:-3px;margin-right:6px"')}${t('ak.kaartKlaar')}</h3><p>${t('ak.kaartKlaarTekst', { datum: fmtDatum(ak.t), tijd: fmtTijd(ak.t) })}</p><button class="knop knop-secundair knop-blok" type="button" data-open-akkoord="kaart">${t('ak.bekijk')}</button>`
-    : `<h3>${t('ak.kaartTitel')}</h3><p>${t('ak.kaartTekst')}</p><button class="knop knop-primair knop-blok" type="button" data-open-akkoord="kaart"><span>${t('ak.kaartKnop')}</span> ${icoon('i-pen')}</button>`;
+    ? `<div class="interesse-bevestiging">${icoon('i-vink')}<span>${t('ak.klaarKort', { datum: fmtDatum(ak.t) })} <button class="knop-link" type="button" data-open-akkoord="kaart">${t('ak.bekijkKort')}</button></span></div>`
+    : `<button class="knop knop-primair knop-blok midden" type="button" data-open-akkoord="kaart"><span>${t('ak.hoofdKnop')}</span> ${icoon('i-pen')}</button>`;
 }
 
 $('#knopPdf').addEventListener('click', () => {
@@ -2801,7 +2761,7 @@ $('#akFormulier').addEventListener('submit', e => {
   registreer('akkoord_gegeven', { betaalwijze, verzekeringsvoorstel, stand: staat.akkoord.stand || undefined });
   toonAkkoordStap(3);
   renderAkkoordKaart();
-  if (staat.actieveTab === 'offerte') renderOfferteDocument();
+  if ($('#klapOfferte').open) renderOfferteDocument();
 });
 document.addEventListener('click', e => {
   const knop = e.target.closest('[data-open-akkoord]');
@@ -2810,65 +2770,27 @@ document.addEventListener('click', e => {
 $$('dialog [data-sluit]').forEach(k => k.addEventListener('click', () => k.closest('dialog').close()));
 
 /* =====================================================================
-   TABS & NAVIGATIE (klant)
+   NAVIGATIE (klant): één overzichtspagina; onderdelen openen in plaats van tabbladen
    ===================================================================== */
-const TABS = ['financiering', 'verzekering', 'offerte'];
-function zetStartTab(tab) {
-  staat.actieveTab = tab;
-  TABS.forEach(tb => {
-    const knop = $(`#tab-${tb}`);
-    knop.setAttribute('aria-selected', String(tb === tab));
-    knop.tabIndex = tb === tab ? 0 : -1;
-    $(`#paneel-${tb}`).hidden = tb !== tab;
-  });
-  if (tab === 'offerte') { renderOfferteDocument(); renderAkkoordKaart(); }
-}
+// Het event heet nog tab_bekeken, zodat score en verkoperweergave hetzelfde blijven werken
 function activeerTab(tab, bron = 'klik') {
-  if (!TABS.includes(tab) || tab === staat.actieveTab) return;
-  staat.actieveTab = tab;
-  TABS.forEach(tb => {
-    const knop = $(`#tab-${tb}`);
-    knop.setAttribute('aria-selected', String(tb === tab));
-    knop.tabIndex = tb === tab ? 0 : -1;
-    $(`#paneel-${tb}`).hidden = tb !== tab;
-  });
-  if (tab === 'financiering') requestAnimationFrame(() => { bouwLooptijdSchaal(); renderFinanciering(); });
-  if (tab === 'offerte') { renderOfferteDocument(); renderAkkoordKaart(); }
-  if (tab === 'verzekering') renderVzStart();
-  const balk = $('.tabbalk');
-  if (bron === 'klik' && balk.getBoundingClientRect().top <= 1) {
-    // Tabbalk plakt bovenaan: naar het begin van het nieuwe tabblad, direct onder de balk
-    const doel = $(`#paneel-${tab}`).getBoundingClientRect().top + window.scrollY - balk.offsetHeight - 8;
-    window.scrollTo({ top: Math.max(0, doel), behavior: 'smooth' });
+  if (tab === 'financiering') {
+    $('#maandkaart').scrollIntoView({ behavior: 'smooth', block: 'start' });
+    registreer('tab_bekeken', { tab, bron, stand: momentopname() });
   }
-  registreer('tab_bekeken', { tab, bron, ...(tab === 'financiering' ? { stand: momentopname() } : {}) });
-  werkMobieleBalkBij();
+  if (tab === 'verzekering') { openVerzekering(bron); $('#vzKaart').scrollIntoView({ behavior: 'smooth', block: 'start' }); }
+  if (tab === 'offerte') { const k = $('#klapOfferte'); k.open = true; k.scrollIntoView({ behavior: 'smooth', block: 'start' }); }
 }
-$$('.tab').forEach(knop => {
-  knop.addEventListener('click', () => activeerTab(knop.dataset.tab));
-  knop.addEventListener('keydown', e => {
-    const i = TABS.indexOf(knop.dataset.tab);
-    let n = null;
-    if (e.key === 'ArrowRight') n = (i + 1) % TABS.length;
-    if (e.key === 'ArrowLeft') n = (i - 1 + TABS.length) % TABS.length;
-    if (n !== null) { e.preventDefault(); $(`#tab-${TABS[n]}`).focus(); activeerTab(TABS[n]); }
-  });
-});
 document.addEventListener('click', e => {
   const doel = e.target.closest('[data-ga-naar-tab]');
-  if (!doel) return;
-  activeerTab(doel.dataset.gaNaarTab);
-  $('.tabbalk').scrollIntoView({ behavior: 'smooth', block: 'start' });
+  if (doel) activeerTab(doel.dataset.gaNaarTab);
 });
-$('#knopSpecificaties').addEventListener('click', () => {
-  registreer('specificaties_bekeken');
-  activeerTab('offerte', 'specificaties');
-  requestAnimationFrame(() => $('#specificaties').scrollIntoView({ behavior: 'smooth', block: 'start' }));
+$('#klapOfferte').addEventListener('toggle', e => {
+  if (!e.target.open) return;
+  renderOfferteDocument();
+  registreer('tab_bekeken', { tab: 'offerte', bron: 'klik' });
 });
-$('#heroVanaf').addEventListener('click', () => {
-  activeerTab('financiering', 'prijskaart');
-  requestAnimationFrame(() => $('#maandkaart').scrollIntoView({ behavior: 'smooth', block: 'start' }));
-});
+$('#klapSpecs').addEventListener('toggle', e => { if (e.target.open) registreer('specificaties_bekeken'); });
 
 // Mobiele balk: toont het maandbedrag als het maandblok uit beeld is
 let maandkaartInBeeld = true;
@@ -2876,7 +2798,7 @@ if ('IntersectionObserver' in window) {
   new IntersectionObserver(([e]) => { maandkaartInBeeld = e.isIntersecting; werkMobieleBalkBij(); }, { threshold: 0.15 }).observe($('#maandkaart'));
 }
 function werkMobieleBalkBij() {
-  const zichtbaar = huidigeView === 'klant' && staat.actieveTab === 'financiering' && !maandkaartInBeeld && window.scrollY > 200;
+  const zichtbaar = huidigeView === 'klant' && !maandkaartInBeeld && window.scrollY > 200;
   $('#mobieleBalk').classList.toggle('zichtbaar', zichtbaar);
 }
 window.addEventListener('scroll', werkMobieleBalkBij, { passive: true });
@@ -2935,43 +2857,42 @@ function vulKlantpagina() {
     ['i-pomp', tw(v.brandstof)], ['i-versnelling', tw(v.transmissie)], ['i-vermogen', v.vermogenPk ? `${v.vermogenPk} pk` : '']
   ].filter(([, tekst]) => tekst && !/^0 km$/.test(tekst)).map(([i, tekst]) => `<li>${icoon(i)}${escapeHtml(tekst)}</li>`).join('');
   // Feiten van deze offerte (geen algemene verkoopargumenten)
-  const feiten = [['i-klok', t('feit.geldig', { datum: fmtDatum(offerte.geldigTot) })]];
+  const feiten = [];
   if (offerte.aflevering) feiten.push(['i-kalender', t('feit.aflevering', { tekst: tw(offerte.aflevering) })]);
   if (offerte.garantie) feiten.push(['i-schild', t('feit.garantie', { garantie: tw(offerte.garantie) })]);
-  if (staat.inruil && staat.inruil.getaxeerd) feiten.push(['i-wissel', t('feit.inruil', { auto: `${staat.inruil.merk} ${staat.inruil.model}`, bedrag: fmtEuro(staat.inruil.waarde, 0) })]);
   $('#uspLijst').innerHTML = feiten.map(([i, tekst]) => `<li>${icoon(i)}${escapeHtml(tekst)}</li>`).join('');
   const korting = -(offerte.prijs.regels || []).filter(r => r.bedrag < 0).reduce((som, r) => som + r.bedrag, 0);
-  $('#heroKorting').hidden = !korting;
-  $('#heroKorting').textContent = t('prijs.korting', { bedrag: fmtEuro(korting, 0) });
+  $('#heroKorting').textContent = korting ? t('ov.inclKorting', { bedrag: fmtEuro(korting, 0) }) : t('ov.inclBtw');
 
   // Persoonlijk bericht van de verkoper + afspraken of volgende stap
   const soort = aanleidingType();
   const datumKort = offerte.aanleiding && offerte.aanleiding.datum ? new Date(offerte.aanleiding.datum).toLocaleDateString(loc(), { day: 'numeric', month: 'long' }) : '';
   const afspraken = offerte.afspraken || [];
-  const hiernaast = afspraken.length ? t('bericht.hiernaastAfspraken') : (offerte.inbegrepen || []).length ? t('bericht.hiernaastInbegrepen') : '';
-  $('#persoonlijkBericht').textContent = (offerte.notitie || t('bericht.' + soort, { aanhef: aanhefTekst(), datum: datumKort, auto: `${v.merk} ${v.model}`, hiernaast }))
+  $('#persoonlijkBericht').textContent = (offerte.notitie || t('bericht.' + soort, { aanhef: aanhefTekst(), datum: datumKort, auto: `${v.merk} ${v.model}` }))
     .replace(/([!?])\./g, '$1').replace(/\s{2,}/g, ' ');
+  // Afspraken en wat er inbegrepen is staan ingeklapt: bevestiging van wat al besproken is, geen beslisinformatie
+  const vinkjes = (lijst, klasse = '') => `<ul class="vink-lijst ${klasse}">${lijst.map(a => `<li>${icoon('i-vink')}<span>${escapeHtml(tw(a))}</span></li>`).join('')}</ul>`;
+  const klap = (titel, inhoud, aantal, open = false) => `<details class="klap"${open ? ' open' : ''}><summary><span>${titel}${aantal ? ` <span class="aantal">(${aantal})</span>` : ''}</span></summary><div class="klap-inhoud">${inhoud}</div></details>`;
   let rechts = '';
-  if (soort === 'lead') rechts = `<h3>${t('rechts.leadTitel')}</h3><p>${t('rechts.leadTekst')}</p><button class="knop knop-primair knop-klein" type="button" data-open-contact="afspraak">${icoon('i-kalender')}${t('rechts.leadKnop')}</button>`;
-  else if (afspraken.length) rechts = `<h3>${t('rechts.afspraken')}</h3><ul class="vink-lijst">${afspraken.map(a => `<li>${icoon('i-vink')}<span>${escapeHtml(tw(a))}</span></li>`).join('')}</ul>`;
+  if (soort === 'lead') rechts += klap(t('rechts.leadTitel'), `<p>${t('rechts.leadTekst')}</p><button class="knop knop-primair knop-klein" type="button" data-open-contact="afspraak">${icoon('i-kalender')}${t('rechts.leadKnop')}</button>`, 0, true);
+  else if (afspraken.length) rechts += klap(t('rechts.afspraken'), vinkjes(afspraken), afspraken.length);
   const inbegrepen = offerte.inbegrepen || [];
-  // Op de telefoon ingeklapt, zodat de klant sneller bij prijs en maandbedrag is
-  if (inbegrepen.length) rechts += `<details class="inbegrepen-lijst${rechts ? ' tweede' : ''}" ${matchMedia('(max-width: 680px)').matches ? '' : 'open'}><summary>${t('rechts.inbegrepen')} <span class="aantal">(${inbegrepen.length})</span></summary><ul class="vink-lijst compact">${inbegrepen.map(a => `<li>${icoon('i-vink')}<span>${escapeHtml(tw(a))}</span></li>`).join('')}</ul></details>`;
+  if (inbegrepen.length) rechts += klap(t('rechts.inbegrepen'), vinkjes(inbegrepen, 'compact'), inbegrepen.length);
   $('#persoonlijkRechts').innerHTML = rechts;
-  $('#persoonlijkRechts').hidden = !rechts;
-  $('#persoonlijkBinnen').classList.toggle('enkel', !rechts);
-  $('#offAfspraakTekst').textContent = t('off.afspraak.' + soort);
   bouwAfspraakSoorten();
-  renderVzVoordelen();
+  // Specificaties
+  $('#specsInhoud').innerHTML = `<table class="spec-tabel"><tbody>${[
+    [t('off.bouwjaar'), v.bouwjaar], [t('off.km'), v.kilometerstand ? `${fmtGetal(v.kilometerstand)} km` : ''], [t('off.brandstof'), tw(v.brandstof)],
+    [t('off.transmissie'), tw(v.transmissie)], [t('off.vermogen'), v.vermogenPk ? `${v.vermogenPk} pk` : ''], [t('off.kenteken'), v.kenteken],
+    [t('off.kleur'), tw(v.kleur)], [t('off.carrosserie'), tw(v.carrosserie)], [t('off.apk'), tw(v.apk)], [t('feit.garantieKort'), tw(offerte.garantie)]
+  ].filter(([, w]) => w).map(([a, b]) => `<tr><td>${a}</td><td>${escapeHtml(String(b))}</td></tr>`).join('')}</tbody></table>`
+    + ((v.uitrusting || []).length ? `<p style="margin:12px 0 0;font-size:13px;color:var(--muted)">${t('off.uitrusting')}: <span style="color:var(--navy)">${escapeHtml(v.uitrusting.join(' · '))}</span></p>` : '');
   const verlopen = $('#verlopenMelding');
   verlopen.hidden = !offerteVerlopen;
   verlopen.innerHTML = t('verlopen', { datum: fmtDatum(offerte.geldigTot), naam: escapeHtml(vk.naam.split(' ')[0]) });
   // Adres staat meestal al op de offerte: alvast invullen
   if (!$('#vzPostcode').value && k.postcode) $('#vzPostcode').value = k.postcode;
   if (!$('#vzHuisnummer').value && k.huisnummer) $('#vzHuisnummer').value = k.huisnummer;
-  $('#vzVoertuig').innerHTML = [
-    [t('off.kenteken'), v.kenteken], [t('off.bouwjaar'), v.bouwjaar], [t('off.brandstof'), tw(v.brandstof)], [t('off.vermogen'), `${v.vermogenPk} pk`]
-  ].map(([a, b]) => `<dt>${a}</dt><dd>${escapeHtml(b)}</dd>`).join('');
 
   const initialen = vk.naam.split(' ').filter(Boolean).map(w => w[0]).filter(c => c === c.toUpperCase()).slice(0, 2).join('');
   $$('[data-verkoper-initialen]').forEach(el => { el.innerHTML = vk.fotoUrl ? `<img src="${escapeHtml(vk.fotoUrl)}" alt="">` : escapeHtml(initialen); });
@@ -2996,9 +2917,6 @@ function vulKlantpagina() {
     img.alt = `${v.merk} ${v.model} ${v.uitvoering}`;
     img.src = v.fotoUrl;
   }
-  $$('[data-auto-thumb]').forEach(el => {
-    el.innerHTML = v.fotoUrl ? `<img src="${escapeHtml(v.fotoUrl)}" alt="">` : '<svg viewBox="0 0 800 320"><use href="#auto-placeholder"/></svg>';
-  });
 }
 
 // Naam van de klant zoals op de offerte: persoon of bedrijf
@@ -3025,12 +2943,6 @@ function bouwAfspraakSoorten() {
   const actief = lijst.some(([w]) => w === gekozen) ? gekozen : lijst[0][0];
   $('#ctSoorten').innerHTML = lijst.map(([w, s]) => `<label><input type="radio" name="soort" value="${w}" ${w === actief ? 'checked' : ''}><span>${t(s)}</span></label>`).join('');
 }
-function renderVzVoordelen() {
-  const voordelen = [t('vz.v1'), t('vz.v2', { naam: escapeHtml(offerte.verkoper.naam.split(' ')[0]) })];
-  if (staat.inruil) voordelen.push(t('vz.v3', { auto: escapeHtml(`${staat.inruil.merk} ${staat.inruil.model}`) }));
-  voordelen.push(t('vz.v4'));
-  $('#vzVoordelen').innerHTML = voordelen.map(v => `<li>${icoon('i-vink')}<span>${v}</span></li>`).join('');
-}
 
 function pasTaalToe() {
   document.documentElement.lang = taal;
@@ -3045,11 +2957,11 @@ function pasTaalToe() {
   $$('[data-taal]').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.taal === taal)));
   vulKlantpagina();
   bouwVerzekeringsopties();
-  bouwLooptijdSchaal();
+  bouwLooptijdChips();
   renderFinanciering();
   renderInruil();
   renderAkkoordKaart();
-  if (staat.actieveTab === 'offerte') renderOfferteDocument();
+  if ($('#klapOfferte').open) renderOfferteDocument();
   zetContactModus(contactModus);
   renderVzStart();
   if ($('#dlgAkkoord').open) $('#akStapLabel').textContent = t('ak.stap' + akkoordStap);
@@ -4405,7 +4317,7 @@ async function toonView() {
       registreer('pagina_geopend', { apparaat: matchMedia('(max-width: 900px)').matches ? 'mobiel' : 'desktop', taal });
       registreer('tab_bekeken', { tab: staat.actieveTab, bron: 'standaard', ...(staat.actieveTab === 'financiering' ? { stand: momentopname() } : {}) });
     }
-    requestAnimationFrame(() => { bouwLooptijdSchaal(); renderFinanciering(); });
+    requestAnimationFrame(() => renderFinanciering());
   }
   werkMobieleBalkBij();
 }
@@ -4430,7 +4342,7 @@ $('#naarKlant').addEventListener('click', e => { e.preventDefault(); history.pus
 window.addEventListener('hashchange', toonView);
 window.addEventListener('popstate', toonView);
 window.addEventListener('beforeunload', () => { volgAanbetaling.flush(); volgLooptijd.flush(); });
-window.addEventListener('resize', () => { if (huidigeView === 'klant' && staat.actieveTab === 'financiering') { bouwLooptijdSchaal(); renderFinanciering(); } });
+window.addEventListener('resize', () => { if (huidigeView === 'klant') renderFinanciering(); });
 window.addEventListener('storage', e => { if (e.key === sleutelEvents && huidigeView === 'verkoper') renderVerkoper(); });
 // Verkoperweergave bijwerken; online elke 5 seconden, zodat je live ziet wat de klant doet
 setInterval(async () => {
@@ -4458,12 +4370,9 @@ if (online) {
 verzamelStatischeTeksten();
 sliderAanb.min = fin.minPct; sliderAanb.max = fin.maxPct;
 sliderAanb.value = Math.round(aanbetalingPct());
-sliderLt.value = fin.looptijden.indexOf(staat.looptijd);
 pasTaalToe();
 herstelVzConcept();
 renderVzStart();
-// Na een lead opent de pagina op de offerte (prijs nog niet besproken); na een showroombezoek op de financiering
-if (aanleidingType() === 'lead') zetStartTab('offerte');
 toonView();
 </script>
 </body>
