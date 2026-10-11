@@ -3267,17 +3267,8 @@ function vzAanvraagTekst(inz) {
     rij('E-mail', k.email),
     rij('Contactvoorkeur', vz.voorkeur),
     '',
-    'VOERTUIG',
-    rij('Merk en model', `${v.merk} ${v.model} ${v.uitvoering || ''}`.trim()),
-    rij('Kenteken', v.kenteken),
-    rij('Bouwjaar', v.bouwjaar),
-    rij('Brandstof', v.brandstof),
-    rij('Vermogen', v.vermogenPk ? `${v.vermogenPk} pk` : ''),
-    rij('Kilometerstand', v.kilometerstand ? `${fmtGetal(v.kilometerstand)} km` : ''),
-    rij('Aankoopprijs', fmtEuro(prijs, 0)),
-    rij('Aflevering', offerte.aflevering),
-    '',
     'VERZEKERING',
+    rij('Kenteken', v.kenteken),
     rij('Gewenste dekking', vz.dekking ? dekkingLabel(vz.dekking) : 'advies gewenst'),
     rij('Schadevrije jaren', vz.schadevrijeJaren ? schadevrijLabel(vz.schadevrijeJaren) : ''),
     rij('Km per jaar', vz.kilometers ? kmLabel(vz.kilometers) : ''),
@@ -3292,7 +3283,7 @@ function vzAanvraagTekst(inz) {
 }
 function vzOverdrachtUrl(inz) {
   const v = offerte.voertuig, vz = inz.vz.voorstel || {};
-  const onderwerp = `Verzekeringsaanvraag${vz.compleet ? '' : ' (onvolledig)'} | ${v.merk} ${v.model}${v.kenteken ? ' | ' + v.kenteken : ''} | ${klantNaam(offerte, false)}`;
+  const onderwerp = `Verzekeringsaanvraag${vz.compleet ? '' : ' (onvolledig)'}${v.kenteken ? ' | ' + v.kenteken : ''} | ${klantNaam(offerte, false)}`;
   return `mailto:${VZ_AFDELING.email}?subject=${encodeURIComponent(onderwerp)}&body=${encodeURIComponent(vzAanvraagTekst(inz))}`;
 }
 
