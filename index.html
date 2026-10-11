@@ -747,10 +747,34 @@
   #vzTeaser { display: grid; gap: 10px; }
   #vzTeaser .intro { margin: 0; }
   @media (min-width: 901px) { .ov-kaart { position: sticky; top: 16px; } }
+  /* Twee stappen: 1 offerte, 2 betalen en verzekering */
+  .ov-stappen { display: flex; align-items: center; gap: 10px; padding-top: 18px; padding-bottom: 0; }
+  .ov-stappen button { display: inline-flex; align-items: center; gap: 8px; background: none; border: 0; padding: 4px 0; font-size: 13px; font-weight: 600; color: var(--muted); }
+  .ov-stappen .nr, .ov-volgende .nr { width: 22px; height: 22px; border-radius: 50%; display: inline-grid; place-items: center; font-size: 12px; font-weight: 700; background: #fff; border: 1.5px solid var(--rand); color: var(--muted); flex: none; }
+  .ov-stappen button[aria-current] { color: var(--navy); }
+  .ov-stappen button[aria-current] .nr { background: var(--blauw); border-color: var(--blauw); color: #fff; }
+  .ov-stappen .streep { width: 32px; height: 1.5px; background: var(--rand); }
+  .ov-stappen + .ov { padding-top: 14px; }
+  .ov-volgende { display: flex; align-items: center; gap: 14px; width: 100%; text-align: left; background: #fff; border: 1px solid var(--rand); border-radius: 14px; padding: 16px 18px; box-shadow: var(--schaduw); color: var(--navy); }
+  .ov-volgende:hover { border-color: var(--blauw-rand); }
+  .ov-volgende .nr { width: 28px; height: 28px; font-size: 13px; border-color: var(--blauw); color: var(--blauw); }
+  .ov-volgende .tekst { flex: 1; min-width: 0; }
+  .ov-volgende strong { display: block; font-size: 15px; }
+  .ov-volgende small { display: block; font-size: 13px; color: var(--muted); margin-top: 2px; font-weight: 400; }
+  .ov-volgende .pijl { width: 18px; height: 18px; color: var(--blauw); flex: none; }
+  .stap2 { max-width: 720px; display: grid; gap: 16px; padding-top: 14px; padding-bottom: 40px; }
+  .stap2-terug { justify-self: start; padding-left: 0; }
+  .stap2 h1 { margin: 0; font-size: 28px; color: var(--navy); }
+  .stap2-samenvatting { margin: -8px 0 0; color: var(--muted); font-size: 14px; }
+  .stap2-samenvatting strong { color: var(--navy); white-space: nowrap; }
+  .stap2-voet { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; }
+  .stap2-voet .knop-primair { flex: 1 1 260px; }
+  .stap2 .klein-links { margin-top: 12px; }
+  .ov-maand .slider-schaal.uiteinden, .ov-maand #lblAanbetaling + .waarde { display: none; }
   @media (max-width: 900px) {
     .ov { grid-template-columns: 1fr; gap: 16px; padding-top: 14px; }
     .ov-links { display: contents; }
-    .ov-titel { order: 1; } .ov-foto { order: 2; } .ov-rechts { order: 3; } #betaalKaart { order: 4; } #vzKaart { order: 5; } .ov-bericht { order: 6; } .ov-klappers { order: 7; }
+    .ov-titel { order: 1; } .ov-foto { order: 2; } .ov-rechts { order: 3; } .ov-volgende { order: 4; } .ov-bericht { order: 5; } .ov-klappers { order: 6; }
     .ov-foto img, .ov-foto svg.auto { max-height: 190px; }
     .ov-titel h1 { font-size: 26px; }
   }
@@ -955,6 +979,11 @@
   <div class="container"><div class="verlopen-melding" id="verlopenMelding" hidden style="margin:14px 0 0"></div></div>
 
   <!-- Eén overzichtspagina: links de auto en de details (ingeklapt), rechts prijs, inruil en maandbedrag in één kaart -->
+  <nav class="container ov-stappen" id="stappenNav" aria-label="Stappen">
+    <button type="button" data-naar-stap="1" aria-current="step"><span class="nr">1</span><span data-t="stap.1">Uw offerte</span></button>
+    <span class="streep" aria-hidden="true"></span>
+    <button type="button" data-naar-stap="2" data-bron="stappenbalk"><span class="nr">2</span><span data-t="stap.2">Betalen en verzekering</span></button>
+  </nav>
   <main class="container ov" id="overzicht">
     <div class="ov-links">
       <div class="ov-titel">
@@ -983,105 +1012,11 @@
           </div>
         </div></details>
       </div>
-      <section class="kaart ov-blok" id="betaalKaart" aria-labelledby="betaalKeuze">
-            <div class="betaal-keuze" id="betaalKeuze">
-              <h2 data-t="bw.titel">Hoe wilt u de auto betalen?</h2>
-              <p data-t="bw.intro">Kies wat u het beste past. <span data-veld="verkoper.voornaam">Uw verkoper</span> neemt contact met u op en regelt de rest. U zit nergens aan vast.</p>
-              <div class="veld" data-check="keuze">
-                <div class="keuzekaarten" id="bwOpties" role="radiogroup" aria-labelledby="betaalKeuze"></div>
-                <div class="foutmelding" data-t="alg.foutKeuze">Maak een keuze.</div>
-              </div>
-              <div class="veld" data-check="keuze">
-                <span class="veld-label" id="lblBwVoorkeur" data-t="int.voorkeur">Hoe wilt u het liefst benaderd worden?</span>
-                <div class="segment drie" role="radiogroup" aria-labelledby="lblBwVoorkeur" id="bwVoorkeur"></div>
-                <div class="foutmelding" data-t="alg.foutKeuze">Maak een keuze.</div>
-              </div>
-              <button class="knop knop-primair knop-blok midden" type="button" id="knopBetaalwijze"><span id="knopBetaalwijzeTekst">Laat uw verkoper contact opnemen</span> <svg class="pijl"><use href="#i-pijl"/></svg></button>
-              <div class="interesse-bevestiging" id="bwBevestiging" hidden><svg><use href="#i-vink"/></svg><span id="bwBevestigingTekst"></span></div>
-            </div>
-            <div class="klein-links">
-              <a class="knop knop-wa knop-klein" href="#" data-whatsapp="financiering" target="_blank" rel="noopener"><svg><use href="#i-whatsapp"/></svg><span data-t="mk.wa">Vraag via WhatsApp</span></a>
-              <button class="knop knop-stil knop-klein" type="button" id="knopDelen"><svg><use href="#i-delen"/></svg><span data-t="mk.delen">Opslaan of delen</span></button>
-            </div>
-      </section>
-
-      <section class="kaart ov-blok" id="vzKaart">
-        <div id="vzTeaser">
-          <h2 data-t="vzt.titel">Ook de verzekering regelen?</h2>
-          <p class="intro" data-t="vzt.tekst">Onze verzekeringsafdeling maakt vrijblijvend een voorstel, zodat de auto verzekerd is bij aflevering.</p>
-          <button class="knop knop-secundair knop-blok midden" type="button" id="knopVzOpen" data-t="vzt.knop">Ja, maak een voorstel</button>
-        </div>
-          <div id="vzFormulierBlok">
-            <p class="intro" data-t="vzs.intro2">Onze eigen verzekeringsafdeling, Demo Dealer Verzekeringen, maakt vrijblijvend een voorstel voor deze auto. Vult u de gegevens hieronder in, dan kan zij direct een voorstel maken. Liever eerst contact? Dan is alleen uw contactvoorkeur genoeg.</p>
-            <form class="formulier" id="vzFormulier" novalidate>
-              <div class="veld" data-check="opt:leeftijd18">
-                <label for="vzGeboortedatum" data-t="alg.geboortedatum">Geboortedatum</label>
-                <input class="invoer" type="date" id="vzGeboortedatum" name="geboortedatum" autocomplete="bday">
-                <div class="foutmelding" data-t="alg.foutGeboortedatum">Vul een geldige geboortedatum in (minimaal 18 jaar).</div>
-              </div>
-              <div class="rij-2">
-                <div class="veld" data-check="opt:postcode">
-                  <label for="vzPostcode" data-t="alg.postcode">Postcode</label>
-                  <input class="invoer" type="text" id="vzPostcode" name="postcode" placeholder="1234 AB" autocomplete="postal-code" maxlength="7">
-                  <div class="foutmelding" data-t="alg.foutPostcode">Gebruik het formaat 1234 AB.</div>
-                </div>
-                <div class="veld" data-check="opt:huisnummer">
-                  <label for="vzHuisnummer" data-t="alg.huisnummer">Huisnummer</label>
-                  <input class="invoer" type="text" inputmode="numeric" id="vzHuisnummer" name="huisnummer" placeholder="12" maxlength="5">
-                  <div class="foutmelding" data-t="alg.foutHuisnummer">Vul een huisnummer in.</div>
-                </div>
-                <div class="veld">
-                  <label for="vzToevoeging"><span data-t="alg.toev">Toev.</span> <span class="hint" data-t="alg.opt">(opt.)</span></label>
-                  <input class="invoer" type="text" id="vzToevoeging" name="toevoeging" maxlength="6">
-                </div>
-              </div>
-              <div class="veld">
-                <label for="vzSchadevrij"><span data-t="vz.schadevrij">Schadevrije jaren</span> <span class="hint" data-t="vz.schadevrijHint">— zie uw huidige polis</span></label>
-                <select class="invoer" id="vzSchadevrij" name="schadevrijeJaren"></select>
-              </div>
-              <div class="veld">
-                <span class="veld-label" id="lblKm" data-t="vz.km">Verwacht aantal kilometers per jaar</span>
-                <div class="segment" role="radiogroup" aria-labelledby="lblKm" id="vzKm"></div>
-              </div>
-              <div class="veld">
-                <span class="veld-label" id="lblDekking"><span data-t="vz.dekking">Gewenste dekking</span> <span class="hint" data-t="alg.optioneel">(optioneel)</span></span>
-                <div class="segment" role="radiogroup" aria-labelledby="lblDekking" id="vzDekking"></div>
-              </div>
-              <div class="veld" data-check="keuze">
-                <span class="veld-label" id="lblVzVoorkeur" data-t="int.voorkeur">Hoe wilt u het liefst benaderd worden?</span>
-                <div class="segment drie" role="radiogroup" aria-labelledby="lblVzVoorkeur" id="vzVoorkeur"></div>
-                <div class="foutmelding" data-t="alg.foutKeuze">Maak een keuze.</div>
-              </div>
-              <div class="vz-voortgang" id="vzVoortgang" aria-live="polite"></div>
-              <div class="veld" data-check="vink">
-                <label class="vinkje"><input type="checkbox" id="vzAkkoord" name="akkoord"> <span data-t="vzs.toestemming2">Ik ga ermee akkoord dat mijn naam, contactgegevens, de gegevens hierboven en de gegevens van deze auto worden doorgegeven aan Demo Dealer Verzekeringen voor een voorstel.</span></label>
-                <div class="foutmelding" data-t="vz.foutToestemming">Geef toestemming om een voorstel te kunnen maken.</div>
-              </div>
-              <button class="knop knop-primair knop-blok midden" type="submit" id="knopVzVoorstel"><span data-t="vzs.knop">Vraag een verzekeringsvoorstel aan</span> <svg class="pijl"><use href="#i-pijl"/></svg></button>
-            </form>
-          </div>
-
-          <div id="vzAangevraagdBlok" hidden>
-            <div class="succes-kop">
-              <span class="rond"><svg><use href="#i-vink"/></svg></span>
-              <div>
-                <h2 data-t="vzs.ontvangen">Uw aanvraag is doorgegeven</h2>
-                <p class="intro" style="margin:0" id="vzsTijd"></p>
-              </div>
-            </div>
-            <div class="samenvatting-blok" id="vzSamenvatting" style="margin-bottom:16px"></div>
-            <h3 style="font-size:14px;margin:0 0 10px;color:var(--navy)" data-t="alg.watNu">Wat gebeurt er nu?</h3>
-            <ol class="genummerd">
-              <li><span id="vzsStap1"></span></li>
-              <li><span id="vzsStap2"></span></li>
-              <li><span data-t="vz.stap3">Akkoord? Dan regelen wij dat de verzekering ingaat op de dag van aflevering.</span></li>
-            </ol>
-            <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:18px">
-              <button class="knop knop-secundair" type="button" id="knopVzWijzig" data-t="vz.wijzig2">Gegevens aanvullen of wijzigen</button>
-              <button class="knop knop-stil" type="button" data-ga-naar-tab="offerte" data-t="vz.naarOfferte">Bekijk uw offerte</button>
-            </div>
-          </div>
-      </section>
+      <button type="button" class="ov-volgende" id="knopNaarStap2" data-naar-stap="2" data-bron="volgende">
+        <span class="nr">2</span>
+        <span class="tekst"><strong data-t="stap.volgendeTitel">Volgende stap: hoe wilt u betalen?</strong><small data-t="stap.volgendeTekst">Met of zonder financiering, en eventueel de verzekering. U zit nergens aan vast.</small></span>
+        <svg class="pijl"><use href="#i-pijl"/></svg>
+      </button>
     </div>
 
     <div class="ov-rechts">
@@ -1174,6 +1109,114 @@
 
     </div>
   </main>
+
+  <section class="container stap2" id="stap2" hidden aria-labelledby="stap2Titel">
+    <button type="button" class="knop knop-stil knop-klein stap2-terug" data-naar-stap="1"><span aria-hidden="true">←</span> <span data-t="stap.terug">Terug naar uw offerte</span></button>
+    <h1 id="stap2Titel" data-t="stap2.titel">Hoe wilt u verder?</h1>
+    <p class="stap2-samenvatting" id="stap2Samenvatting"></p>
+      <section class="kaart ov-blok" id="betaalKaart" aria-labelledby="betaalKeuze">
+          <div class="betaal-keuze" id="betaalKeuze">
+            <h2 data-t="bw.titel">Hoe wilt u de auto betalen?</h2>
+            <p data-t="bw.intro">Kies wat u het beste past. <span data-veld="verkoper.voornaam">Uw verkoper</span> neemt contact met u op en regelt de rest. U zit nergens aan vast.</p>
+            <div class="veld" data-check="keuze">
+              <div class="keuzekaarten" id="bwOpties" role="radiogroup" aria-labelledby="betaalKeuze"></div>
+              <div class="foutmelding" data-t="alg.foutKeuze">Maak een keuze.</div>
+            </div>
+            <div class="veld" data-check="keuze">
+              <span class="veld-label" id="lblBwVoorkeur" data-t="int.voorkeur">Hoe wilt u het liefst benaderd worden?</span>
+              <div class="segment drie" role="radiogroup" aria-labelledby="lblBwVoorkeur" id="bwVoorkeur"></div>
+              <div class="foutmelding" data-t="alg.foutKeuze">Maak een keuze.</div>
+            </div>
+            <button class="knop knop-primair knop-blok midden" type="button" id="knopBetaalwijze"><span id="knopBetaalwijzeTekst">Laat uw verkoper contact opnemen</span> <svg class="pijl"><use href="#i-pijl"/></svg></button>
+            <div class="interesse-bevestiging" id="bwBevestiging" hidden><svg><use href="#i-vink"/></svg><span id="bwBevestigingTekst"></span></div>
+          </div>
+          <div class="klein-links">
+            <a class="knop knop-wa knop-klein" href="#" data-whatsapp="financiering" target="_blank" rel="noopener"><svg><use href="#i-whatsapp"/></svg><span data-t="mk.wa">Vraag via WhatsApp</span></a>
+            <button class="knop knop-stil knop-klein" type="button" id="knopDelen"><svg><use href="#i-delen"/></svg><span data-t="mk.delen">Opslaan of delen</span></button>
+          </div>
+    </section>
+
+    <section class="kaart ov-blok" id="vzKaart">
+      <div id="vzTeaser">
+        <h2 data-t="vzt.titel">Ook de verzekering regelen?</h2>
+        <p class="intro" data-t="vzt.tekst">Onze verzekeringsafdeling maakt vrijblijvend een voorstel, zodat de auto verzekerd is bij aflevering.</p>
+        <button class="knop knop-secundair knop-blok midden" type="button" id="knopVzOpen" data-t="vzt.knop">Ja, maak een voorstel</button>
+      </div>
+        <div id="vzFormulierBlok">
+          <p class="intro" data-t="vzs.intro2">Onze eigen verzekeringsafdeling, Demo Dealer Verzekeringen, maakt vrijblijvend een voorstel voor deze auto. Vult u de gegevens hieronder in, dan kan zij direct een voorstel maken. Liever eerst contact? Dan is alleen uw contactvoorkeur genoeg.</p>
+          <form class="formulier" id="vzFormulier" novalidate>
+            <div class="veld" data-check="opt:leeftijd18">
+              <label for="vzGeboortedatum" data-t="alg.geboortedatum">Geboortedatum</label>
+              <input class="invoer" type="date" id="vzGeboortedatum" name="geboortedatum" autocomplete="bday">
+              <div class="foutmelding" data-t="alg.foutGeboortedatum">Vul een geldige geboortedatum in (minimaal 18 jaar).</div>
+            </div>
+            <div class="rij-2">
+              <div class="veld" data-check="opt:postcode">
+                <label for="vzPostcode" data-t="alg.postcode">Postcode</label>
+                <input class="invoer" type="text" id="vzPostcode" name="postcode" placeholder="1234 AB" autocomplete="postal-code" maxlength="7">
+                <div class="foutmelding" data-t="alg.foutPostcode">Gebruik het formaat 1234 AB.</div>
+              </div>
+              <div class="veld" data-check="opt:huisnummer">
+                <label for="vzHuisnummer" data-t="alg.huisnummer">Huisnummer</label>
+                <input class="invoer" type="text" inputmode="numeric" id="vzHuisnummer" name="huisnummer" placeholder="12" maxlength="5">
+                <div class="foutmelding" data-t="alg.foutHuisnummer">Vul een huisnummer in.</div>
+              </div>
+              <div class="veld">
+                <label for="vzToevoeging"><span data-t="alg.toev">Toev.</span> <span class="hint" data-t="alg.opt">(opt.)</span></label>
+                <input class="invoer" type="text" id="vzToevoeging" name="toevoeging" maxlength="6">
+              </div>
+            </div>
+            <div class="veld">
+              <label for="vzSchadevrij"><span data-t="vz.schadevrij">Schadevrije jaren</span> <span class="hint" data-t="vz.schadevrijHint">— zie uw huidige polis</span></label>
+              <select class="invoer" id="vzSchadevrij" name="schadevrijeJaren"></select>
+            </div>
+            <div class="veld">
+              <span class="veld-label" id="lblKm" data-t="vz.km">Verwacht aantal kilometers per jaar</span>
+              <div class="segment" role="radiogroup" aria-labelledby="lblKm" id="vzKm"></div>
+            </div>
+            <div class="veld">
+              <span class="veld-label" id="lblDekking"><span data-t="vz.dekking">Gewenste dekking</span> <span class="hint" data-t="alg.optioneel">(optioneel)</span></span>
+              <div class="segment" role="radiogroup" aria-labelledby="lblDekking" id="vzDekking"></div>
+            </div>
+            <div class="veld" data-check="keuze">
+              <span class="veld-label" id="lblVzVoorkeur" data-t="int.voorkeur">Hoe wilt u het liefst benaderd worden?</span>
+              <div class="segment drie" role="radiogroup" aria-labelledby="lblVzVoorkeur" id="vzVoorkeur"></div>
+              <div class="foutmelding" data-t="alg.foutKeuze">Maak een keuze.</div>
+            </div>
+            <div class="vz-voortgang" id="vzVoortgang" aria-live="polite"></div>
+            <div class="veld" data-check="vink">
+              <label class="vinkje"><input type="checkbox" id="vzAkkoord" name="akkoord"> <span data-t="vzs.toestemming2">Ik ga ermee akkoord dat mijn naam, contactgegevens, de gegevens hierboven en de gegevens van deze auto worden doorgegeven aan Demo Dealer Verzekeringen voor een voorstel.</span></label>
+              <div class="foutmelding" data-t="vz.foutToestemming">Geef toestemming om een voorstel te kunnen maken.</div>
+            </div>
+            <button class="knop knop-primair knop-blok midden" type="submit" id="knopVzVoorstel"><span data-t="vzs.knop">Vraag een verzekeringsvoorstel aan</span> <svg class="pijl"><use href="#i-pijl"/></svg></button>
+          </form>
+        </div>
+
+        <div id="vzAangevraagdBlok" hidden>
+          <div class="succes-kop">
+            <span class="rond"><svg><use href="#i-vink"/></svg></span>
+            <div>
+              <h2 data-t="vzs.ontvangen">Uw aanvraag is doorgegeven</h2>
+              <p class="intro" style="margin:0" id="vzsTijd"></p>
+            </div>
+          </div>
+          <div class="samenvatting-blok" id="vzSamenvatting" style="margin-bottom:16px"></div>
+          <h3 style="font-size:14px;margin:0 0 10px;color:var(--navy)" data-t="alg.watNu">Wat gebeurt er nu?</h3>
+          <ol class="genummerd">
+            <li><span id="vzsStap1"></span></li>
+            <li><span id="vzsStap2"></span></li>
+            <li><span data-t="vz.stap3">Akkoord? Dan regelen wij dat de verzekering ingaat op de dag van aflevering.</span></li>
+          </ol>
+          <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:18px">
+            <button class="knop knop-secundair" type="button" id="knopVzWijzig" data-t="vz.wijzig2">Gegevens aanvullen of wijzigen</button>
+            <button class="knop knop-stil" type="button" data-ga-naar-tab="offerte" data-t="vz.naarOfferte">Bekijk uw offerte</button>
+          </div>
+        </div>
+    </section>
+    <div class="stap2-voet" id="stap2Voet">
+      <button class="knop knop-primair" type="button" id="stap2Akkoord" data-open-akkoord="stap2"><span data-t="ak.hoofdKnop">Akkoord met deze offerte</span> <svg><use href="#i-pen"/></svg></button>
+    </div>
+  </section>
 
   <footer class="site-footer">
     <div class="container">
@@ -1724,7 +1767,7 @@ const NL = {
   'off.aanleiding.showroom': 'Naar aanleiding van uw bezoek op {datum}',
   'off.aanleiding.lead': 'Naar aanleiding van uw aanvraag op {datum}',
   // Betaalwijze (ronde 1): de klant kiest, de verkoper regelt de rest
-  'bw.fin': 'Met financiering', 'bw.finSub': 'Op basis van het maandbedrag hierboven: {bedrag} per maand',
+  'bw.fin': 'Met financiering', 'bw.finSub': 'Op basis van uw berekening: {bedrag} per maand',
   'bw.zelf': 'Volledig zelf betalen', 'bw.zelfSub': 'Bij te betalen: {bedrag}',
   'bw.twijfel': 'Weet ik nog niet', 'bw.twijfelSub': 'Ik wil eerst advies over de mogelijkheden',
   'bw.knop': 'Laat {naam} contact opnemen', 'bw.knopOpnieuw': 'Gewijzigde keuze doorgeven',
@@ -1734,6 +1777,8 @@ const NL = {
   'vzs.stap1': '{afdeling} neemt contact met u op ({voorkeur}).',
   'off.betaalwijzeKop': 'Betaalwijze', 'off.bwKeuze': 'Uw keuze', 'off.bwContact': 'Contact via', 'off.indicatie': 'indicatie',
   'off.bwVolgt': 'Doorgegeven op {datum}. {naam} neemt contact met u op om alles te regelen.',
+  'stap2.samenvatting': '{auto} · bij te betalen {bedrag} · of {maand} per maand ({n} mnd)',
+  'stap2.samenvattingZelf': '{auto} · bij te betalen {bedrag}',
   'off.bwGeen': 'Nog geen betaalwijze gekozen. Laatst berekend: {bedrag} per maand.', 'off.bwKies': 'Kies uw betaalwijze',
   'off.vzVoorstel': 'Voorstel aangevraagd bij {afdeling} op {datum}',
   'ak.finVolgt': '{naam} neemt contact met u op om de financiering te regelen.',
@@ -1889,7 +1934,7 @@ const EN = {
   'st.titel': 'Your personal quote', 'st.geldig': 'valid until',
   'bw.titel': 'How would you like to pay for the car?',
   'bw.intro': 'Choose what suits you best. <span data-veld="verkoper.voornaam">Your consultant</span> will contact you and arrange the rest. There is no obligation.',
-  'bw.fin': 'With financing', 'bw.finSub': 'Based on the monthly payment above: {bedrag} per month',
+  'bw.fin': 'With financing', 'bw.finSub': 'Based on your calculation: {bedrag} per month',
   'bw.zelf': 'Pay in full myself', 'bw.zelfSub': 'Amount to pay: {bedrag}',
   'bw.twijfel': 'Not sure yet', 'bw.twijfelSub': 'I would like advice on the options first',
   'bw.knop': 'Ask {naam} to contact me', 'bw.knopOpnieuw': 'Send my updated choice',
@@ -1905,6 +1950,10 @@ const EN = {
   'ft.privacy': 'We only use what you view and calculate on this page to help you better with this quote. We do not share or sell this.',
   'off.betaalwijzeKop': 'Payment method', 'off.bwKeuze': 'Your choice', 'off.bwContact': 'Contact by', 'off.indicatie': 'estimate',
   'off.bwVolgt': 'Sent on {datum}. {naam} will contact you to arrange everything.',
+  'stap.1': 'Your quote', 'stap.2': 'Payment and insurance', 'stap.terug': 'Back to your quote', 'stap2.titel': 'How would you like to proceed?',
+  'stap.volgendeTitel': 'Next step: how would you like to pay?', 'stap.volgendeTekst': 'With or without financing, and the insurance if you like. No obligation.',
+  'stap2.samenvatting': '{auto} · to pay {bedrag} · or {maand} per month ({n} months)',
+  'stap2.samenvattingZelf': '{auto} · to pay {bedrag}',
   'off.bwGeen': 'No payment method chosen yet. Last calculation: {bedrag} per month.', 'off.bwKies': 'Choose your payment method',
   'off.vzVoorstel': 'Proposal requested from {afdeling} on {datum}',
   'ak.finVolgt': '{naam} will contact you to arrange the financing.',
@@ -2205,6 +2254,7 @@ function renderFinanciering() {
   $('#ovBijTeBetalen').textContent = fmtEuro(prijs - inruilWaarde(), 0);
   $('#ovJkpKort').textContent = fmtGetal(b.jkp, 2) + '%';
   $('#ovTotaalKort').textContent = kanFinancieren ? fmtEuro(b.totaalTermijnen) : '—';
+  werkStap2Bij(b, kanFinancieren);
 
   $('#ovInruilLabel').textContent = staat.inruil && staat.inruil.getaxeerd ? t('inr.label.getaxeerd') : t('inr.label.indicatief');
   renderVoorstel();
@@ -2586,7 +2636,7 @@ function renderOfferteDocument() {
     ]) + `<p style="margin:8px 0 0;font-size:13px;color:var(--muted)">${t('off.bwVolgt', { naam: escapeHtml(verkoperVoornaam()), datum: fmtDatum(bw.t) })}</p>`;
   } else {
     const b = huidigeBerekening();
-    bwBlok = `<div class="leeg-blok"><span>${t('off.bwGeen', { bedrag: fmtEuro(b.maandbedrag) })}</span><button class="knop knop-secundair knop-klein geen-print" type="button" data-ga-naar-tab="financiering">${t('off.bwKies')}</button></div>`;
+    bwBlok = `<div class="leeg-blok"><span>${t('off.bwGeen', { bedrag: fmtEuro(b.maandbedrag) })}</span><button class="knop knop-secundair knop-klein geen-print" type="button" data-naar-stap="2" data-bron="offerte">${t('off.bwKies')}</button></div>`;
   }
   const vv = staat.vzVoorstel;
   const vzBlok = vv
@@ -2651,6 +2701,7 @@ function renderAkkoordKaart() {
   const ak = staat.akkoord;
   const kaart = $('#akkoordKaart');
   kaart.classList.toggle('klaar', !!ak);
+  $('#stap2Akkoord').hidden = !!ak;
   kaart.innerHTML = ak
     ? `<div class="interesse-bevestiging">${icoon('i-vink')}<span>${t('ak.klaarKort', { datum: fmtDatum(ak.t) })} <button class="knop-link" type="button" data-open-akkoord="kaart">${t('ak.bekijkKort')}</button></span></div>`
     : `<button class="knop knop-primair knop-blok midden" type="button" data-open-akkoord="kaart"><span>${t('ak.hoofdKnop')}</span> ${icoon('i-pen')}</button>`;
@@ -2773,7 +2824,37 @@ $$('dialog [data-sluit]').forEach(k => k.addEventListener('click', () => k.close
    NAVIGATIE (klant): één overzichtspagina; onderdelen openen in plaats van tabbladen
    ===================================================================== */
 // Het event heet nog tab_bekeken, zodat score en verkoperweergave hetzelfde blijven werken
+/* ---------- Stappen: 1 offerte, 2 betalen en verzekering ---------- */
+let huidigeStap = 1;
+function toonStap(n, bron = 'klik', { geschiedenis = true, scroll = true } = {}) {
+  if (n !== 2) n = 1;
+  if (n === huidigeStap) return;
+  huidigeStap = n;
+  $('#overzicht').hidden = n !== 1;
+  $('#stap2').hidden = n !== 2;
+  $$('#stappenNav [data-naar-stap]').forEach(k => k.toggleAttribute('aria-current', Number(k.dataset.naarStap) === n));
+  $$('#stappenNav [aria-current]').forEach(k => k.setAttribute('aria-current', 'step'));
+  if (n === 2) registreer('tab_bekeken', { tab: 'betalen', bron, ...(financierbaar() ? { stand: momentopname() } : {}) });
+  if (geschiedenis) history.pushState({ stap: n }, '', n === 2 ? '#betalen' : location.pathname + location.search);
+  if (scroll) window.scrollTo(0, 0);
+  werkMobieleBalkBij();
+}
+window.addEventListener('popstate', e => toonStap(e.state && e.state.stap === 2 ? 2 : 1, 'terug', { geschiedenis: false }));
+document.addEventListener('click', e => {
+  const doel = e.target.closest('[data-naar-stap]');
+  if (doel) toonStap(Number(doel.dataset.naarStap), doel.dataset.bron || 'klik');
+});
+function werkStap2Bij(b, kanFinancieren) {
+  const v = offerte.voertuig;
+  $('#stap2Samenvatting').innerHTML = t(kanFinancieren ? 'stap2.samenvatting' : 'stap2.samenvattingZelf', {
+    auto: escapeHtml(`${v.merk} ${v.model}`),
+    bedrag: `<strong>${fmtEuro(offerte.prijs.verkoopprijs - inruilWaarde(), 0)}</strong>`,
+    maand: `<strong>${fmtEuro(b.maandbedrag)}</strong>`, n: staat.looptijd
+  });
+}
+
 function activeerTab(tab, bron = 'klik') {
+  toonStap(tab === 'verzekering' ? 2 : 1, bron, { scroll: false });
   if (tab === 'financiering') {
     $('#maandkaart').scrollIntoView({ behavior: 'smooth', block: 'start' });
     registreer('tab_bekeken', { tab, bron, stand: momentopname() });
@@ -2798,7 +2879,7 @@ if ('IntersectionObserver' in window) {
   new IntersectionObserver(([e]) => { maandkaartInBeeld = e.isIntersecting; werkMobieleBalkBij(); }, { threshold: 0.15 }).observe($('#maandkaart'));
 }
 function werkMobieleBalkBij() {
-  const zichtbaar = huidigeView === 'klant' && !maandkaartInBeeld && window.scrollY > 200;
+  const zichtbaar = huidigeView === 'klant' && huidigeStap === 1 && !maandkaartInBeeld && window.scrollY > 200;
   $('#mobieleBalk').classList.toggle('zichtbaar', zichtbaar);
 }
 window.addEventListener('scroll', werkMobieleBalkBij, { passive: true });
@@ -3030,7 +3111,7 @@ function berekenInzichten(evs) {
   const laatsteInruil = inruilEvents.length && inruilEvents[inruilEvents.length - 1].type === 'inruil_toegevoegd' ? inruilEvents[inruilEvents.length - 1] : null;
 
   const f = {
-    views: tel('tab_bekeken', e => e.tab === 'financiering'), aanbAantal: aanb.length, ltAantal: lt.length,
+    views: tel('tab_bekeken', e => e.tab === 'financiering' || e.tab === 'betalen'), aanbAantal: aanb.length, ltAantal: lt.length,
     pctGeprobeerd, ltGeprobeerd, laatsteStand, combinaties: combinaties.size,
     betaalwijze: laatste(evs, 'betaalwijze_gekozen')
   };
@@ -3209,9 +3290,9 @@ function omschrijfEvent(e, index, alle) {
       return { tekst: 'Offertepagina geopend', sub: `${nr > 1 ? `Bezoek ${nr} · ` : ''}${e.apparaat === 'mobiel' ? 'op mobiel' : 'op desktop'}${e.taal === 'en' ? ' · Engels' : ''}`, cat: '' };
     }
     case 'tab_bekeken': return {
-      tekst: { financiering: 'Financiering bekeken', verzekering: 'Verzekering bekeken', offerte: 'Offerte bekeken' }[e.tab],
-      sub: { standaard: 'standaard geopend bij binnenkomst', specificaties: 'via "Bekijk alle specificaties"', prijskaart: 'via het maandbedrag bij de prijs', akkoord: 'vanuit het akkoord' }[e.bron] || '',
-      cat: { financiering: 'fin', verzekering: 'vz', offerte: 'off' }[e.tab]
+      tekst: { financiering: 'Financiering bekeken', betalen: 'Stap 2 geopend: betalen en verzekering', verzekering: 'Verzekering bekeken', offerte: 'Offerte bekeken' }[e.tab],
+      sub: { standaard: 'standaard geopend bij binnenkomst', specificaties: 'via "Bekijk alle specificaties"', prijskaart: 'via het maandbedrag bij de prijs', akkoord: 'vanuit het akkoord', volgende: 'via "Volgende stap"', stappenbalk: 'via de stappenbalk', offerte: 'vanuit de offerte', link: 'via de link', terug: 'met de terugknop' }[e.bron] || '',
+      cat: { financiering: 'fin', betalen: 'fin', verzekering: 'vz', offerte: 'off' }[e.tab]
     };
     case 'aanbetaling_gewijzigd': return { tekst: `Aanbetaling ${fmtPct(e.van)} → ${fmtPct(e.naar)}`, sub: `${fmtEuro(e.bedrag)} · ${fmtEuro(s.maandbedrag)} p/m bij ${s.looptijd} mnd`, cat: 'fin' };
     case 'looptijd_gewijzigd': return { tekst: `Looptijd ${e.van} → ${e.naar} maanden`, sub: `${fmtEuro(s.maandbedrag)} p/m bij ${fmtPct(s.aanbetalingPct)} aanbetaling`, cat: 'fin' };
@@ -4318,6 +4399,7 @@ async function toonView() {
       registreer('tab_bekeken', { tab: staat.actieveTab, bron: 'standaard', ...(staat.actieveTab === 'financiering' ? { stand: momentopname() } : {}) });
     }
     requestAnimationFrame(() => renderFinanciering());
+    if (location.hash === '#betalen') toonStap(2, 'link', { geschiedenis: false });
   }
   werkMobieleBalkBij();
 }
