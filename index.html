@@ -4,6 +4,16 @@
 <meta charset="UTF-8">
 <meta name="robots" content="noindex, nofollow">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Wittebrug">
+<meta property="og:title" content="Uw persoonlijke offerte">
+<meta property="og:description" content="Bekijk uw offerte, kies hoe u wilt betalen en geef akkoord.">
+<meta property="og:image" content="https://jurgenvdlecq.github.io/Occasion-offerte-demo/deel.png">
+<meta property="og:image:type" content="image/png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Wittebrug">
+<meta name="twitter:card" content="summary_large_image">
 <title>Uw offerte — Wittebrug</title>
 <!--
   PROTOTYPE — Digitale occasionofferte met geïntegreerde F&I
@@ -1550,6 +1560,7 @@ const INSTELLINGEN = {
   voorwaardenUrl: '',                // link naar de algemene voorwaarden (PDF); leeg = de klant vraagt ze op bij de verkoper
   bewaarMaanden: 12,                 // zo lang na de geldigheid bewaren we offerte en keuzes; daarna automatisch gewist (database)
   herinneringNaWerkdagen: 2,         // herinnering aan de verkoper als de klant nog niets koos
+  verloopSeinDagen: 2,               // seintje aan de verkoper als een offerte zonder akkoord binnen zoveel kalenderdagen verloopt (0 = alleen op de laatste dag)
   fiDesk: { naam: 'F&I-desk', email: '' }   // leeg = de verkoper kiest zelf de ontvanger
 };
 
@@ -3459,6 +3470,24 @@ const fmtMomentNL = d => `${new Date(d).toLocaleDateString('nl-NL', { weekday: '
 const datumKort = d => new Date(d).toLocaleDateString('nl-NL', { day: 'numeric', month: 'short' });
 const BW_LABEL = { financiering: 'Met financiering', zelf: 'Zelf betalen', twijfel: 'Weet het nog niet, wil advies' };
 
+// Seintje vlak voor het verlopen: de offerte heeft geen akkoord, is niet ingetrokken, is nog niet verlopen en verloopt binnen
+// INSTELLINGEN.verloopSeinDagen kalenderdagen (geldigTot is de laatste dag). Keuzes van de klant (betaalwijze e.d.) doen er niet toe.
+// "Opgevolgd" dempt het seintje alleen als dat vanaf het begin van die periode gebeurde: een eerdere opvolging (bijvoorbeeld de
+// herinnering na twee werkdagen) mag het seintje niet wegnemen. Geeft null of { dagen, tot }.
+function verloopSeinVan(o, st, ak) {
+  if (!o || !o.geldigTot || ak || st.ingetrokken) return null;
+  const tot = new Date(o.geldigTot + 'T00:00:00');
+  if (Number.isNaN(tot.getTime())) return null;
+  const dagen = dagnummer(tot) - dagnummer(new Date());
+  if (dagen < 0 || dagen > INSTELLINGEN.verloopSeinDagen) return null;
+  const begin = new Date(tot); begin.setDate(begin.getDate() - INSTELLINGEN.verloopSeinDagen);
+  if ((st.opgevolgdOp || 0) >= begin.getTime()) return null;
+  return { dagen, tot: o.geldigTot };
+}
+const verloopWanneer = dagen => dagen === 0 ? 'vandaag' : dagen === 1 ? 'morgen' : `over ${dagen} dagen`;
+// Datum (jjjj-mm-dd) als tekst, in de taal van de ontvanger; als lokale kalenderdag, zodat de datum nooit een dag opschuift
+const isoDatumTekst = (iso, taalCode = 'nl-NL') => new Date(iso + 'T00:00:00').toLocaleDateString(taalCode, { day: 'numeric', month: 'long', year: 'numeric' });
+
 function berekenInzichten(evs, st = {}, o = offerte, aangemaakt = null) {
   const keuzes = evs.filter(e => KEUZE_EVENTS.includes(e.type));
   const inruilEvents = keuzes.filter(e => e.type === 'inruil_toegevoegd' || e.type === 'inruil_verwijderd');
@@ -3484,6 +3513,8 @@ function berekenInzichten(evs, st = {}, o = offerte, aangemaakt = null) {
     deadline: ak ? (ak.bevestigUiterlijk || bevestigUiterlijk(ak.t)) : null,
     // Herinnering op basis van de verzenddatum, niet van bezoeken of klikken
     herinnering: !keuzes.length && !st.ingetrokken && !opgevolgd && werkdagen >= INSTELLINGEN.herinneringNaWerkdagen,
+    // Seintje vlak voor het verlopen (op basis van geldigTot en de kalender, niet van bezoeken of klikken)
+    verloopSein: verloopSeinVan(o, st, ak),
     laatsteKeuze: keuzes.length ? keuzes[keuzes.length - 1] : null
   };
 }
@@ -3529,7 +3560,9 @@ function maakAdvies(inz) {
   }
   const overig = inz.openContact.filter(c => c.onderwerp !== 'financiering');
   if (overig.length) a.push(`Klant stuurde ${overig.map(c => ({ bericht: 'een bericht', afspraak: 'een afspraakverzoek', terugbellen: 'een terugbelverzoek' }[c.modus] || 'een verzoek')).join(' en ')}: reageer vandaag.`);
-  if (inz.herinnering) a.push(`De offerte is ${inz.werkdagen} werkdagen geleden verstuurd en de klant heeft nog niets gekozen. Bel of app en vraag hoe de klant de auto wil betalen.`);
+  // Verloopt de offerte bijna, dan gaat dat voor; is er ook nog niets gekozen, dan staat dat in dezelfde regel (geen dubbele taak)
+  if (inz.verloopSein) a.push(`De offerte verloopt ${verloopWanneer(inz.verloopSein.dagen)} (geldig t/m ${isoDatumTekst(inz.verloopSein.tot)}).${inz.herinnering ? ` De klant heeft nog niets gekozen, terwijl de offerte ${inz.werkdagen} werkdagen geleden is verstuurd.` : ''} Bel of app de klant: heeft de klant nog vragen, of moet de offerte worden verlengd?`);
+  else if (inz.herinnering) a.push(`De offerte is ${inz.werkdagen} werkdagen geleden verstuurd en de klant heeft nog niets gekozen. Bel of app en vraag hoe de klant de auto wil betalen.`);
   if (inz.klantTaal === 'en') a.push('Klant gebruikt de Engelse versie: voer het gesprek in het Engels.');
   if (!a.length) a.push(inz.keuzes.length ? 'Geen openstaande acties.' : `De klant heeft nog niets gekozen. Na ${INSTELLINGEN.herinneringNaWerkdagen} werkdagen krijg je een herinnering.`);
   return a;
@@ -3645,6 +3678,24 @@ function bevestigingTekst(inz) {
   return `${naam ? `Beste ${man ? 'meneer ' : vrouw ? 'mevrouw ' : ''}${naam}` : 'Beste klant'},\n\nDank voor uw akkoord op offerte ${offerte.nummer} (versie ${versie}) van ${datum}${ak.controlecode ? `, controlecode ${ak.controlecode}` : ''}. Hierbij bevestig ik de koop van de ${auto}.\n\n${ak.betaalwijze === 'financiering' ? 'De financiering regelen we samen met u; die is onder voorbehoud van acceptatie door de financier.\n\n' : ''}Ik neem binnenkort contact met u op om de aflevering in te plannen.\n\nMet vriendelijke groet,\n${ondertekening}`;
 }
 
+// De link naar de klantpagina van de geopende offerte (zonder #verkoper)
+const klantLinkNu = () => location.href.split('#')[0];
+// Herinnering aan de klant vlak voor het verlopen van de offerte, in de taal van de klant (zelfde aanhef en groet als flowBerichtTekst)
+function verloopBerichtTekst(inz) {
+  const v = offerte.voertuig, vk = offerte.verkoper, k = offerte.klant, en = inz.klantTaal === 'en';
+  const naam = k.achternaam ? k.achternaam.charAt(0).toUpperCase() + k.achternaam.slice(1) : '';
+  const man = /^(dhr|de heer)/i.test(k.aanhef || ''), vrouw = /^(mevr|mw|mevrouw)/i.test(k.aanhef || '');
+  const aanhef = en
+    ? (naam ? `Dear ${man ? 'Mr ' : vrouw ? 'Ms ' : ''}${naam}` : 'Hello')
+    : (naam ? `Beste ${man ? 'meneer ' : vrouw ? 'mevrouw ' : ''}${naam}` : 'Beste klant');
+  const auto = `${v.merk} ${v.model}`, datum = isoDatumTekst(offerte.geldigTot, en ? 'en-GB' : 'nl-NL');
+  const kern = en
+    ? `your quote for the ${auto} is still valid until ${datum}. Do you have any questions, or would you like us to extend the quote? Please let me know.`
+    : `uw offerte voor de ${auto} is nog geldig t/m ${datum}. Heeft u nog vragen, of wilt u de offerte laten verlengen? Laat het gerust weten.`;
+  const groet = en ? `Kind regards,\n${vk.naam}` : `Met vriendelijke groet,\n${vk.naam}`;
+  return `${aanhef}, ${kern}\n\n${groet}\n\n${klantLinkNu()}`;
+}
+
 // Leesbare omschrijving per keuze of actie voor de tijdlijn (Nederlands, intern)
 function omschrijfEvent(e) {
   const s = e.stand;
@@ -3722,7 +3773,7 @@ function renderVerkoperNL() {
     inz.klantTaal === 'en' ? '<span class="chip">Klant gebruikt Engels</span>' : '',
     `<button class="chip" type="button" id="kopieerKlantlink">${icoon('i-delen')} Kopieer klantlink</button>`
   ].join('');
-  $('#kopieerKlantlink').onclick = () => kopieer(location.href.split('#')[0], 'Klantlink gekopieerd');
+  $('#kopieerKlantlink').onclick = () => kopieer(klantLinkNu(), 'Klantlink gekopieerd');
 
   // Statusbalk: van verstuurd tot bevestigd
   const cel = (titel, tekst, klasse = '') => `<div class="${klasse}"><b>${klasse === 'klaar' ? icoon('i-vink') : klasse === 'let' ? icoon('i-klok') : ''}${titel}</b>${escapeHtml(tekst)}</div>`;
@@ -3805,7 +3856,13 @@ function takenHtml(inz, opening) {
     taken.push(taak(`${escapeHtml(om.tekst)} · ${relatieveTijd(c.t)}`, escapeHtml(om.sub || 'Reageer zo snel mogelijk.'), (tel ? `<a class="knop knop-secundair knop-klein" href="tel:${tel}">Bel ${escapeHtml(c.telefoon)}</a>` : '') + knop('Afgehandeld', 'data-vk-actie="opgevolgd"'), 'belangrijk'));
   });
   if (inz.zelfOpen) taken.push(taak('Afronding bespreken', `Klant wil zelf betalen en wil ${escapeHtml(String(inz.bw.voorkeur || '').toLowerCase())} benaderd worden.`, knop('Afgehandeld', 'data-vk-actie="opgevolgd"')));
-  if (inz.herinnering) taken.push(taak('Herinnering: nog geen keuze', `Verstuurd ${inz.werkdagen} werkdagen geleden. Bel of app de klant en vraag naar de gewenste betaalwijze.`,
+  // Seintje voor het verlopen gaat voor de herinnering "nog geen keuze": één taak, met die extra regel erbij
+  if (inz.verloopSein) {
+    const vs = inz.verloopSein, bericht = verloopBerichtTekst(inz);
+    taken.push(taak(`Offerte verloopt ${verloopWanneer(vs.dagen)}`,
+      `Geldig t/m ${isoDatumTekst(vs.tot)}.${inz.herinnering ? ` De klant koos ook nog niets (verstuurd ${inz.werkdagen} werkdagen geleden).` : ''} Vraag of de klant nog vragen heeft of de offerte wil laten verlengen; verlengen doe je met een nieuwe versie.`,
+      `<a class="knop knop-wa knop-klein" href="https://wa.me/${waNummer(k.telefoon)}?text=${encodeURIComponent(bericht)}" target="_blank" rel="noopener">${icoon('i-whatsapp')}App herinnering</a>${knop('Kopieer bericht', 'data-kopieer="verloop"')}${knop('Opgevolgd', 'data-vk-actie="opgevolgd"')}`, 'belangrijk'));
+  } else if (inz.herinnering) taken.push(taak('Herinnering: nog geen keuze', `Verstuurd ${inz.werkdagen} werkdagen geleden. Bel of app de klant en vraag naar de gewenste betaalwijze.`,
     `<a class="knop knop-wa knop-klein" href="https://wa.me/${waNummer(k.telefoon)}?text=${encodeURIComponent(opening)}" target="_blank" rel="noopener">${icoon('i-whatsapp')}App met openingszin</a>${knop('Opgevolgd', 'data-vk-actie="opgevolgd"')}`, 'belangrijk'));
   else if (!inz.keuzes.length && st.opgevolgdOp) taken.push(taak(`Opgevolgd op ${fmtDatum(st.opgevolgdOp)}`, 'Je krijgt voor deze offerte geen herinnering meer.', '', 'klaar'));
   if (!st.ingetrokken) {
@@ -3839,7 +3896,11 @@ $('#vkTaken').addEventListener('click', async e => {
   const el = e.target.closest('[data-vk-actie], [data-na-mail], [data-kopieer]');
   if (!el || !huidigeInzichten) return;
   const inz = huidigeInzichten;
-  if (el.dataset.kopieer) { kopieer(metNL(() => el.dataset.kopieer === 'fi' ? fiAanvraagTekst(inz) : vzAanvraagTekst(inz)), el.dataset.kopieer === 'fi' ? 'Financieringsaanvraag gekopieerd' : 'Verzekeringsaanvraag gekopieerd'); return; }
+  if (el.dataset.kopieer) {
+    const [maakTekst, melding] = { fi: [fiAanvraagTekst, 'Financieringsaanvraag gekopieerd'], vz: [vzAanvraagTekst, 'Verzekeringsaanvraag gekopieerd'], verloop: [verloopBerichtTekst, 'Bericht gekopieerd'] }[el.dataset.kopieer];
+    kopieer(metNL(() => maakTekst(inz)), melding);
+    return;
+  }
   if (el.dataset.naMail) { voerActieUit(el.dataset.naMail).then(renderVerkoper).catch(() => {}); return; }   // de mail opent gewoon
   const actie = el.dataset.vkActie;
   if (actie === 'nieuwe_versie') { startNieuweVersie(); return; }
@@ -3906,6 +3967,7 @@ function renderAccountEnBeheer() {
     ['Akkoord van de klant', INSTELLINGEN.akkoordVariant === 'reservering' ? 'kosteloze reservering' : 'koop onder voorbehoud van bevestiging'],
     ['Bevestigen door de verkoper', 'uiterlijk de volgende werkdag om 17:00'],
     ['Herinnering als de klant niets kiest', `na ${INSTELLINGEN.herinneringNaWerkdagen} werkdagen`],
+    ['Seintje voordat een offerte verloopt', INSTELLINGEN.verloopSeinDagen === 0 ? 'op de laatste dag (zonder akkoord)' : `${INSTELLINGEN.verloopSeinDagen} ${INSTELLINGEN.verloopSeinDagen === 1 ? 'dag' : 'dagen'} voor de einddatum (zonder akkoord)`],
     ['Offertes en keuzes bewaren', `tot ${INSTELLINGEN.bewaarMaanden} maanden na de geldigheid${online ? ', daarna automatisch gewist' : ''}`],
     ['Algemene voorwaarden (link)', INSTELLINGEN.voorwaardenUrl ? 'ingesteld' : 'nog niet ingesteld'],
     ['Verzekeringsafdeling', VZ_AFDELING.email],
@@ -4750,6 +4812,8 @@ function offerteStatus(inz) {
   if (inz.zelfOpen) open.push('neem contact op over de afronding');
   if (open.length) return { ...basis, status: 'Actie nodig', kleur: 'rood', prio: 3, advies: hoofdletter(open.join('; ')) };
   if (inz.ak) return { ...basis, status: 'Verkocht', kleur: 'groen', prio: 1, advies: 'Plan de aflevering' };
+  // Verloopt de offerte bijna: oranje, met het woord erbij; gaat voor "Opvolgen" (dezelfde oranje stand, één regel)
+  if (inz.verloopSein) return { ...basis, status: 'Verloopt binnenkort', kleur: 'oranje', prio: 2, advies: `Offerte verloopt ${verloopWanneer(inz.verloopSein.dagen)}${inz.herinnering ? ` en de klant koos nog niets (${inz.werkdagen} werkdagen)` : ''}: bel of app de klant` };
   if (inz.herinnering) return { ...basis, status: 'Opvolgen', kleur: 'oranje', prio: 2, advies: `Nog geen keuze na ${inz.werkdagen} werkdagen: bel of app de klant` };
   return { ...basis, status: inz.keuzes.length ? 'In gesprek' : 'Verstuurd', kleur: 'info', prio: 1, advies: inz.keuzes.length ? 'Geen openstaande acties' : 'Wacht op de keuze van de klant' };
 }
