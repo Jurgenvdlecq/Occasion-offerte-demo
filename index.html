@@ -4400,7 +4400,8 @@ async function vulAanMetRdw(d) {
 async function leesPdfOfferte(bestand, opVoortgang = () => {}) {
   opVoortgang(0);
   const pdfjsLib = await laadPdfJs();
-  const doc = await pdfjsLib.getDocument({ data: new Uint8Array(await bestand.arrayBuffer()) }).promise;
+  // isEvalSupported: false sluit het bekende lek in pdf.js 3.x uit (een PDF kan anders code uitvoeren, CVE-2024-4367).
+  const doc = await pdfjsLib.getDocument({ data: new Uint8Array(await bestand.arrayBuffer()), isEvalSupported: false }).promise;
   opVoortgang(1);
   const paginas = [];
   let foto = null;
