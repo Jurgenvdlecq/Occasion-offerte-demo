@@ -334,7 +334,7 @@
   .bel > * { position: absolute; top: 0; transform: translateX(-50%); }
   .bel-veld { width: 140px; height: 44px; border: 1px solid var(--rand-veld); border-radius: var(--radius-s); background: var(--wit); text-align: center; font-weight: 600; font-size: 16px; color: var(--hoofd); }
   .bel-veld:focus { outline: 3px solid var(--focus); outline-offset: 0; border-color: var(--hoofd); }
-  .lt-chips { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 8px; margin-top: 8px; }
+  .lt-chips { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 8px; margin-top: 8px; }
   .lt-chips button { border: 1px solid var(--rand-veld); background: var(--wit); border-radius: var(--radius-s); min-width: 44px; min-height: 44px; font-size: 16px; font-weight: 600; color: var(--hoofd); padding: 0; }
   .lt-chips button[aria-pressed="true"] { background: var(--hoofd); border-color: var(--hoofd); color: var(--op-donker); }
 
@@ -795,7 +795,6 @@
     .ov-maand { gap: 12px; }
     .ov-feiten { line-height: 1.35; }
     .ov-foto img, .ov-foto svg.auto { max-height: 110px; }
-    .lt-chips { grid-template-columns: repeat(4, minmax(0, 1fr)); }
     .keuzekaart > span { grid-template-columns: 24px minmax(0, 1fr); }
     .keuzekaart > span b { grid-column: 2; }
     .segment.drie { grid-template-columns: 1fr; }
@@ -1132,6 +1131,7 @@
           <div class="ov-maand-kop"><span class="label" data-t="ov.perMaand">Of per maand</span><div class="voorstel-rij" id="voorstelRij" hidden></div></div>
           <div class="maandbedrag" aria-live="polite"><span class="bedrag" id="maandBedrag">€ 544<small>,00</small></span><span class="per" data-t="mk.per">per maand</span></div>
           <div class="minimum-melding" id="minimumMelding" hidden></div>
+          <div class="minimum-melding" id="looptijdMelding" hidden></div>
           <div class="slider-blok">
             <div class="veld-rij">
               <span class="label" id="lblAanbetaling"><span data-t="fin.aanbetaling">Aanbetaling</span> <button type="button" class="info-knop" data-uitleg="uitlegAanbetaling" aria-label="Uitleg over de aanbetaling" data-t-attr="aria-label:fin.labelAanbetaling">i</button></span>
@@ -1152,14 +1152,15 @@
             <div class="uitleg" id="uitlegLooptijd" hidden data-t="fin.uitlegLooptijd">Het aantal maanden waarin u het geleende bedrag terugbetaalt. Een langere looptijd geeft een lager maandbedrag, maar u betaalt in totaal meer rente. Er is geen slottermijn: aan het einde is de auto volledig afbetaald.</div>
             <div class="lt-chips" id="looptijdChips" role="group" aria-labelledby="lblLooptijd"></div>
           </div>
-          <p class="ov-jkp" id="ovJkpRegel"><span><span data-t="ov.jkpLang">Jaarlijks kostenpercentage</span> <button type="button" class="info-knop" data-uitleg="uitlegJkp" aria-label="Uitleg over het jaarlijks kostenpercentage" data-t-attr="aria-label:fin.labelJkp">i</button> <b id="ovJkpKort"></b></span><span><span data-t="ov.renteVast">Vaste debetrente</span> <b id="renteChip">8,99%</b></span></p>
-          <div class="uitleg" id="uitlegJkp" hidden data-t="fin.uitlegJkp">Het jaarlijks kostenpercentage (JKP) laat zien wat de lening per jaar kost, met de rente en de verplichte kosten. Met dit percentage kunt u leningen vergelijken.</div>
+          <p class="ov-jkp" id="ovJkpRegel"><span><span data-t="ov.jkpLang">Jaarlijks kostenpercentage</span> <button type="button" class="info-knop" data-uitleg="uitlegJkp" aria-label="Uitleg over het jaarlijks kostenpercentage" data-t-attr="aria-label:fin.labelJkp">i</button> <b id="ovJkpKort"></b></span><span><span data-t="ov.renteVast">Debetrentevoet (vast)</span> <button type="button" class="info-knop" data-uitleg="uitlegRente" aria-label="Uitleg over de debetrentevoet" data-t-attr="aria-label:fin.labelRente">i</button> <b id="renteChip">8,99%</b></span></p>
+          <div class="uitleg" id="uitlegJkp" hidden data-t="fin.uitlegJkp">Het jaarlijks kostenpercentage (JKP) is wat de lening per jaar kost, met rente én verplichte kosten. Zijn er geen kosten naast de rente, dan is het JKP gelijk aan de debetrentevoet. Met het JKP kunt u leningen vergelijken.</div>
+          <div class="uitleg" id="uitlegRente" hidden data-t="fin.uitlegRente">De debetrentevoet is de rente per jaar over het geleende bedrag. Hij blijft gelijk zolang de lening loopt. U betaalt elke maand achteraf, met de rente omgerekend naar een maand.</div>
           <div class="ov-voorbeeld" id="ovVoorbeeld">
             <h3 data-t="ov.voorbeeld">Uw rekenvoorbeeld</h3>
             <dl>
               <dt data-t="ov.kredietbedrag">Kredietbedrag</dt><dd id="vbKrediet"></dd>
               <dt data-t="mk.looptijd">Looptijd</dt><dd id="vbLooptijd"></dd>
-              <dt data-t="ov.renteVast">Vaste debetrente</dt><dd id="vbRente"></dd>
+              <dt data-t="ov.renteVast">Debetrentevoet (vast)</dt><dd id="vbRente"></dd>
               <dt data-t="ov.jkpLang">Jaarlijks kostenpercentage</dt><dd id="vbJkp"></dd>
               <dt data-t="ov.maandtermijn">Maandtermijn</dt><dd id="vbMaand"></dd>
               <dt data-t="mk.kosten">Totale kredietkosten</dt><dd id="ovKosten"></dd>
@@ -1169,6 +1170,7 @@
           <div class="geld-lenen-blok" data-t="ov.geldLenen">Let op! Geld lenen kost geld.</div>
           <p class="ov-wettelijk" data-t="ov.indicatie">Indicatie, onder voorbehoud van acceptatie door de financier.</p>
           <p class="ov-vastgelegd" id="ovVastgelegd" hidden data-t="ov.vastgelegd">Vastgelegd in uw akkoord. Indicatie: de definitieve voorwaarden volgen na beoordeling door de financier.</p>
+          <p class="ov-vastgelegd" id="ovLooptijdVervallen" hidden></p>
           <details class="klap ov-berekening"><summary><span data-t="ov.berekening">Hoe is dit berekend?</span></summary><div class="klap-inhoud">
           <div class="overzicht">
             <div class="rij"><span id="ovPrijsLabel"></span><span id="ovAanschaf"></span></div>
@@ -1594,9 +1596,33 @@ const INSTELLINGEN = {
   voorwaardenUrl: '',                // link naar de algemene voorwaarden (PDF); leeg = de klant vraagt ze op bij de verkoper
   bewaarMaanden: 12,                 // zo lang na de geldigheid bewaren we offerte en keuzes; daarna automatisch gewist (database)
   herinneringNaWerkdagen: 2,         // herinnering aan de verkoper als de klant nog niets koos
+  maxLooptijd: 60,                   // langste looptijd (maanden) van de financiering; langere looptijden worden weggelaten of 60
   verloopSeinDagen: 2,               // seintje aan de verkoper als een offerte zonder akkoord binnen zoveel kalenderdagen verloopt (0 = alleen op de laatste dag)
   fiDesk: { naam: 'F&I-desk', email: '' }   // leeg = de verkoper kiest zelf de ontvanger
 };
+
+// Looptijden boven INSTELLINGEN.maxLooptijd worden op de pagina gecorrigeerd (de database blijft ongemoeid):
+// weglaten uit de keuzes, en een gekozen of voorgestelde looptijd wordt het maximum.
+const LOOPTIJDEN_STANDAARD = [12, 24, 36, 48, 60];
+const beperkLooptijd = n => (typeof n === 'number' && n > INSTELLINGEN.maxLooptijd ? INSTELLINGEN.maxLooptijd : n);
+const looptijdBijgewerkt = new Set();   // id's van offertes waarvan een te lange looptijd is aangepast (voor de melding in de maandkaart)
+function corrigeerOfferte(o) {
+  const f = o && o.financiering;
+  if (!f) return o;
+  const max = INSTELLINGEN.maxLooptijd;
+  const lijst = Array.isArray(f.looptijden) ? f.looptijden.filter(m => m <= max) : f.looptijden;
+  const nieuw = {
+    ...f,
+    ...(Array.isArray(f.looptijden) ? { looptijden: lijst.length ? lijst : LOOPTIJDEN_STANDAARD } : {}),
+    ...(typeof f.looptijd === 'number' ? { looptijd: beperkLooptijd(f.looptijd) } : {}),
+    voorstel: f.voorstel ? { ...f.voorstel, looptijd: beperkLooptijd(f.voorstel.looptijd) } : f.voorstel
+  };
+  if (!('voorstel' in f)) delete nieuw.voorstel;
+  const gewijzigd = (Array.isArray(f.looptijden) && f.looptijden.some(m => m > max)) || f.looptijd > max || (f.voorstel && f.voorstel.looptijd > max);
+  if (!gewijzigd) return o;
+  if (o.id) looptijdBijgewerkt.add(o.id);
+  return { ...o, financiering: nieuw };
+}
 
 const api = {
   sessie: null,
@@ -1675,7 +1701,7 @@ if (online) {
     let geenVerbinding = false;
     try {
       const data = await api.rpc('haal_offerte', { p_token: tokenInUrl });
-      if (data && typeof data === 'object') onlineOfferte = { ...data, id: tokenInUrl };
+      if (data && typeof data === 'object') onlineOfferte = corrigeerOfferte({ ...data, id: tokenInUrl });
     } catch (e) { geenVerbinding = true; }
     if (!onlineOfferte) {
       document.body.innerHTML = geenVerbinding
@@ -1751,9 +1777,9 @@ const DEMO_OFFERTE = {
   // Standaard bij deze occasion inbegrepen (blok "Extra's" in de offerte)
   inbegrepen: ['Wittebrug servicepakket', '130 puntencheck', 'Minimaal 12 maanden geldige APK', 'Professionele reiniging van binnen en buiten', 'Volle tank brandstof'],
   financiering: {
-    rentePct: 8.99, aanbetalingPct: 25, looptijd: 60, looptijden: [12, 24, 36, 48, 60, 72, 84], minPct: 0, maxPct: 50, slottermijn: 0, minTeFinancieren: 2500,
+    rentePct: 8.99, aanbetalingPct: 25, looptijd: 60, looptijden: [12, 24, 36, 48, 60], minPct: 0, maxPct: 50, slottermijn: 0, minTeFinancieren: 2500,
     // rentePerLooptijd: { 12: 7.99, 24: 8.49, ... }  // tarieven van de financier; ontbreekt een looptijd, dan geldt rentePct
-    voorstel: { aanbetaling: 3000, looptijd: 72 }   // besproken voorstel; null = niet besproken
+    voorstel: { aanbetaling: 3000, looptijd: 60 }   // besproken voorstel; null = niet besproken
   },
   inruil: { kenteken: 'AB-123-C', merk: 'Volkswagen', model: 'Polo', bouwjaar: '2017', km: 98000, waarde: 6000, getaxeerd: true, taxatieDatum: demoBezoek, taxatieGeldigTot: demoGeldigTot },
   pdfUrl: ''                          // later: link naar de originele PDF uit het offertesysteem
@@ -1806,10 +1832,10 @@ function laadOfferte() {
   const token = new URLSearchParams(location.search).get('o') || opslag.lees(`${OPSLAG_PREFIX}:actief`, null);
   if (token) {
     const lijst = opslag.lees(`${OPSLAG_PREFIX}:offertes`, {});
-    if (lijst[token]) return lijst[token];
-    if (INGEBOUWD[token]) return INGEBOUWD[token];
+    if (lijst[token]) return corrigeerOfferte(lijst[token]);
+    if (INGEBOUWD[token]) return corrigeerOfferte(INGEBOUWD[token]);
   }
-  return DEMO_OFFERTE;
+  return corrigeerOfferte(DEMO_OFFERTE);
 }
 
 const offerte = laadOfferte();
@@ -1830,7 +1856,7 @@ function zetLokaleStatus(id, wijziging) {
   alles[id] = { ...(alles[id] || {}), ...wijziging };
   opslag.schrijf(sleutelStatus, alles);
 }
-const alleLokaleOffertes = () => [DEMO_OFFERTE, DEMO_LEAD, ...Object.values(opslag.lees(`${OPSLAG_PREFIX}:offertes`, {}))];
+const alleLokaleOffertes = () => [DEMO_OFFERTE, DEMO_LEAD, ...Object.values(opslag.lees(`${OPSLAG_PREFIX}:offertes`, {}))].map(corrigeerOfferte);
 const lokaleEvents = id => opslag.lees(`${OPSLAG_PREFIX}:${id}:events`, []);
 // Dezelfde auto in een andere offerte herkennen: op kenteken, anders op occasionnummer
 const autosleutel = o => {
@@ -1911,6 +1937,8 @@ const NL = {
   'inr.handmatig': 'Automatisch opzoeken lukt nu niet. Vul merk en model zelf in.',
   'inr.toegevoegd': 'Inruil toegevoegd aan uw berekening',
   'inr.getaxeerd': 'getaxeerd',
+  'mk.looptijdBijgewerkt': 'Deze offerte is bijgewerkt. De looptijd is nu maximaal 60 maanden, dus het maandbedrag is anders dan eerder.',
+  'ov.looptijdVervallen': 'Vastgelegd in uw akkoord van {datum}. Deze looptijd wordt niet meer aangeboden.',
   'mk.minimum': 'Het te financieren bedrag is lager dan het minimum van {bedrag}. Verlaag de aanbetaling of neem contact op.',
   'mk.min': '− {bedrag}',
   'fin.maxAanbetaling': 'De maximale aanbetaling in dit rekenvoorbeeld is {pct}',
@@ -2112,7 +2140,9 @@ const EN = {
   'route.overleg': 'Talk it over first?',
   'deel.regel': 'Please note: anyone who has this link can see your quote with your name and can also accept it.',
   'ov.vastgelegd': 'Recorded in your acceptance. This is an indication: the final terms follow after assessment by the lender.',
-  'fin.uitlegJkp': 'The annual percentage rate of charge (APR) shows what the loan costs per year, including interest and mandatory costs. You can use it to compare loans.',
+  'fin.uitlegJkp': 'The annual percentage rate (APR) is what the loan costs per year, including interest and mandatory costs. If there are no costs besides interest, the APR equals the borrowing rate. Use it to compare loans.',
+  'fin.uitlegRente': 'The borrowing rate is the yearly interest on the amount you borrow. It stays the same for the whole loan. You pay each month in arrears, with the interest converted to a monthly rate.',
+  'fin.labelRente': 'Explanation of the borrowing rate',
   'st.van': 'From',
   // Statisch (data-t)
   'h.verkoper': 'Your consultant', 'h.app': 'Message <span data-veld="verkoper.voornaam">Mark</span>',
@@ -2155,7 +2185,7 @@ const EN = {
   'int.voorkeur': 'How would you like to be contacted?', 'int.tel': 'By phone', 'int.mail': 'Email', 
   'ak.titel': 'Accept your quote digitally', 'ak.betaalwijze': 'How would you like to pay for the car?', 'ak.verzekering2': 'Also send me an insurance quote for this car, without obligation, from Wittebrug Verzekeringen',
   'ak.typen': 'Type your name', 'ak.tekenen': 'Sign with your finger', 'ak.download': 'Print or save as PDF',
-  'ov.jkpLang': 'Annual percentage rate (APR)', 'ov.renteVast': 'Fixed borrowing rate', 'ov.voorbeeld': 'Your example calculation', 'ov.kredietbedrag': 'Amount of credit',
+  'ov.jkpLang': 'Annual percentage rate (APR)', 'ov.renteVast': 'Borrowing rate (fixed)', 'ov.voorbeeld': 'Your example calculation', 'ov.kredietbedrag': 'Amount of credit',
   'ov.maandtermijn': 'Monthly payment', 'ov.totaalTeBetalen': 'Total to repay to the lender', 'prijs.belFin': 'Call me about the financing', 'ft.privacyMeer': 'More about privacy',
   'pv.titel': 'Privacy and this quote', 'hr.titel': 'Model withdrawal form',
   'ct.titel.financiering': 'Call me about the financing', 'ct.ok.financiering': 'We will call you about the financing within 1 working day',
@@ -2208,6 +2238,8 @@ const EN = {
   'inr.nietGevonden': 'This plate is not in the RDW register. Please enter make and model yourself.',
   'inr.handmatig': 'Automatic lookup is not available right now. Please enter make and model yourself.',
   'inr.toegevoegd': 'Trade-in added to your calculation', 'inr.getaxeerd': 'valued',
+  'mk.looptijdBijgewerkt': 'This quote has been updated. The term is now at most 60 months, so the monthly amount differs from before.',
+  'ov.looptijdVervallen': 'Recorded in your acceptance of {datum}. This term is no longer offered.',
   'mk.minimum': 'The amount to finance is below the minimum of {bedrag}. Lower the down payment or contact us.',
   'fin.maxAanbetaling': 'The maximum down payment in this example is {pct}',
   'rij.aanbetaling': 'Down payment', 'rij.looptijd': 'Term', 'rij.maandbedrag': 'Monthly payment', 'rij.inruil': 'Trade-in (estimate)',
@@ -2485,15 +2517,54 @@ function registreer(type, data = {}, { wacht = false } = {}) {
 const fin = offerte.financiering;
 const prijs = offerte.prijs.verkoopprijs;
 
-// Annuïtaire lening: vaste maandtermijn, geen slottermijn.
-// M = P · r / (1 − (1 + r)^−n), met r = nominale jaarrente / 12.
+// Annuïtaire lening zoals VWPFS rekent: vaste maandtermijn, betaling achteraf, nog geen slottermijn.
+// M = P · r / (1 − (1 + r)^−n), met r = (1 + debetrente/100)^(1/12) − 1 (de debetrentevoet is een effectieve jaarrente, omgerekend naar een maand).
 function berekenFinanciering(bedrag, aanbetaling, looptijd, rentePct) {
   const hoofdsom = Math.max(bedrag - aanbetaling, 0);
-  const r = rentePct / 100 / 12;
+  const r = Math.pow(1 + rentePct / 100, 1 / 12) - 1;
   const termijnExact = r === 0 ? hoofdsom / looptijd : hoofdsom * r / (1 - Math.pow(1 + r, -looptijd));
   const maandbedrag = Math.round(termijnExact * 100) / 100;
   const totaalTermijnen = Math.round(maandbedrag * looptijd * 100) / 100;
-  return { hoofdsom, maandbedrag, totaalTermijnen, kredietkosten: totaalTermijnen - hoofdsom, jkp: (Math.pow(1 + r, 12) - 1) * 100 };
+  return { hoofdsom, maandbedrag, totaalTermijnen, kredietkosten: totaalTermijnen - hoofdsom, jkp: berekenJkp(hoofdsom, maandbedrag, looptijd) };
+}
+// JKP uit de betalingen zelf: de jaarrente waarbij de contante waarde van de (afgeronde) maandtermijnen gelijk is aan het kredietbedrag,
+// dus (1 + i)^12 − 1 met i de maandrente, gevonden met bisectie. Zonder kosten is dat de debetrente; komen er later kosten bij, dan klopt het nog.
+function berekenJkp(hoofdsom, maandbedrag, looptijd) {
+  if (!(hoofdsom > 0) || !(maandbedrag > 0) || !(looptijd > 0) || maandbedrag * looptijd <= hoofdsom) return 0;
+  const contanteWaarde = i => maandbedrag * (1 - Math.pow(1 + i, -looptijd)) / i;   // som van de termijnen achteraf, contant gemaakt
+  let laag = 1e-9, hoog = 1;
+  for (let k = 0; k < 200; k++) {
+    const mid = (laag + hoog) / 2;
+    if (contanteWaarde(mid) > hoofdsom) laag = mid; else hoog = mid;
+  }
+  return (Math.pow(1 + (laag + hoog) / 2, 12) - 1) * 100;
+}
+
+// Een al gegeven akkoord toont wat er toen is vastgelegd en wordt nooit opnieuw berekend.
+// Bron: de vastlegging van het akkoord; ontbreekt die (oude data), dan de berekening van dat moment (ak.stand) met het toen getoonde maandbedrag.
+// Alleen het JKP (dat daar niet in zat) wordt dan uit de vastgelegde betalingen afgeleid.
+function vastgelegdeFinanciering(ak, prijsV, renteStandaard) {
+  const vl = ak && ak.vastgelegd && ak.vastgelegd.financiering;
+  if (vl) return { aanbetaling: vl.aanbetaling, looptijd: vl.looptijd, hoofdsom: vl.kredietbedrag, rentePct: vl.rentePct, jkp: vl.jkp, maandbedrag: vl.maandbedrag, totaalTermijnen: vl.totaalTermijnen, kredietkosten: vl.totaalTermijnen - vl.kredietbedrag };
+  const s = ak && ak.stand;
+  if (!s) return null;
+  const prijsAk = ak.vastgelegd && ak.vastgelegd.prijs ? ak.vastgelegd.prijs.verkoopprijs : prijsV;
+  return financieringUitStand(s, prijsAk, s.rentePct ?? renteStandaard(s.looptijd));
+}
+// Financiering uit een bewaarde berekening (stand), met het bewaarde maandbedrag
+function financieringUitStand(s, prijsV, rentePct) {
+  const hoofdsom = Math.max(prijsV - (s.inruil || 0) - s.aanbetaling, 0);
+  const totaalTermijnen = Math.round(s.maandbedrag * s.looptijd * 100) / 100;
+  return { aanbetaling: s.aanbetaling, looptijd: s.looptijd, hoofdsom, rentePct, jkp: berekenJkp(hoofdsom, s.maandbedrag, s.looptijd), maandbedrag: s.maandbedrag, totaalTermijnen, kredietkosten: totaalTermijnen - hoofdsom };
+}
+// Een bewaarde berekening zonder akkoord is nog niet bindend: op de pagina wordt hij altijd opnieuw berekend met de huidige
+// rekenwijze, met een looptijd van hoogstens 60 maanden. Zo tonen maandkaart, document en F&I-aanvraag hetzelfde bedrag.
+// Een berekening bij een akkoord wordt nooit opnieuw berekend (zie vastgelegdeFinanciering); roep dit dus alleen aan zonder akkoord.
+function beperkStand(s, o = offerte) {
+  if (!s || !(s.looptijd > 0)) return s;
+  const looptijd = Math.min(s.looptijd, INSTELLINGEN.maxLooptijd), f = o.financiering, r = f.rentePerLooptijd && f.rentePerLooptijd[looptijd];
+  const b = berekenFinanciering(o.prijs.verkoopprijs - (s.inruil || 0), s.aanbetaling, looptijd, typeof r === 'number' && r >= 0 ? r : f.rentePct);
+  return { ...s, looptijd, maandbedrag: b.maandbedrag };
 }
 
 // Laatste keuzes van de klant terugzetten (indien bewaard)
@@ -2501,8 +2572,8 @@ const bewaard = opslag.lees(sleutelKeuze, {});
 const voorstel = fin.voorstel || null;    // besproken financieringsvoorstel
 const staat = {
   aanbetaling: typeof bewaard.aanbetaling === 'number' ? bewaard.aanbetaling : (voorstel ? voorstel.aanbetaling : prijs * fin.aanbetalingPct / 100),
-  looptijd: fin.looptijden.includes(bewaard.looptijd) ? bewaard.looptijd : (voorstel ? voorstel.looptijd : fin.looptijd),
-  betaalwijze: bewaard.betaalwijze || null,        // keuze van de klant: hoe wil hij de auto betalen
+  looptijd: fin.looptijden.includes(beperkLooptijd(bewaard.looptijd)) ? beperkLooptijd(bewaard.looptijd) : (voorstel ? voorstel.looptijd : fin.looptijd),
+  betaalwijze: bewaard.betaalwijze ? { ...bewaard.betaalwijze } : null,        // keuze van de klant: hoe wil hij de auto betalen
   vzVoorstel: bewaard.vzVoorstel || null,          // voorstel gevraagd bij de verzekeringsafdeling
   // Een in de showroom getaxeerde inruil staat vast in de offerte; anders telt wat de klant zelf invulde
   inruil: offerte.inruil && offerte.inruil.getaxeerd ? { ...offerte.inruil } : (bewaard.inruil !== undefined ? bewaard.inruil : null),
@@ -2513,6 +2584,14 @@ const staat = {
 if (!staat.akkoord && serverStatusKlant && serverStatusKlant.akkoord) staat.akkoord = { ...serverStatusKlant.akkoord, t: Date.parse(serverStatusKlant.akkoord.t) };
 // Na een akkoord staat de rekenhulp vast op de getekende keuze. Dit is alleen weergave: er wordt niets opnieuw berekend of opgeslagen.
 if (staat.akkoord && staat.akkoord.stand) { staat.aanbetaling = staat.akkoord.stand.aanbetaling; staat.looptijd = staat.akkoord.stand.looptijd; }
+// Zonder akkoord: een bewaarde berekening opnieuw berekenen met de huidige rekenwijze (alleen weergave, er wordt niets opgeslagen)
+if (!staat.akkoord && staat.betaalwijze && staat.betaalwijze.stand) staat.betaalwijze.stand = beperkStand(staat.betaalwijze.stand);
+// Een te lange looptijd (in de offerte of in een bewaarde keuze) is bijgewerkt: één keer melden, alleen zonder akkoord.
+// Dat de melding gezien is, staat apart van de klantkeuzes; zo worden er bij het laden geen keuzes weggeschreven.
+const sleutelLooptijdMelding = `${sleutelKeuze}:looptijdmelding`;
+const langeBewaardeLooptijd = bewaard.looptijd > INSTELLINGEN.maxLooptijd || (bewaard.betaalwijze && bewaard.betaalwijze.stand && bewaard.betaalwijze.stand.looptijd > INSTELLINGEN.maxLooptijd);
+const toonLooptijdMelding = (looptijdBijgewerkt.has(offerte.id) || langeBewaardeLooptijd) && !staat.akkoord && !opslag.lees(sleutelLooptijdMelding, false);
+if (toonLooptijdMelding) opslag.schrijf(sleutelLooptijdMelding, true);
 function bewaarKeuze() {
   const { actieveTab, ...rest } = staat;
   opslag.schrijf(sleutelKeuze, rest);
@@ -2521,7 +2600,10 @@ const inruilWaarde = () => (staat.inruil && staat.inruil.waarde > 0 ? staat.inru
 const aanbetalingPct = () => staat.aanbetaling / prijs * 100;
 // Rente van de financier per looptijd; ontbreekt die, dan de standaardrente
 const renteVoor = looptijd => { const r = fin.rentePerLooptijd && fin.rentePerLooptijd[looptijd]; return typeof r === 'number' && r >= 0 ? r : fin.rentePct; };
-const huidigeBerekening = () => berekenFinanciering(prijs - inruilWaarde(), staat.aanbetaling, staat.looptijd, renteVoor(staat.looptijd));
+// Na een akkoord met financiering: de vastgelegde waarden; anders de berekening van het moment
+const akkoordFin = () => (staat.akkoord && staat.akkoord.betaalwijze === 'financiering' ? vastgelegdeFinanciering(staat.akkoord, prijs, renteVoor) : null);
+const huidigeBerekening = () => akkoordFin() || berekenFinanciering(prijs - inruilWaarde(), staat.aanbetaling, staat.looptijd, renteVoor(staat.looptijd));
+const weergaveRente = () => { const v = akkoordFin(); return v ? v.rentePct : renteVoor(staat.looptijd); };
 const financierbaar = () => huidigeBerekening().hoofdsom >= fin.minTeFinancieren;
 const momentopname = () => ({
   aanbetalingPct: Math.round(aanbetalingPct() * 10) / 10, aanbetaling: staat.aanbetaling, inruil: inruilWaarde(),
@@ -2598,6 +2680,12 @@ function renderFinanciering() {
     bedragEl.classList.remove('bedrag-flits'); void bedragEl.offsetWidth; bedragEl.classList.add('bedrag-flits');
   }
   vorigMaandbedrag = b.maandbedrag;
+  const lm = $('#looptijdMelding');
+  lm.hidden = !toonLooptijdMelding;
+  lm.textContent = t('mk.looptijdBijgewerkt');
+  const lv = $('#ovLooptijdVervallen'), akFin = akkoordFin();
+  lv.hidden = !(akFin && akFin.looptijd > INSTELLINGEN.maxLooptijd);
+  lv.textContent = t('ov.looptijdVervallen', { datum: fmtDatum(staat.akkoord && staat.akkoord.t) });
   const melding = $('#minimumMelding');
   melding.hidden = kanFinancieren;
   melding.textContent = t('mk.minimum', { bedrag: fmtEuro(fin.minTeFinancieren, 0) });
@@ -2609,12 +2697,12 @@ function renderFinanciering() {
   $('#ovAanbetalingPct').textContent = fmtPct(pct);
   $('#ovAanbetaling').textContent = '− ' + fmtEuro(staat.aanbetaling);
   $('#ovHoofdsom').textContent = fmtEuro(b.hoofdsom);
-  const rente = renteVoor(staat.looptijd);
+  const rente = weergaveRente();
   $('#renteChip').textContent = fmtGetal(rente, 2) + '%';
   $('#vbKrediet').textContent = kanFinancieren ? fmtEuro(b.hoofdsom) : '—';
   $('#vbLooptijd').textContent = t('maanden', { n: staat.looptijd });
   $('#vbRente').textContent = fmtGetal(rente, 2) + '%';
-  $('#vbJkp').textContent = fmtGetal(b.jkp, 2) + '%';
+  $('#vbJkp').textContent = kanFinancieren ? fmtGetal(b.jkp, 2) + '%' : '—';
   $('#vbMaand').textContent = kanFinancieren ? fmtEuro(b.maandbedrag) : '—';
   $('#knopBelFin').hidden = !kanFinancieren;
   $('#ovKosten').textContent = kanFinancieren ? fmtEuro(b.kredietkosten) : '—';
@@ -2622,7 +2710,7 @@ function renderFinanciering() {
   $('#ovTotaalRegel').hidden = !inruilWaarde();
   $('#ovBijTeBetalenLabel').textContent = naInruilLabel();
   $('#ovBijTeBetalen').textContent = fmtEuro(teBetalen(), 0);
-  $('#ovJkpKort').textContent = fmtGetal(b.jkp, 2) + '%';
+  $('#ovJkpKort').textContent = kanFinancieren ? fmtGetal(b.jkp, 2) + '%' : '—';
   $('#ovTotaalKort').textContent = kanFinancieren ? fmtEuro(b.totaalTermijnen) : '—';
   renderMobieleBalk();
   werkStap2Bij();
@@ -2997,7 +3085,7 @@ function renderOfferteDocument() {
   let bwBlok;
   if (bw) {
     const st = bw.stand && bw.keuze === 'financiering' ? bw.stand : null;
-    const bk = st ? berekenFinanciering(prijs - (st.inruil || 0), st.aanbetaling, st.looptijd, fin.rentePct) : null;
+    const bk = st ? financieringUitStand(st, prijs, renteVoor(st.looptijd)) : null;
     bwBlok = tabel([
       [t('off.bwKeuze'), `<strong>${escapeHtml(betaalwijzeLabel(bw.keuze))}</strong>`],
       ...(bk ? [[t('rij.aanbetaling'), `${fmtEuro(st.aanbetaling)} (${fmtPct(st.aanbetalingPct)})`], [t('rij.looptijd'), t('maanden', { n: st.looptijd })], [t('rij.maandbedrag'), `${fmtEuro(bk.maandbedrag)} <span style="color:var(--muted);font-weight:400">(${t('off.indicatie')})</span>`], [t('ov.jkpLang'), fmtGetal(bk.jkp, 2) + '%']] : []),
@@ -3012,9 +3100,11 @@ function renderOfferteDocument() {
     : `<div class="leeg-blok"><span>${t('off.vzGeen')}</span><button class="knop knop-secundair knop-klein geen-print" type="button" data-ga-naar-tab="verzekering">${t('off.vzBereken')}</button></div>`;
   const ak = staat.akkoord, ks = klantStatus();
   const hand = ak && ak.handtekening;
+  const akFinDoc = ak && ak.betaalwijze === 'financiering' ? vastgelegdeFinanciering(ak, prijs, renteVoor) : null;
   const akBlok = ak
     ? `<p class="doc-akkoord">${t('off.akkoordDoor', { naam: escapeHtml(ak.naam), datum: fmtDatum(ak.t), tijd: fmtTijd(ak.t) })}</p>
-       <p class="doc-akkoord-regel">${t('off.betaalwijze')}: ${ak.betaalwijze === 'financiering' ? (ak.stand ? t('ak.metFinKort', { bedrag: fmtEuro(ak.stand.maandbedrag), jkp: fmtGetal(berekenFinanciering(prijs - (ak.stand.inruil || 0), ak.stand.aanbetaling, ak.stand.looptijd, renteVoor(ak.stand.looptijd)).jkp, 2) + '%', waarschuwing: t('krediet.waarschuwing') }) : t('ak.metFin')) : t('ak.zelfKort')}</p>
+       <p class="doc-akkoord-regel">${t('off.betaalwijze')}: ${ak.betaalwijze === 'financiering' ? (ak.stand ? t('ak.metFinKort', { bedrag: fmtEuro(ak.stand.maandbedrag), jkp: fmtGetal(vastgelegdeFinanciering(ak, prijs, renteVoor).jkp, 2) + '%', waarschuwing: t('krediet.waarschuwing') }) : t('ak.metFin')) : t('ak.zelfKort')}</p>
+       ${akFinDoc && akFinDoc.looptijd > INSTELLINGEN.maxLooptijd ? `<p class="doc-akkoord-regel">${t('ov.looptijdVervallen', { datum: fmtDatum(ak.t) })}</p>` : ''}
        ${ak.controlecode ? `<p class="doc-akkoord-regel">${t('off.akkoordCode', { versie: ak.versie || offerteVersie, code: escapeHtml(ak.controlecode) })}</p>` : ''}
        <p class="doc-akkoord-regel">${ks.bevestigdOp ? t('ak.bevestigdOp', { dealer: escapeHtml(INSTELLINGEN.dealer), datum: fmtDatum(ks.bevestigdOp) }) : akkoordVervolgRegel(ak)}</p>
        ${typeof hand === 'string' ? `<img class="handtekening-img" src="${escapeHtml(hand)}" alt="">` : hand && hand.beeld ? `<img class="handtekening-img" src="${escapeHtml(hand.beeld)}" alt="">` : hand ? `<p class="getypt-handtekening">${escapeHtml(ak.naam)}</p>` : ''}`
@@ -3677,9 +3767,12 @@ function berekenInzichten(evs, st = {}, o = offerte, aangemaakt = null) {
   const keuzes = evs.filter(e => KEUZE_EVENTS.includes(e.type));
   const inruilEvents = keuzes.filter(e => e.type === 'inruil_toegevoegd' || e.type === 'inruil_verwijderd');
   const laatsteInruil = inruilEvents.length && inruilEvents[inruilEvents.length - 1].type === 'inruil_toegevoegd' ? inruilEvents[inruilEvents.length - 1] : null;
-  const bw = laatste(keuzes, 'betaalwijze_gekozen'), vz = laatste(keuzes, 'verzekering_aangevraagd'), ak = laatste(keuzes, 'akkoord_gegeven');
+  // Een berekening zonder akkoord wordt opnieuw berekend met de huidige rekenwijze (hoogstens 60 maanden); na een akkoord blijft alles zoals vastgelegd
+  const ak = laatste(keuzes, 'akkoord_gegeven');
+  const metStand = e => (e && e.stand && !ak ? { ...e, stand: beperkStand(e.stand, o) } : e);
+  const bw = metStand(laatste(keuzes, 'betaalwijze_gekozen')), vz = laatste(keuzes, 'verzekering_aangevraagd');
   const contact = keuzes.filter(e => e.type === 'contact_verstuurd');
-  const terugbelFin = contact.filter(c => c.onderwerp === 'financiering').pop() || null;
+  const terugbelFin = metStand(contact.filter(c => c.onderwerp === 'financiering').pop() || null);
   const metTaal = keuzes.filter(e => e.taal);
   const verstuurd = verstuurdOp(o, aangemaakt);
   const opgevolgd = st.opgevolgdOp || 0;
@@ -3705,6 +3798,12 @@ function berekenInzichten(evs, st = {}, o = offerte, aangemaakt = null) {
 }
 // De berekening die bij een keuze hoort (akkoord, betaalwijze of terugbelverzoek)
 const gekozenStand = inz => (inz.ak && inz.ak.stand) || (inz.bw && inz.bw.stand) || (inz.terugbelFin && inz.terugbelFin.stand) || null;
+// De financiering bij die keuze, met JKP: bij een akkoord de vastgelegde waarden, anders de bewaarde berekening
+function gekozenFinanciering(inz) {
+  if (inz.ak && inz.ak.betaalwijze === 'financiering') return vastgelegdeFinanciering(inz.ak, prijs, renteVoor);
+  const s = gekozenStand(inz);
+  return s ? financieringUitStand(s, prijs, renteVoor(s.looptijd)) : null;
+}
 
 // Wijkt een berekening af van het besproken voorstel? (null als er geen voorstel is)
 function wijktAfVanVoorstel(stand) {
@@ -3815,7 +3914,7 @@ function vzOverdrachtUrl(inz) {
 // Financieringsaanvraag voor de F&I-desk: vast format, met de berekening van het moment waarop de klant koos
 function fiAanvraagTekst(inz) {
   const k = offerte.klant, v = offerte.voertuig, vk = offerte.verkoper, s = gekozenStand(inz);
-  const b = s ? berekenFinanciering(prijs - (s.inruil || 0), s.aanbetaling, s.looptijd, renteVoor(s.looptijd)) : null;
+  const b = gekozenFinanciering(inz);
   const keuze = inz.ak ? `akkoord gegeven op ${datumNL(inz.ak.t)}, ${inz.ak.betaalwijze === 'financiering' ? 'met financiering' : 'zelf betalen'}`
     : inz.bw ? { financiering: 'wil financieren', twijfel: 'wil advies over betalen', zelf: 'wil zelf betalen' }[inz.bw.keuze]
     : inz.terugbelFin ? 'wil gebeld worden over de financiering' : '';
@@ -3836,8 +3935,8 @@ function fiAanvraagTekst(inz) {
     regelTekst('Inruil', s && s.inruil ? fmtEuro(s.inruil) : inz.inruil ? `${inz.inruil.omschrijving}, verwacht ${fmtEuro(inz.inruil.waarde || 0)}` : ''),
     '',
     'BEREKENING VAN DE KLANT (indicatief)',
-    ...(b ? [regelTekst('Aanbetaling', fmtEuro(s.aanbetaling)), regelTekst('Kredietbedrag', fmtEuro(b.hoofdsom)), regelTekst('Looptijd', `${s.looptijd} maanden`),
-      regelTekst('Rente', fmtGetal(renteVoor(s.looptijd), 2) + '%'), regelTekst('JKP', fmtGetal(b.jkp, 2) + '%'), regelTekst('Maandbedrag', fmtEuro(b.maandbedrag)), regelTekst('Totaal termijnen', fmtEuro(b.totaalTermijnen))]
+    ...(b ? [regelTekst('Aanbetaling', fmtEuro(b.aanbetaling)), regelTekst('Kredietbedrag', fmtEuro(b.hoofdsom)), regelTekst('Looptijd', `${b.looptijd} maanden`),
+      regelTekst('Rente', fmtGetal(b.rentePct, 2) + '%'), regelTekst('JKP', fmtGetal(b.jkp, 2) + '%'), regelTekst('Maandbedrag', fmtEuro(b.maandbedrag)), regelTekst('Totaal termijnen', fmtEuro(b.totaalTermijnen))]
       : ['Nog geen berekening gekozen']),
     '',
     'OFFERTE',
@@ -3877,9 +3976,10 @@ function akkoordKopieTekst(inz) {
     }
     if (ak.betaalwijze === 'financiering') {
       let f = vl.financiering;
-      if (!f && ak.stand) { const b = berekenFinanciering(prijsV - (ak.stand.inruil || 0), ak.stand.aanbetaling, ak.stand.looptijd, renteVoor(ak.stand.looptijd)); f = { aanbetaling: ak.stand.aanbetaling, looptijd: ak.stand.looptijd, kredietbedrag: b.hoofdsom, jkp: b.jkp, maandbedrag: b.maandbedrag, totaalTermijnen: b.totaalTermijnen }; }
+      if (!f && ak.stand) { const b = vastgelegdeFinanciering(ak, prijsV, renteVoor); f = { aanbetaling: b.aanbetaling, looptijd: b.looptijd, kredietbedrag: b.hoofdsom, jkp: b.jkp, maandbedrag: b.maandbedrag, totaalTermijnen: b.totaalTermijnen }; }
       regels.push(`${en ? 'Payment choice' : 'Betaalkeuze'}: ${t('ak.metFin')}`);
       if (f) regels.push(`${t('ak.metFinSub', { aanbetaling: eur(f.aanbetaling, 2), krediet: eur(f.kredietbedrag, 2), looptijd: f.looptijd, maand: eur(f.maandbedrag, 2), jkp: getal(f.jkp, 2) + '%', totaal: eur(f.totaalTermijnen, 2), kosten: eur(f.totaalTermijnen - f.kredietbedrag, 2) })} ${t('krediet.waarschuwing')} ${t('ak.voorbehoudFin')}`);
+      if (f && f.looptijd > INSTELLINGEN.maxLooptijd) regels.push(t('ov.looptijdVervallen', { datum: wanneer.toLocaleDateString(locale, { day: 'numeric', month: 'long', year: 'numeric' }) }));
     } else regels.push(`${en ? 'Payment choice' : 'Betaalkeuze'}: ${t('ak.zelfKort')}`);
     return regels.join('\n');
   });
@@ -4007,14 +4107,14 @@ function renderVerkoperNL() {
   ].join('');
 
   // Wat de klant koos, met de berekening van het moment van kiezen
-  const s = gekozenStand(inz);
+  const s = gekozenStand(inz), gf = gekozenFinanciering(inz);
   const regel = (a, b) => `<div><span>${a}</span><span>${b}</span></div>`;
   const getaxeerd = offerte.inruil && offerte.inruil.getaxeerd ? offerte.inruil : null;
   const contactVoorkeur = (inz.bw && inz.bw.voorkeur) || (inz.vz && inz.vz.voorkeur) || (inz.terugbelFin ? 'Terugbellen' : '');
   $('#vkKeuze').innerHTML = [
     regel('Betaalwijze', inz.ak ? (inz.ak.betaalwijze === 'financiering' ? 'Met financiering (bij akkoord)' : 'Zelf betalen (bij akkoord)') : inz.bw ? escapeHtml(BW_LABEL[inz.bw.keuze] || '—') : inz.terugbelFin ? 'Wil gebeld worden over financiering' : 'Nog niet gekozen'),
-    s ? regel('Berekening bij die keuze', `${fmtEuro(s.aanbetaling)} aanbetaling · ${s.looptijd} mnd`) : '',
-    s ? regel('Maandbedrag', `${fmtEuro(s.maandbedrag)} <small>(rente ${fmtGetal(renteVoor(s.looptijd), 2)}%)</small>`) : '',
+    s ? regel('Berekening bij die keuze', `${fmtEuro(gf.aanbetaling)} aanbetaling · ${gf.looptijd} mnd`) : '',
+    s ? regel('Maandbedrag', `${fmtEuro(gf.maandbedrag)} <small>(rente ${fmtGetal(gf.rentePct, 2)}%, JKP ${fmtGetal(gf.jkp, 2)}%)</small>`) : '',
     regel('Contact', escapeHtml(contactVoorkeur || '—')),
     regel('Inruil', getaxeerd ? escapeHtml(`${getaxeerd.merk} ${getaxeerd.model} · getaxeerd ${fmtEuro(getaxeerd.waarde, 0)}`) : inz.inruil ? escapeHtml(`${inz.inruil.omschrijving} · verwacht ${inz.inruil.waarde ? fmtEuro(inz.inruil.waarde, 0) : '—'}`) : '—'),
     regel('Verzekeringsofferte', inz.vz ? (inz.vz.gewist ? 'Doorgezet, gegevens gewist' : inz.vz.compleet ? `Compleet · ${escapeHtml(dekkingLabel(inz.vz.dekking))}` : `Onvolledig · ontbreekt ${escapeHtml(vzOntbrekendNL(inz.vz))}`) : vzBijAkkoord ? 'Gevraagd bij akkoord' : '—'),
@@ -4782,7 +4882,7 @@ function vulControleScherm(d, bron) {
   if (x.aanleiding) $('#fl-aanleiding').value = x.aanleiding;
   if (x.taal) $('#fl-taal').value = x.taal;
   if (x.whatsapp) $('#fl-whatsapp').value = x.whatsapp;
-  if (x.voorstel) { $('#fl-voorstelAanbetaling').value = x.voorstel.aanbetaling || ''; $('#fl-voorstelLooptijd').value = String(x.voorstel.looptijd || ''); }
+  if (x.voorstel) { $('#fl-voorstelAanbetaling').value = x.voorstel.aanbetaling || ''; $('#fl-voorstelLooptijd').value = String(beperkLooptijd(x.voorstel.looptijd) || ''); }
   $('#fl-rijklaar').checked = x.rijklaar ?? (d.prijs.regels || []).some(r => RIJKLAAR_RE.test(r.omschrijving || ''));
   (d.prijs.regels.length ? d.prijs.regels : [{ omschrijving: [v.merk, v.model, v.uitvoering].filter(Boolean).join(' '), bedrag: d.prijs.verkoopprijs || 0 }]).forEach(voegPrijsregelToe);
   $('#flRegelErbij').onclick = () => { voegPrijsregelToe({ omschrijving: '', bedrag: 0 }); controleerPrijs(); };
@@ -5079,7 +5179,7 @@ async function renderOfferteLijstNL() {
           const rijen = await api.verzoek(`/rest/v1/events?select=offerte_id,t,type,data&offerte_id=in.(${lijst.map(r => r.id).join(',')})&order=t.asc&limit=10000`);
           rijen.forEach(r => { (perOfferte[r.offerte_id] = perOfferte[r.offerte_id] || []).push({ ...(r.data || {}), t: Date.parse(r.t), type: r.type }); });
         }
-        onlineLijst = lijst; onlineLijstEvents = perOfferte;
+        onlineLijst = lijst.map(r => ({ ...r, data: corrigeerOfferte(r.data) })); onlineLijstEvents = perOfferte;
       } catch (e) { $('#offerteLijst').innerHTML = '<li class="leeg">De offertes konden niet worden geladen.</li>'; return; }
     }
     const basis = `${location.origin}${location.pathname}`;
