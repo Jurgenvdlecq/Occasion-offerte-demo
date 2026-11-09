@@ -304,6 +304,11 @@
   .ov-maand-kop { display: flex; justify-content: space-between; align-items: center; gap: 8px; flex-wrap: wrap; }
   .ov-maand-kop .label { font-size: 16px; font-weight: 600; color: var(--hoofd); }
   .voorstel-rij { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin: 0; }
+  /* "Besproken" en "aangepast · voorstel was …" staan onder het maandbedrag in dezelfde cel; de hoogste bepaalt de hoogte. Zo verspringt bij een wijziging niets: niet het maandbedrag en ook niet de schuifbalken */
+  .vs-stapel { display: grid; }
+  .vs-stapel > .voorstel-rij { grid-area: 1 / 1; }
+  .vs-stapel > .vs-uit { visibility: hidden; }
+  .overzicht .rij-noot span { font-size: 14px; color: var(--muted); }
   .ov-maand .maandbedrag { margin: 0; }
   .maandbedrag { display: flex; align-items: baseline; gap: 4px 10px; flex-wrap: wrap; color: var(--hoofd); }
   .maandbedrag .bedrag { font-family: var(--font-bedrag); font-size: clamp(34px, 10.5vw, 40px); font-weight: 700; letter-spacing: 0; line-height: 1; font-variant-numeric: tabular-nums; }
@@ -849,6 +854,8 @@
   }
 
   /* ================= Afdrukken (alleen het offertedocument) ================= */
+  .demo-label { background: #fff3c4; color: #4a3500; border-bottom: 2px solid #c99a00; padding: 8px 16px; font-size: 16px; font-weight: 600; text-align: center; }
+  .demo-label[hidden] { display: none; }
   @media print {
     body { background: var(--wit); }
     body * { visibility: hidden; }
@@ -864,6 +871,7 @@
 </style>
 </head>
 <body>
+<div class="demo-label geen-print" id="demoStrook" role="note" hidden data-t="demo.strook">Demo met verzonnen gegevens. Dit is geen echte offerte. Vul geen eigen gegevens in.</div>
 
 <!-- Herbruikbare SVG-iconen -->
 <svg width="0" height="0" style="position:absolute" aria-hidden="true">
@@ -1127,12 +1135,15 @@
           </div>
           <div class="ov-regel" id="inlossingRegel" hidden><span data-t="inl.label">Inlossing lening inruilauto</span><strong id="inlossingBedrag"></strong></div>
           <p class="ov-wettelijk" id="inlossingUitleg" hidden></p>
+          <div class="ov-regel" id="nettoRegel" hidden><span id="nettoLabel"></span><strong id="nettoBedrag"></strong></div>
+          <p class="ov-wettelijk" id="nettoUitleg" hidden data-t="inr.nettoNeg">De lening op uw inruilauto is hoger dan de waarde ervan. Dit verschil betaalt of financiert u.</p>
           <div class="ov-regel ov-totaal" id="ovTotaalRegel" hidden><span id="ovBijTeBetalenLabel"></span><strong id="ovBijTeBetalen">€ 34.950</strong></div>
           <ul class="ov-feiten" id="uspLijst"></ul>
         </div>
         <div class="ov-maand">
-          <div class="ov-maand-kop"><span class="label" data-t="ov.perMaand">Of per maand</span><div class="voorstel-rij" id="voorstelRij" hidden></div></div>
+          <div class="ov-maand-kop"><span class="label" data-t="ov.perMaand">Of per maand</span></div>
           <div class="maandbedrag" aria-live="polite"><span class="bedrag" id="maandBedrag">€ 544<small>,00</small></span><span class="per" data-t="mk.per">per maand</span></div>
+          <div class="voorstel-rij" id="voorstelRij" hidden></div>
           <p class="ov-wettelijk maand-slot" id="maandSlot" hidden></p>
           <div class="minimum-melding" id="minimumMelding" hidden></div>
           <div class="minimum-melding" id="looptijdMelding" hidden></div>
@@ -1166,6 +1177,8 @@
               <div class="bel" id="belSlottermijn"><input class="bel-veld" id="invoerSlottermijn" type="text" inputmode="decimal" aria-labelledby="lblSlottermijn" value="€ 0,00"></div>
             </div>
             <p class="ov-wettelijk" id="slotMax"></p>
+            <p class="ov-wettelijk" id="maandVergelijking" hidden></p>
+            <p class="ov-wettelijk" id="maandSlotRisico" hidden data-t="slot.risico">De slottermijn betaalt u aan het einde in één keer. De auto kan dan minder waard zijn dan dit bedrag.</p>
           </div>
           <p class="ov-jkp" id="ovJkpRegel"><span><span data-t="ov.jkpLang">Jaarlijks kostenpercentage</span> <button type="button" class="info-knop" data-uitleg="uitlegJkp" aria-label="Uitleg over het jaarlijks kostenpercentage" data-t-attr="aria-label:fin.labelJkp">i</button> <b id="ovJkpKort"></b></span><span><span data-t="ov.renteVast">Debetrentevoet (vast)</span> <button type="button" class="info-knop" data-uitleg="uitlegRente" aria-label="Uitleg over de debetrentevoet" data-t-attr="aria-label:fin.labelRente">i</button> <b id="renteChip">8,99%</b></span></p>
           <div class="uitleg" id="uitlegJkp" hidden data-t="fin.uitlegJkp">Het jaarlijks kostenpercentage (JKP) is wat de lening per jaar kost, met rente én verplichte kosten. Zijn er geen kosten naast de rente, dan is het JKP gelijk aan de debetrentevoet, op een klein afrondingsverschil na. Met het JKP kunt u leningen vergelijken.</div>
@@ -1192,6 +1205,8 @@
             <div class="rij"><span id="ovPrijsLabel"></span><span id="ovAanschaf"></span></div>
             <div class="rij" id="ovInruilRij" hidden><span id="ovInruilLabel">Inruil (indicatief)</span><span id="ovInruil"></span></div>
             <div class="rij" id="ovInlossingRij" hidden><span data-t="inl.label">Inlossing lening inruilauto</span><span id="ovInlossing"></span></div>
+            <div class="rij" id="ovNettoRij" hidden><span id="ovNettoLabel"></span><span id="ovNetto"></span></div>
+            <div class="rij rij-noot" id="ovNettoUitleg" hidden><span data-t="inr.nettoNeg">De lening op uw inruilauto is hoger dan de waarde ervan. Dit verschil betaalt of financiert u.</span></div>
             <div class="rij"><span><span data-t="mk.aanbetaling">Aanbetaling</span> (<span id="ovAanbetalingPct">25%</span>)</span><span id="ovAanbetaling"></span></div>
             <div class="scheiding"></div>
             <div class="rij nadruk"><span data-t="mk.hoofdsom">Kredietbedrag</span><span id="ovHoofdsom"></span></div>
@@ -1233,56 +1248,22 @@
     <section class="kaart ov-blok" id="vzKaart">
       <div id="vzTeaser">
         <h2 data-t="vzt.titel">Ook de verzekering regelen?</h2>
-        <p class="intro" data-t="vzt.tekst">Onze verzekeringsafdeling maakt vrijblijvend een voorstel. Accepteert u dat, dan kunt u de auto bij aflevering verzekerd meenemen.</p>
-        <button class="knop knop-secundair knop-blok midden" type="button" id="knopVzOpen" data-t="vzt.knop">Ja, maak een voorstel</button>
+        <p class="intro" data-t="vzt.tekst">Wilt u een vrijblijvende verzekeringsofferte voor deze auto? Wittebrug Verzekeringen neemt dan contact met u op.</p>
+        <button class="knop knop-secundair knop-blok midden" type="button" id="knopVzOpen" data-t="vzt.knop">Ja, neem contact met mij op</button>
       </div>
         <div id="vzFormulierBlok">
-          <p class="intro" data-t="vzs.intro2">Onze eigen verzekeringsafdeling, Wittebrug Verzekeringen, maakt vrijblijvend een voorstel voor deze auto. Vult u de gegevens hieronder in, dan kan zij direct een voorstel maken. Liever eerst contact? Dan is alleen uw contactvoorkeur genoeg.</p>
+          <p class="intro" data-t="vzs.intro2">Wilt u een vrijblijvende verzekeringsofferte voor deze auto? Wittebrug Verzekeringen neemt dan contact met u op. Kies hoe u het liefst benaderd wordt.</p>
           <form class="formulier" id="vzFormulier" novalidate>
-            <div class="veld" data-check="opt:leeftijd18">
-              <label for="vzGeboortedatum" data-t="alg.geboortedatum">Geboortedatum</label>
-              <input class="invoer" type="date" id="vzGeboortedatum" name="geboortedatum" autocomplete="bday">
-              <div class="foutmelding" data-t="alg.foutGeboortedatum">Vul een geldige geboortedatum in (minimaal 18 jaar).</div>
-            </div>
-            <div class="rij-2">
-              <div class="veld" data-check="opt:postcode">
-                <label for="vzPostcode" data-t="alg.postcode">Postcode</label>
-                <input class="invoer" type="text" id="vzPostcode" name="postcode" placeholder="1234 AB" autocomplete="postal-code" maxlength="7">
-                <div class="foutmelding" data-t="alg.foutPostcode">Gebruik het formaat 1234 AB.</div>
-              </div>
-              <div class="veld" data-check="opt:huisnummer">
-                <label for="vzHuisnummer" data-t="alg.huisnummer">Huisnummer</label>
-                <input class="invoer" type="text" inputmode="numeric" id="vzHuisnummer" name="huisnummer" placeholder="12" maxlength="5">
-                <div class="foutmelding" data-t="alg.foutHuisnummer">Vul een huisnummer in.</div>
-              </div>
-              <div class="veld">
-                <label for="vzToevoeging"><span data-t="alg.toev">Toev.</span> <span class="hint" data-t="alg.opt">(opt.)</span></label>
-                <input class="invoer" type="text" id="vzToevoeging" name="toevoeging" maxlength="6">
-              </div>
-            </div>
-            <div class="veld">
-              <label for="vzSchadevrij"><span data-t="vz.schadevrij">Schadevrije jaren</span> <span class="hint" data-t="vz.schadevrijHint">— zie uw huidige polis</span></label>
-              <select class="invoer" id="vzSchadevrij" name="schadevrijeJaren"></select>
-            </div>
-            <div class="veld">
-              <span class="veld-label" id="lblKm" data-t="vz.km">Verwacht aantal kilometers per jaar</span>
-              <div class="segment" role="radiogroup" aria-labelledby="lblKm" id="vzKm"></div>
-            </div>
-            <div class="veld">
-              <span class="veld-label" id="lblDekking"><span data-t="vz.dekking">Gewenste dekking</span> <span class="hint" data-t="alg.optioneel">(optioneel)</span></span>
-              <div class="segment" role="radiogroup" aria-labelledby="lblDekking" id="vzDekking"></div>
-            </div>
             <div class="veld" data-check="keuze">
               <span class="veld-label" id="lblVzVoorkeur" data-t="int.voorkeur">Hoe wilt u het liefst benaderd worden?</span>
               <div class="segment drie" role="radiogroup" aria-labelledby="lblVzVoorkeur" id="vzVoorkeur"></div>
               <div class="foutmelding" data-t="alg.foutKeuze">Maak een keuze.</div>
             </div>
-            <div class="vz-voortgang" id="vzVoortgang" aria-live="polite"></div>
             <div class="veld" data-check="vink">
-              <label class="vinkje"><input type="checkbox" id="vzAkkoord" name="akkoord"> <span data-t="vzs.toestemming2">Ik ga ermee akkoord dat mijn naam, contactgegevens, de gegevens hierboven en de gegevens van deze auto worden doorgegeven aan Wittebrug Verzekeringen voor een voorstel.</span></label>
-              <div class="foutmelding" data-t="vz.foutToestemming">Geef toestemming om een voorstel te kunnen maken.</div>
+              <label class="vinkje"><input type="checkbox" id="vzAkkoord" name="akkoord"> <span data-t="vzs.toestemming2">Ik geef toestemming om mijn naam, telefoonnummer, e-mailadres en de gegevens van deze auto door te geven aan Wittebrug Verzekeringen, zodat zij contact met mij opnemen over een verzekeringsofferte.</span></label>
+              <div class="foutmelding" data-t="vz.foutToestemming">Geef toestemming om uw gegevens door te geven.</div>
             </div>
-            <button class="knop knop-primair knop-blok midden" type="submit" id="knopVzVoorstel"><span data-t="vzs.knop">Vraag een verzekeringsvoorstel aan</span> <svg class="pijl"><use href="#i-pijl"/></svg></button>
+            <button class="knop knop-primair knop-blok midden" type="submit" id="knopVzVoorstel"><span data-t="vzs.knop">Vraag een verzekeringsofferte aan</span> <svg class="pijl"><use href="#i-pijl"/></svg></button>
           </form>
         </div>
 
@@ -1299,10 +1280,10 @@
           <ol class="genummerd">
             <li><span id="vzsStap1"></span></li>
             <li><span id="vzsStap2"></span></li>
-            <li><span data-t="vz.stap3">Accepteert u het voorstel? Dan regelen wij dat de verzekering ingaat op de dag van aflevering.</span></li>
+            <li><span data-t="vz.stap3">U bent pas verzekerd als u een verzekering afsluit.</span></li>
           </ol>
           <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:18px">
-            <button class="knop knop-secundair" type="button" id="knopVzWijzig" data-t="vz.wijzig2">Gegevens aanvullen of wijzigen</button>
+            <button class="knop knop-secundair" type="button" id="knopVzWijzig" data-t="vz.wijzig2">Contactvoorkeur wijzigen</button>
             <button class="knop knop-stil" type="button" data-ga-naar-tab="offerte" data-t="vz.naarOfferte">Bekijk uw offerte</button>
           </div>
         </div>
@@ -1533,7 +1514,7 @@
           <div class="keuzekaarten" id="akBetaalwijze"></div>
           <div class="foutmelding" data-t="alg.foutKeuze">Maak een keuze.</div>
         </div>
-        <label class="vinkje" id="akVzRij"><input type="checkbox" id="akVerzekering"> <span data-t="ak.verzekering2">Stuur mij ook vrijblijvend een verzekeringsofferte voor deze auto, van Wittebrug Verzekeringen</span></label>
+        <label class="vinkje" id="akVzRij"><input type="checkbox" id="akVerzekering"> <span data-t="ak.verzekering2">Laat Wittebrug Verzekeringen contact met mij opnemen over een verzekeringsofferte voor deze auto. Zij krijgen mijn naam, telefoonnummer, e-mailadres en de gegevens van de auto.</span></label>
       </div>
       <div class="dialoog-inhoud" data-ak-stap="2" hidden>
         <div class="ak-blok" id="akAkkoordTekst"></div>
@@ -1604,6 +1585,8 @@ document.querySelectorAll('.logo').forEach(el => { el.innerHTML = LOGO_HTML; });
    offerte via de token in de link.
    ===================================================================== */
 const BACKEND = {"url": "https://pzeqeobykxmdaheduvlf.supabase.co", "sleutel": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InB6ZXFlb2J5a3htZGFoZWR1dmxmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTEzOTQwMTMsImV4cCI6MjEwNjk3MDAxM30.qpxIGZAd5L_TWPXcSkbyuiboJJPg_Tr8VpMLevsQfEg"};
+// Label "Demo": alleen scripts/maak_demo_site.py zet dit op true (online versies). In dit bestand blijft het false.
+const DEMO_LABEL = true;
 const online = !!(BACKEND.url && BACKEND.sleutel);
 
 // Instellingen van de dealer (later per vestiging uit de database)
@@ -1882,10 +1865,27 @@ const autosleutel = o => {
   const v = (o && o.voertuig) || {}, k = normKenteken(v.kenteken);
   return k || (v.occasionnummer ? 'OCC:' + String(v.occasionnummer).trim().toUpperCase() : '');
 };
-// Uiterste moment om een akkoord te bevestigen: de volgende werkdag om 17:00 (dezelfde regel als in de database)
+// Uiterste moment om een akkoord te bevestigen: 17:00 (Nederlandse tijd) op de tweede werkdag na de dag van het akkoord (dezelfde regel als in de database).
+// ma → wo, di → do, wo → vr, do → ma, vr → di, za en zo → di. Feestdagen tellen nog niet mee.
+const WERKDAGEN_BEVESTIGEN = { 0: 2, 1: 2, 2: 2, 3: 2, 4: 4, 5: 4, 6: 3 };   // dagen erbij, per weekdag van het akkoord (zo = 0)
+// De termijn rekent altijd in Nederlandse tijd (Europe/Amsterdam), zoals de database, ook als het toestel in een andere tijdzone staat
+const AMSTERDAM = 'Europe/Amsterdam';
+function amsterdamOnderdelen(ms) {
+  const o = {};
+  new Intl.DateTimeFormat('en-GB', { timeZone: AMSTERDAM, year: 'numeric', month: 'numeric', day: 'numeric', hour: 'numeric', minute: 'numeric', second: 'numeric', hourCycle: 'h23', weekday: 'short' })
+    .formatToParts(new Date(ms)).forEach(p => { o[p.type] = p.value; });
+  return { jaar: +o.year, maand: +o.month, dag: +o.day, uur: +o.hour, minuut: +o.minute, seconde: +o.second, weekdag: ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].indexOf(o.weekday) };
+}
+// Het moment (ms) waarop het in Amsterdam jaar-maand-dag uur:minuut is
+function amsterdamMoment(jaar, maand, dag, uur, minuut) {
+  let gok = Date.UTC(jaar, maand - 1, dag, uur, minuut);
+  for (let i = 0; i < 2; i++) { const a = amsterdamOnderdelen(gok); gok += Date.UTC(jaar, maand - 1, dag, uur, minuut) - Date.UTC(a.jaar, a.maand - 1, a.dag, a.uur, a.minuut); }
+  return gok;
+}
 function bevestigUiterlijk(tijd) {
-  const d = new Date(tijd), plus = d.getDay() === 5 ? 3 : d.getDay() === 6 ? 2 : 1;
-  return new Date(d.getFullYear(), d.getMonth(), d.getDate() + plus, 17, 0, 0).getTime();
+  const a = amsterdamOnderdelen(tijd), plus = WERKDAGEN_BEVESTIGEN[a.weekdag];
+  const doel = new Date(Date.UTC(a.jaar, a.maand - 1, a.dag + plus));
+  return amsterdamMoment(doel.getUTCFullYear(), doel.getUTCMonth() + 1, doel.getUTCDate(), 17, 0);
 }
 // Een akkoord houdt de auto vast zolang het bevestigd is, of nog binnen de bevestigingstermijn valt
 const akkoordHoudtVast = (ak, st) => !!ak && !st.ingetrokken && (!!st.bevestigdOp || Date.now() < (ak.bevestigUiterlijk || bevestigUiterlijk(ak.t)));
@@ -1918,7 +1918,12 @@ const NL = {
   'stap.volgendeKort': 'Met of zonder financiering, en eventueel de verzekering.',
   'bw.introVerlopen': 'Kies wat u het beste past. {naam} neemt contact met u op en regelt de rest.',
   'stap2.titelNa': 'Uw keuze',
-  'ak.melding.nietBevestigd': '{naam} heeft de koop nog niet bevestigd. Uw akkoord blijft staan. Vragen? Neem contact op met {naam}.',
+  // Akkoord vervalt als de verkoper niet binnen 2 werkdagen bevestigt (besluit 09-11-2026; concepttekst, jurist toetst)
+  'ak.melding.vervallen': 'Uw akkoord van {datum} is vervallen, omdat {naam} de koop niet op tijd heeft bevestigd. U zit nergens aan vast. Wilt u de auto nog? Vraag {naam} om een nieuwe offerte.',
+  'ak.vervallen.vraag': 'Vraag {naam} om een nieuwe offerte',
+  'ak.vervallen.wa': 'Hallo {voornaam}, mijn akkoord op offerte {nummer} ({auto}) is vervallen. Ik wil de auto graag nog kopen. Kunt u mij een nieuwe offerte sturen?',
+  'ak.vervallenStatus': 'Akkoord van {datum} vervallen.',
+  'vk.vervallen.bericht': '{aanhef}, uw akkoord op offerte {nummer} is vervallen, omdat wij de koop niet op tijd hebben bevestigd. U zit nergens aan vast. Wilt u de auto nog? Dan maak ik graag een nieuwe offerte voor u. Groet, {verkoper}, {dealer}',
   // Klantreview fase 1 (29-10-2026): prijs, akkoord, routes en kredietwaarschuwing
   'mb.knop': 'Akkoord',
   'verlopen.wa': 'Hallo {voornaam}, mijn offerte {nummer} voor de {auto} is verlopen. Kunt u mij een nieuwe offerte sturen?',
@@ -1931,12 +1936,18 @@ const NL = {
   'ak.melding.reservering': 'U heeft op {datum} akkoord gegeven. De auto is voor u gereserveerd tot {deadline}.',
   'ak.melding.koop': 'U heeft op {datum} akkoord gegeven. De koop is definitief als {naam} hem bevestigt, uiterlijk {deadline}.',
   'ak.regel.reservering': 'Hiermee reserveert u de auto kosteloos tot {deadline}.',
-  'ak.regel.koop': 'Hiermee koopt u de auto. De koop is pas definitief als {naam} hem bevestigt. {naam} doet dat uiterlijk {deadline}; komt de bevestiging later, dan blijft uw akkoord staan.',
+  'ak.regel.koop': 'Hiermee koopt u de auto onder voorbehoud. De koop is definitief zodra {naam} hem bevestigt, uiterlijk {deadline}. Anders vervalt uw akkoord en zit u nergens aan vast.',
   'ak.akkoordGevenReservering': 'Akkoord: reserveer deze auto',
   'ak.akkoordGevenKoop': 'Akkoord: ik koop deze auto met betalingsverplichting',
   'krediet.waarschuwing': 'Let op! Geld lenen kost geld.',
   'slot.plus': 'plus slottermijn {bedrag} na {n} maanden',
+  'demo.kopie': 'DEMO met verzonnen gegevens',
   'slot.plusKaart': 'en na {n} maanden nog {bedrag} (slottermijn)',
+  'slot.vergelijk': 'Totaal terug te betalen {totaal}. Zonder slottermijn: {maand0} per maand, totaal {totaal0}.',
+  'slot.vergelijkKort': 'Zonder slottermijn: {maand0} per maand, totaal {totaal0}.',
+  'slot.risico': 'De slottermijn betaalt u aan het einde in één keer. De auto kan dan minder waard zijn dan dit bedrag.',
+  'inr.netto': 'Netto inruil',
+  'inr.nettoNeg': 'De lening op uw inruilauto is hoger dan de waarde ervan. Dit verschil betaalt of financiert u.',
   'slot.max': 'Maximaal {max} ({pct}% van de prijs bij {n} maanden)',
   'slot.maxKrediet': 'Maximaal {max} (het kredietbedrag)',
   'slot.maxToast': 'De slottermijn is hoogstens {max}.',
@@ -1979,10 +1990,10 @@ const NL = {
   'rij.maandbedrag': 'Maandbedrag',
   'rij.inruil': 'Inruil (indicatief)',
   'rij.auto': 'Auto',
-  'rij.postcode': 'Postcode',
-  'rij.schadevrij': 'Schadevrije jaren',
-  'rij.km': 'Kilometers per jaar',
-  'rij.dekking': 'Gewenste dekking',
+
+
+
+
   'deel.titel': 'Uw offerte: {auto}',
   'deel.gekopieerd': 'De link naar uw persoonlijke offerte is gekopieerd',
   'deel.mislukt': 'Bewaar deze pagina via de deelknop van uw browser',
@@ -2006,9 +2017,9 @@ const NL = {
   'off.inruilRegel': 'Inruil {auto} (indicatief)', 'off.bijbetalen': 'Te betalen na inruil',
   'off.inruil': 'Inruil', 'off.inruilTaxatie': 'Taxatie aangevraagd', 'off.inruilWaarde': 'Verwachte waarde',
   'off.verzekering': 'Verzekering', 'off.akkoord': 'Akkoord',
-  'off.vzVolgt': 'Voorstel volgt',
-  'off.vzGeen': 'Nog geen verzekeringsvoorstel aangevraagd.',
-  'off.vzBereken': 'Vraag een verzekeringsvoorstel aan',
+  'off.vzVolgt': 'Contact volgt',
+  'off.vzGeen': 'Nog geen verzekeringsofferte aangevraagd.',
+  'off.vzBereken': 'Vraag een verzekeringsofferte aan',
   'off.akkoordDoor': 'Akkoord gegeven door <strong>{naam}</strong> op {datum} om {tijd}',
   'off.betaalwijze': 'Betaalwijze',
   'off.pdf': 'Originele offerte (PDF)',
@@ -2064,7 +2075,7 @@ const NL = {
   'ct.s.vervolg': 'Vervolgafspraak', 'ct.s.aflevering': 'Aflevering bespreken', 'ct.s.proefritNog': 'Nog een proefrit',
   'ct.s.proefrit': 'Proefrit', 'ct.s.bezichtiging': 'Bezichtiging', 'ct.s.video': 'Videobellen',
   'ak.juridisch': 'Uw akkoord wordt vastgelegd met de datum, de tijd en deze versie van de offerte. Daarna verandert de offerte niet meer; een wijziging wordt een nieuwe versie.',
-  'ak.tekst.voorbehoud': 'Met uw akkoord koopt u deze auto onder voorbehoud van bevestiging door {dealer}. {naam} bevestigt de koop uiterlijk {deadline}. Tot die tijd houden wij de auto voor u vast.',
+  'ak.tekst.voorbehoud': 'Met uw akkoord koopt u deze auto onder voorbehoud van bevestiging door {dealer}. {naam} bevestigt de koop uiterlijk {deadline}; tot dan houden wij de auto voor u vast. Bevestigen wij niet op tijd, dan vervalt uw akkoord en zit u nergens aan vast.',
   'ak.tekst.reservering': 'Met uw akkoord reserveert u deze auto kosteloos tot {deadline}. De koop komt pas tot stand als u de koopovereenkomst ondertekent.',
   'ak.tekstFin': 'Kiest u voor financiering, dan geldt de koop ook onder voorbehoud van acceptatie door de financier.',
   'ak.tekstInruil': 'Een inruil is onder voorbehoud van beoordeling.',
@@ -2078,15 +2089,15 @@ const NL = {
   'ak.foutGereserveerd': 'Deze auto is net gereserveerd door een andere klant. Uw akkoord is niet verwerkt. {naam} neemt contact met u op.',
   'ak.foutVerlopen': 'Deze offerte is verlopen. Vraag {naam} om een nieuwe offerte.',
   'ak.foutIngetrokken': 'Deze offerte is niet meer geldig. Neem contact op met {naam}.',
-  'ak.foutAl': 'Er is al akkoord gegeven op deze offerte.',
+  'ak.foutAl': 'Op deze offerte kan geen nieuw akkoord meer worden gegeven. Vraag {naam} om een nieuwe offerte.',
   'ak.foutVerbinding': 'Uw akkoord kon niet worden verstuurd. Controleer de internetverbinding en probeer het opnieuw.',
   'ak.vastgelegd': 'Vastgelegd als versie {versie} van offerte {nummer}. Controlecode: <span class="controlecode">{code}</span>',
-  'ak.bevestigingVolgt': '{naam} bevestigt de koop uiterlijk {deadline}.',
+  'ak.bevestigingVolgt': '{naam} bevestigt de koop uiterlijk {deadline}. Gebeurt dat niet op tijd, dan vervalt uw akkoord en zit u nergens aan vast.',
   'ak.gereserveerdTot': 'De auto is voor u gereserveerd tot {deadline}.',
   'ak.bevestigdOp': '{dealer} heeft de koop bevestigd op {datum}.',
   'ak.na.voorbehoud1': 'Na de bevestiging neemt {naam} contact met u op over de afleverdatum.',
   'ak.na.reservering1': '{naam} stuurt u de koopovereenkomst om te ondertekenen.',
-  'ak.na2d': '{naam} stuurt u een bevestiging van de koop, met een kopie van uw akkoord.',
+  'ak.na2d': '{naam} bevestigt de koop uiterlijk {deadline} en stuurt u dan een bevestiging, met een kopie van uw akkoord. Gebeurt dat niet op tijd, dan vervalt uw akkoord en zit u nergens aan vast.',
   'ak.na3': 'Bewaar een kopie van uw offerte en akkoord met de knop hieronder.',
   'ak.bevestigdKort': 'Koop bevestigd op {datum}.',
   'moment': '{dag} om {tijd}',
@@ -2098,7 +2109,7 @@ const NL = {
   'st.ingetrokkenTitel': 'Deze offerte is niet meer geldig',
   'st.ingetrokkenTekst': '{dealer} heeft deze offerte ingetrokken. Misschien heeft u een nieuwe versie ontvangen. Vragen? Neem contact op met {naam}.',
   'st.bel': 'Bel {naam}',
-  'pv.inhoud': '<ul class="privacy-lijst"><li><strong>Wat we bewaren:</strong> alleen wat u zelf kiest of invult: uw betaalwijze en contactvoorkeur, een inruilauto, een aanvraag voor een verzekeringsofferte, een bericht of terugbelverzoek, en uw akkoord.</li><li><strong>Wat we niet doen:</strong> we houden niet bij welke onderdelen u bekijkt, hoe vaak u de pagina opent of waarmee u rekent. Er zijn geen cookies of advertentietrackers.</li><li><strong>Waarvoor:</strong> om u bij deze offerte te helpen en, als u akkoord geeft, de koop af te ronden.</li><li><strong>Wie het ziet:</strong> uw verkoper en, als u financiering kiest, onze financieringsadviseur. Een aanvraag voor een verzekeringsofferte gaat alleen met uw toestemming naar {afdeling}.</li><li><strong>Hoe lang:</strong> tot {maanden} maanden nadat de offerte is verlopen. Daarna wissen we alles automatisch.</li><li><strong>Kenteken opzoeken:</strong> bij een inruilauto zoeken we het kenteken op in de open data van de RDW. Daarbij gaan geen persoonsgegevens mee.</li><li><strong>Uw rechten:</strong> wilt u zien wat we van u bewaren, of het laten wissen? Vraag het {naam}.</li></ul>',
+  'pv.inhoud': '<ul class="privacy-lijst"><li><strong>Wat we bewaren:</strong> alleen wat u zelf kiest of invult: uw betaalwijze en contactvoorkeur, een inruilauto, een verzoek om contact over een verzekeringsofferte, een bericht of terugbelverzoek, en uw akkoord.</li><li><strong>Wat we niet doen:</strong> we houden niet bij welke onderdelen u bekijkt, hoe vaak u de pagina opent of waarmee u rekent. Er zijn geen cookies of advertentietrackers.</li><li><strong>Waarvoor:</strong> om u bij deze offerte te helpen en, als u akkoord geeft, de koop af te ronden.</li><li><strong>Wie het ziet:</strong> uw verkoper en, als u financiering kiest, onze financieringsadviseur. Een verzoek om contact over een verzekering gaat alleen met uw toestemming, met uw naam, telefoonnummer, e-mailadres en de gegevens van deze auto, naar {afdeling}. U kunt uw toestemming intrekken: vraag het {naam}.</li><li><strong>Hoe lang:</strong> tot {maanden} maanden nadat de offerte is verlopen. Daarna wissen we alles automatisch.</li><li><strong>Kenteken opzoeken:</strong> bij een inruilauto zoeken we het kenteken op in de open data van de RDW. Daarbij gaan geen persoonsgegevens mee.</li><li><strong>Uw rechten:</strong> wilt u zien wat we van u bewaren, of het laten wissen? Vraag het {naam}.</li></ul>',
   'hr.inhoud': '<div class="modelformulier"><p style="color:var(--muted)">Vul dit formulier alleen in en stuur het terug als u de koop wilt herroepen. Dat kan tot 14 dagen nadat u de auto heeft ontvangen. Een e-mail met dezelfde inhoud is ook goed.</p><p>— Aan: {aan}<br>&nbsp;&nbsp;E-mail: {email}</p><p>— Ik deel u hierbij mede dat ik onze overeenkomst betreffende de verkoop van het volgende product herroep: {auto}, offerte {nummer}.</p><p>— Besteld op: <span class="invul"></span> / ontvangen op: <span class="invul"></span></p><p>— Naam consument: {klant}</p><p>— Adres consument: <span class="invul"></span></p><p>— Handtekening consument (alleen als u dit formulier op papier indient): <span class="invul"></span></p><p>— Datum: <span class="invul"></span></p></div>',
   'rij.afspraken': 'Afspraken',
   'off.afspraken': 'Afspraken',
@@ -2121,15 +2132,16 @@ const NL = {
   'off.bwVolgt': 'Doorgegeven op {datum}. {naam} neemt binnen 1 werkdag contact met u op om alles te regelen.',
   'stap2.samenvatting': '{auto} · {zin}',
   'off.bwGeen': 'Nog geen betaalwijze gekozen.', 'off.bwKies': 'Kies uw betaalwijze',
-  'off.vzVoorstel': 'Voorstel aangevraagd bij {afdeling} op {datum}',
+  'off.vzVoorstel': 'Verzekeringsofferte gevraagd bij {afdeling} op {datum}',
   'ak.finVolgt': '{naam} neemt contact met u op om de financiering te regelen.',
-  'ak.vzVolgt': '{afdeling} stuurt u een verzekeringsvoorstel voor deze auto.',
+  'vzs.stap2': 'Samen met u maakt zij een verzekeringsofferte voor deze auto.',
+  'ak.vzVolgt': '{afdeling} neemt contact met u op over een verzekeringsofferte voor deze auto.',
   // Verzekering: één formulier, compleet = genoeg voor een offerte
   'vzm.geboortedatum': 'geboortedatum', 'vzm.postcode': 'postcode', 'vzm.huisnummer': 'huisnummer', 'vzm.schadevrij': 'schadevrije jaren', 'vzm.km': 'kilometers per jaar',
-  'vz.nogNodig': 'Nog nodig voor een directe offerte: <strong>{velden}</strong>. U kunt ook zonder versturen; dan vragen we het na.',
-  'vz.compleet': '<strong>Compleet.</strong> Hiermee kan Wittebrug Verzekeringen direct een voorstel maken.',
-  'vzs.stap2compleet': 'Met uw gegevens maakt zij direct een voorstel op maat voor deze auto.',
-  'vzs.stap2onvolledig': 'Zij vraagt de ontbrekende gegevens bij u na ({velden}) en maakt daarna een voorstel.',
+
+
+
+
   // Overzichtspagina
   'ov.inclBtw': 'incl. btw', 'ov.inclKorting': 'incl. btw en {bedrag} korting', 'feit.garantieKort': 'Garantie',
   'ak.klaarKort': 'Akkoord gegeven op {datum}.', 'ak.bekijkKort': 'Bekijk', 'ak.hoofdKnop': 'Akkoord met deze offerte',
@@ -2147,7 +2159,11 @@ const EN = {
   'stap.volgendeKort': 'With or without financing, and the insurance if you like.',
   'bw.introVerlopen': 'Choose what suits you best. {naam} will contact you and arrange the rest.',
   'stap2.titelNa': 'Your choice',
-  'ak.melding.nietBevestigd': '{naam} has not confirmed the purchase yet. Your acceptance stays valid. Questions? Contact {naam}.',
+  'ak.melding.vervallen': 'Your acceptance of {datum} has lapsed, because {naam} did not confirm the purchase in time. You are not committed to anything. Do you still want the car? Ask {naam} for a new quote.',
+  'ak.vervallen.vraag': 'Ask {naam} for a new quote',
+  'ak.vervallen.wa': 'Hello {voornaam}, my acceptance of quote {nummer} ({auto}) has lapsed. I would still like to buy the car. Could you send me a new quote?',
+  'ak.vervallenStatus': 'Acceptance of {datum} lapsed.',
+  'vk.vervallen.bericht': '{aanhef}, your acceptance of quote {nummer} has lapsed, because we did not confirm the purchase in time. You are not committed to anything. Do you still want the car? Then I will gladly prepare a new quote for you. Kind regards, {verkoper}, {dealer}',
   'verlopen.wa': 'Hello {voornaam}, my quote {nummer} for the {auto} has expired. Could you send me a new quote?',
   'verlopen.vraag': 'Ask {naam} for a new quote',
   'rij.aflevering': 'Delivery',
@@ -2159,12 +2175,19 @@ const EN = {
   'ak.melding.reservering': 'You accepted on {datum}. The car is reserved for you until {deadline}.',
   'ak.melding.koop': 'You accepted on {datum}. The purchase is final once {naam} confirms it, by {deadline} at the latest.',
   'ak.regel.reservering': 'With this you reserve the car free of charge until {deadline}.',
-  'ak.regel.koop': 'With this you buy the car. The purchase is only final once {naam} confirms it. {naam} will do so by {deadline} at the latest; if the confirmation comes later, your acceptance stays valid.',
+  'ak.regel.koop': 'With this you buy the car, subject to confirmation. The purchase becomes final once {naam} confirms it, by {deadline} at the latest. If not, your acceptance lapses and you are not committed to anything.',
   'ak.akkoordGevenReservering': 'Accept: reserve this car',
   'ak.akkoordGevenKoop': 'Accept: I buy this car with an obligation to pay',
   'krediet.waarschuwing': 'Let op! Geld lenen kost geld. (Please note: borrowing money costs money.)',
   'slot.plus': 'plus balloon payment of {bedrag} after {n} months',
+  'demo.strook': 'Demo with made-up data. This is not a real quote. Do not enter your own details.',
+  'demo.kopie': 'DEMO with made-up data',
   'slot.plusKaart': 'and after {n} months another {bedrag} (balloon payment)',
+  'slot.vergelijk': 'Total to repay {totaal}. Without a balloon payment: {maand0} per month, total {totaal0}.',
+  'slot.vergelijkKort': 'Without a balloon payment: {maand0} per month, total {totaal0}.',
+  'slot.risico': 'You pay the balloon payment in one go at the end. By then the car may be worth less than this amount.',
+  'inr.netto': 'Net trade-in',
+  'inr.nettoNeg': 'The loan on your trade-in car is higher than its value. You pay or finance this difference.',
   'slot.max': 'Maximum {max} ({pct}% of the price for {n} months)',
   'slot.maxKrediet': 'Maximum {max} (the amount of credit)',
   'slot.maxToast': 'The balloon payment is at most {max}.',
@@ -2202,7 +2225,7 @@ const EN = {
   'inr.uitleg': 'The expected value is included in your calculation as an estimate. You will receive the final trade-in price after our valuation.',
   'inr.verwijder': 'Remove trade-in', 'inr.opslaan': 'Add trade-in',
   'alg.annuleren': 'Cancel', 'alg.verplicht': 'Required field.', 'alg.optioneel': '(optional)', 'alg.opt': '(opt.)', 'alg.toev': 'Addition',
-  'alg.geboortedatum': 'Date of birth', 'alg.foutGeboortedatum': 'Enter a valid date of birth (at least 18 years old).',
+
   'alg.postcode': 'Postcode', 'alg.foutPostcode': 'Use the format 1234 AB.', 'alg.huisnummer': 'House number', 'alg.foutHuisnummer': 'Enter a house number.',
   'alg.watNu': 'What happens next?', 'alg.sluiten': 'Close', 'alg.terug': 'Back', 'alg.kies': 'Please choose', 'alg.foutKeuze': 'Please make a choice.',
   'alg.demo': 'demo, nothing was sent',
@@ -2215,13 +2238,13 @@ const EN = {
   'mk.disclaimer': 'In this example you pay the same amount every month; at the end the loan is paid off.',
   'usp1.t': 'Fixed monthly payment', 'usp1.s': 'You know exactly where you stand.', 'usp2.t': 'Quick and easy', 'usp2.s': 'Calculate online and apply straight away.',
   'usp3.t': 'Personal advice', 'usp3.s': 'Our specialists are happy to help.',
-  'vz.schadevrij': 'No-claims years', 'vz.schadevrijHint': '— see your current policy', 
-  'vz.km': 'Expected kilometres per year', 'vz.dekking': 'Preferred cover',
-  'vz.foutToestemming': 'Please give permission so we can prepare a proposal.',
+
+
+  'vz.foutToestemming': 'Please give permission to pass on your details.',
   'vz.gestart': 'Your insurance request has started',
-  'vz.stap3': 'Do you accept the proposal? Then we will arrange for the insurance to start on the day of delivery.',
+  'vz.stap3': 'You are only insured once you take out insurance.',
   'vz.wijzig': 'Change details', 'vz.naarOfferte': 'View your quote', 'vz.alIngevuld': 'Already filled in',
-  'vz.waarom': 'Insurance through Wittebrug Verzekeringen', 
+
   'off.verkoper': 'Your consultant', 'off.wa': 'Send a WhatsApp', 'off.afspraak': 'Book a test drive or appointment', 'off.origineel': 'Original quote',
   'off.origineelTekst': 'The quote as prepared in our quoting system.', 'off.pdf': 'Open PDF quote', 'off.print': 'Print or save as PDF',
   'ft.persoonlijk': 'Personal quote for', 'ft.offerte': 'Quote', 'ft.geldig': 'valid until',
@@ -2231,14 +2254,14 @@ const EN = {
   'ct.dagdeel': 'Time of day', 'ct.ochtend': 'Morning', 'ct.middag': 'Afternoon', 'ct.avond': 'Thursday evening', 'ct.telefoon': 'Phone number',
   'ct.uwBericht': 'Your message', 'ct.placeholder': 'For example: I would like to trade in my current car.', 'ct.liever': 'Prefer WhatsApp',
   'int.voorkeur': 'How would you like to be contacted?', 'int.tel': 'By phone', 'int.mail': 'Email', 
-  'ak.titel': 'Accept your quote digitally', 'ak.betaalwijze': 'How would you like to pay for the car?', 'ak.verzekering2': 'Also send me an insurance quote for this car, without obligation, from Wittebrug Verzekeringen',
+  'ak.titel': 'Accept your quote digitally', 'ak.betaalwijze': 'How would you like to pay for the car?', 'ak.verzekering2': 'Have Wittebrug Verzekeringen contact me about an insurance quote for this car. They receive my name, phone number, email address and the details of the car.',
   'ak.typen': 'Type your name', 'ak.tekenen': 'Sign with your finger', 'ak.download': 'Print or save as PDF',
   'ov.jkpLang': 'Annual percentage rate (APR)', 'ov.renteVast': 'Borrowing rate (fixed)', 'ov.voorbeeld': 'Your example calculation', 'ov.kredietbedrag': 'Amount of credit',
   'ov.maandtermijn': 'Monthly payment', 'ov.totaalTeBetalen': 'Total to repay to the lender', 'prijs.belFin': 'Call me about the financing', 'ft.privacyMeer': 'More about privacy',
   'pv.titel': 'Privacy and this quote', 'hr.titel': 'Model withdrawal form',
   'ct.titel.financiering': 'Call me about the financing', 'ct.ok.financiering': 'We will call you about the financing within 1 working day',
   'ct.onderwerpFin': 'We will call you about financing this car. Your calculation: {maand} per month{slot}, {looptijd} months, APR {jkp}. {waarschuwing}',
-  'ak.tekst.voorbehoud': 'By accepting, you buy this car subject to confirmation by {dealer}. {naam} will confirm the purchase by {deadline} at the latest. Until then, we hold the car for you.',
+  'ak.tekst.voorbehoud': 'By accepting, you buy this car subject to confirmation by {dealer}. {naam} will confirm the purchase by {deadline} at the latest; until then, we hold the car for you. If we do not confirm in time, your acceptance lapses and you are not committed to anything.',
   'ak.tekst.reservering': 'By accepting, you reserve this car free of charge until {deadline}. The purchase is only concluded when you sign the purchase agreement.',
   'ak.tekstFin': 'If you choose financing, the purchase is also subject to approval by the lender.',
   'ak.tekstInruil': 'A trade-in is subject to assessment.',
@@ -2252,15 +2275,15 @@ const EN = {
   'ak.foutGereserveerd': 'This car has just been reserved by another customer. Your acceptance has not been processed. {naam} will contact you.',
   'ak.foutVerlopen': 'This quote has expired. Ask {naam} for a new quote.',
   'ak.foutIngetrokken': 'This quote is no longer valid. Please contact {naam}.',
-  'ak.foutAl': 'This quote has already been accepted.',
+  'ak.foutAl': 'No new acceptance can be given on this quote. Ask {naam} for a new quote.',
   'ak.foutVerbinding': 'Your acceptance could not be sent. Please check your connection and try again.',
   'ak.vastgelegd': 'Recorded as version {versie} of quote {nummer}. Verification code: <span class="controlecode">{code}</span>',
-  'ak.bevestigingVolgt': '{naam} will confirm the purchase by {deadline} at the latest.',
+  'ak.bevestigingVolgt': '{naam} will confirm the purchase by {deadline} at the latest. If that does not happen in time, your acceptance lapses and you are not committed to anything.',
   'ak.gereserveerdTot': 'The car is reserved for you until {deadline}.',
   'ak.bevestigdOp': '{dealer} confirmed the purchase on {datum}.',
   'ak.na.voorbehoud1': 'After the confirmation, {naam} will contact you about the delivery date.',
   'ak.na.reservering1': '{naam} will send you the purchase agreement to sign.',
-  'ak.na2d': '{naam} will send you a confirmation of the purchase, with a copy of your acceptance.',
+  'ak.na2d': '{naam} will confirm the purchase by {deadline} at the latest and then send you a confirmation, with a copy of your acceptance. If that does not happen in time, your acceptance lapses and you are not committed to anything.',
   'ak.na3': 'Keep a copy of your quote and acceptance using the button below.',
   'ak.bevestigdKort': 'Purchase confirmed on {datum}.',
   'moment': '{dag} at {tijd}',
@@ -2272,7 +2295,7 @@ const EN = {
   'st.ingetrokkenTitel': 'This quote is no longer valid',
   'st.ingetrokkenTekst': '{dealer} has withdrawn this quote. You may have received a new version. Questions? Please contact {naam}.',
   'st.bel': 'Call {naam}',
-  'pv.inhoud': '<ul class="privacy-lijst"><li><strong>What we keep:</strong> only what you choose or fill in yourself: your payment method and contact preference, a trade-in car, a request for an insurance quote, a message or call-back request, and your acceptance.</li><li><strong>What we do not do:</strong> we do not record which parts you view, how often you open the page or what you calculate. There are no cookies or advertising trackers.</li><li><strong>What for:</strong> to help you with this quote and, if you accept, to complete the purchase.</li><li><strong>Who sees it:</strong> your consultant and, if you choose financing, our financing adviser. A request for an insurance quote only goes to {afdeling} with your permission.</li><li><strong>How long:</strong> up to {maanden} months after the quote has expired. After that, everything is deleted automatically.</li><li><strong>Licence plate lookup:</strong> for a trade-in car we look up the licence plate in the open data of the RDW. No personal data is sent.</li><li><strong>Your rights:</strong> would you like to see what we keep about you, or have it deleted? Ask {naam}.</li></ul>',
+  'pv.inhoud': '<ul class="privacy-lijst"><li><strong>What we keep:</strong> only what you choose or fill in yourself: your payment method and contact preference, a trade-in car, a request to be contacted about an insurance quote, a message or call-back request, and your acceptance.</li><li><strong>What we do not do:</strong> we do not record which parts you view, how often you open the page or what you calculate. There are no cookies or advertising trackers.</li><li><strong>What for:</strong> to help you with this quote and, if you accept, to complete the purchase.</li><li><strong>Who sees it:</strong> your consultant and, if you choose financing, our financing adviser. A request to be contacted about insurance only goes to {afdeling} with your permission, together with your name, phone number, email address and the details of this car. You can withdraw your permission: ask {naam}.</li><li><strong>How long:</strong> up to {maanden} months after the quote has expired. After that, everything is deleted automatically.</li><li><strong>Licence plate lookup:</strong> for a trade-in car we look up the licence plate in the open data of the RDW. No personal data is sent.</li><li><strong>Your rights:</strong> would you like to see what we keep about you, or have it deleted? Ask {naam}.</li></ul>',
   'hr.inhoud': '<div class="modelformulier"><p style="color:var(--muted)">Only complete and return this form if you wish to withdraw from the purchase. You can do so up to 14 days after receiving the car. An email with the same content is also fine.</p><p>— To: {aan}<br>&nbsp;&nbsp;Email: {email}</p><p>— I hereby give notice that I withdraw from my contract for the sale of the following goods: {auto}, quote {nummer}.</p><p>— Ordered on: <span class="invul"></span> / received on: <span class="invul"></span></p><p>— Name of consumer: {klant}</p><p>— Address of consumer: <span class="invul"></span></p><p>— Signature of consumer (only if this form is notified on paper): <span class="invul"></span></p><p>— Date: <span class="invul"></span></p></div>',
   'ak.naam': 'Full name', 'ak.handtekening': 'Your signature', 'ak.tekenHier': 'Sign here with your finger or mouse', 'ak.wis': 'Clear',
   'ak.foutHandtekening': 'Please sign in the box.', 'ak.voorwaarden': 'I accept this quote and the general terms and conditions (BOVAG).',
@@ -2292,12 +2315,12 @@ const EN = {
   'fin.maxAanbetaling': 'The maximum down payment in this example is {pct}',
   'rij.aanbetaling': 'Down payment', 'rij.looptijd': 'Term', 'rij.maandbedrag': 'Monthly payment', 'rij.inruil': 'Trade-in (estimate)',
   'rij.auto': 'Car',
-  'rij.postcode': 'Postcode', 'rij.schadevrij': 'No-claims years', 'rij.km': 'Kilometres per year', 'rij.dekking': 'Preferred cover',
+
   'deel.titel': 'Your quote: {auto}', 'deel.gekopieerd': 'The link to your personal quote has been copied', 'deel.mislukt': 'Save this page using your browser\'s share button',
   'kopieer.mislukt': 'Copying is not possible here. Link: {tekst}',
   'vz.kies': 'Please choose', 'vz.jaar': '{n} years', 'vz.meer20': 'More than 20 years', 'vz.nooit': 'Never been insured',
   'vz.wa': 'Third party', 'vz.waSub': 'Legal minimum', 'vz.beperkt': 'Third party plus limited cover', 'vz.beperktSub': 'Also glass, storm, theft',
-  'vz.allrisk': 'Comprehensive', 'vz.allriskSub': 'Also covers damage to your own car in an accident. The exact cover is stated in the proposal.', 'vz.geenVoorkeur': 'No preference',
+  'vz.allrisk': 'Comprehensive', 'vz.allriskSub': 'Also covers damage to your own car in an accident. The exact cover is stated in the insurance quote.', 'vz.geenVoorkeur': 'No preference',
   'vz.gestartOp': 'started on {datum} at {tijd}',
   'off.titel': 'Used car quote', 'off.nummer': 'Quote number', 'off.datum': 'Date', 'off.geldig': 'Valid until', 'off.klant': 'Customer',
   'off.voertuig': 'Vehicle', 'off.bouwjaar': 'Year', 'off.km': 'Mileage', 'off.brandstof': 'Fuel', 'off.transmissie': 'Transmission',
@@ -2305,7 +2328,7 @@ const EN = {
   'off.apk': 'MOT (APK)', 'off.prijsopbouw': 'Price breakdown', 'off.inbegrepen': 'Included',
   'off.inruilRegel': 'Trade-in {auto} (estimate)', 'off.bijbetalen': 'To pay after trade-in', 'off.inruil': 'Trade-in',
   'off.inruilTaxatie': 'Valuation requested', 'off.inruilWaarde': 'Expected value', 'off.verzekering': 'Insurance', 'off.akkoord': 'Acceptance',
-  'off.vzVolgt': 'Proposal to follow', 'off.vzGeen': 'No insurance proposal requested yet.', 'off.vzBereken': 'Request an insurance proposal',
+  'off.vzVolgt': 'Contact to follow', 'off.vzGeen': 'No insurance quote requested yet.', 'off.vzBereken': 'Request an insurance quote',
   'off.akkoordDoor': 'Accepted by <strong>{naam}</strong> on {datum} at {tijd}', 'off.betaalwijze': 'Payment method',
   'ak.kaartTitel': 'Happy with this quote?', 'ak.kaartTekst': 'Accept this quote digitally right away. Your consultant will then confirm the purchase.',
   'ak.kaartKnop': 'Accept digitally', 'ak.kaartKlaar': 'Quote accepted', 'ak.kaartKlaarTekst': 'On {datum} at {tijd}. Your consultant will contact you.',
@@ -2367,11 +2390,11 @@ const EN = {
   'bw.toast': '{naam} will contact you within 1 working day',
   'int.wa': 'WhatsApp',
   'vzs.titel': 'Insurance for your <span data-veld="voertuig.merkModel">SEAT Leon</span>',
-  'vzs.intro': 'Our own insurance department, Wittebrug Verzekeringen, will prepare a proposal for this car, without obligation. That way everything is arranged when you collect the car.',
-  'vzs.toestemming': 'I agree that my name, contact details and the details of this car are passed on to Wittebrug Verzekeringen for a proposal.',
-  'vzs.knop': 'Request an insurance proposal', 
+  'vzs.intro': 'Wittebrug Verzekeringen will contact you about an insurance quote for this car, without obligation.',
+  'vzs.toestemming': 'I give permission to pass on my name, phone number, email address and the details of this car to Wittebrug Verzekeringen, so they can contact me about an insurance quote.',
+  'vzs.knop': 'Request an insurance quote', 
   'vzs.ontvangen': 'Your request has been passed on', 'vzs.stap1': '{afdeling} will contact you ({voorkeur}).',
-  'vzs.stap2': 'You will receive a proposal tailored to this car.', 
+  'vzs.stap2': 'Together with you, they will prepare an insurance quote for this car.', 
   'ft.privacy': 'We only use what you fill in or choose yourself, to help you with this quote. We do not record what you click on this page.',
   'off.betaalwijzeKop': 'Payment method', 'off.bwKeuze': 'Your choice', 'off.bwContact': 'Contact by', 'off.indicatie': 'estimate',
   'off.bwVolgt': 'Sent on {datum}. {naam} will contact you within 1 working day to arrange everything.',
@@ -2380,21 +2403,21 @@ const EN = {
   'stap2.samenvatting': '{auto} · {zin}',
   'stap2.samenvattingZelf': '{auto} · to pay {bedrag}',
   'off.bwGeen': 'No payment method chosen yet.', 'off.bwKies': 'Choose your payment method',
-  'off.vzVoorstel': 'Proposal requested from {afdeling} on {datum}',
+  'off.vzVoorstel': 'Insurance quote requested from {afdeling} on {datum}',
   'ak.finVolgt': '{naam} will contact you to arrange the financing.',
-  'ak.vzVolgt': '{afdeling} will send you an insurance proposal for this car.',
-  'vzs.intro2': 'Our own insurance department, Wittebrug Verzekeringen, will prepare a proposal for this car, without obligation. If you fill in the details below, they can prepare a proposal straight away. Prefer to talk first? Your contact preference is enough.',
-  'vzs.toestemming2': 'I agree that my name, contact details, the details above and the details of this car are passed on to Wittebrug Verzekeringen for a proposal.',
-  'vz.wijzig2': 'Complete or change details',
+  'ak.vzVolgt': '{afdeling} will contact you about an insurance quote for this car.',
+  'vzs.intro2': 'Would you like a no-obligation insurance quote for this car? Wittebrug Verzekeringen will then contact you. Choose how you would like to be contacted.',
+  'vzs.toestemming2': 'I give permission to pass on my name, phone number, email address and the details of this car to Wittebrug Verzekeringen, so they can contact me about an insurance quote.',
+  'vz.wijzig2': 'Change contact preference',
   'vzm.geboortedatum': 'date of birth', 'vzm.postcode': 'postcode', 'vzm.huisnummer': 'house number', 'vzm.schadevrij': 'claim-free years', 'vzm.km': 'kilometres per year',
-  'vz.nogNodig': 'Still needed for an immediate quote: <strong>{velden}</strong>. You can also send without; we will ask you.',
-  'vz.compleet': '<strong>Complete.</strong> Wittebrug Verzekeringen can prepare a proposal straight away.',
-  'vzs.stap2compleet': 'With your details they will prepare a tailored proposal for this car straight away.',
-  'vzs.stap2onvolledig': 'They will ask you for the missing details ({velden}) and then prepare a proposal.',
+
+
+
+
   'ov.titel': 'Your quote', 'ov.aankoop': 'Price', 'ov.bijbetalen': 'To pay after trade-in', 'ov.perMaand': 'Or per month',
   'ov.indicatie': 'Estimate, subject to approval by the lender.', 'ov.geldLenen': 'Let op! Geld lenen kost geld. (Please note: borrowing money costs money.)',
   'ov.berekening': 'How is this calculated?', 'kl.specs': 'Specifications', 'kl.offerte': 'Full quote and PDF',
-  'vzt.titel': 'Arrange the insurance too?', 'vzt.tekst': 'Our insurance department will prepare a proposal without obligation. If you accept it, you can drive the car away insured on delivery.', 'vzt.knop': 'Yes, prepare a proposal',
+  'vzt.titel': 'Arrange the insurance too?', 'vzt.tekst': 'Would you like a no-obligation insurance quote for this car? Wittebrug Verzekeringen will then contact you.', 'vzt.knop': 'Yes, contact me',
   'ov.inclBtw': 'incl. VAT', 'ov.inclKorting': 'incl. VAT and {bedrag} discount', 'feit.garantieKort': 'Warranty',
   'ak.klaarKort': 'Accepted on {datum}.', 'ak.bekijkKort': 'View', 'ak.hoofdKnop': 'Accept this quote',
   'ak.getyptLeeg': 'Fill in your full name above'
@@ -2532,7 +2555,7 @@ function herstelVeld(doel) {
 }
 // Postcode netjes maken: 1234ab → 1234 AB
 document.addEventListener('focusout', e => {
-  if (!e.target.matches || !e.target.matches('#vzPostcode, #aaPostcode')) return;
+  if (!e.target.matches || !e.target.matches('#aaPostcode')) return;
   const m = e.target.value.trim().match(/^(\d{4})\s?([A-Za-z]{2})$/);
   if (m) e.target.value = `${m[1]} ${m[2].toUpperCase()}`;
 });
@@ -2645,6 +2668,13 @@ const staat = {
 };
 // Online: een akkoord dat op een ander apparaat is gegeven, staat op de server
 if (!staat.akkoord && serverStatusKlant && serverStatusKlant.akkoord) staat.akkoord = { ...serverStatusKlant.akkoord, t: Date.parse(serverStatusKlant.akkoord.t) };
+// Akkoord vervallen: de verkoper bevestigde niet binnen de termijn (koop, niet reservering). Dan geldt het akkoord niet meer:
+// de pagina rekent weer vrij en houdt de auto niet vast. Het oude akkoord blijft in de opslag staan (zie bewaarKeuze) en staat hier apart voor de melding.
+staat.vervallenAkkoord = null;
+if (staat.akkoord && INSTELLINGEN.akkoordVariant !== 'reservering') {
+  const stKlant = serverStatusKlant ? { ingetrokken: !!serverStatusKlant.ingetrokken, bevestigdOp: serverStatusKlant.bevestigdOp } : lokaleStatus(offerte.id);   // niet klantStatus(): die rekent ook de reservering uit en is hier nog niet klaar
+  if (!stKlant.bevestigdOp && !stKlant.ingetrokken && Date.now() > (staat.akkoord.bevestigUiterlijk || bevestigUiterlijk(staat.akkoord.t))) { staat.vervallenAkkoord = staat.akkoord; staat.akkoord = null; }
+}
 // Na een akkoord staat de rekenhulp vast op de getekende keuze. Dit is alleen weergave: er wordt niets opnieuw berekend of opgeslagen.
 if (staat.akkoord && staat.akkoord.stand) { staat.aanbetaling = staat.akkoord.stand.aanbetaling; staat.looptijd = staat.akkoord.stand.looptijd; staat.slottermijn = staat.akkoord.stand.slottermijn || 0; }
 // Zonder akkoord: een bewaarde berekening opnieuw berekenen met de huidige rekenwijze (alleen weergave, er wordt niets opgeslagen)
@@ -2656,7 +2686,8 @@ const langeBewaardeLooptijd = bewaard.looptijd > INSTELLINGEN.maxLooptijd || (be
 const toonLooptijdMelding = (looptijdBijgewerkt.has(offerte.id) || langeBewaardeLooptijd) && !staat.akkoord && !opslag.lees(sleutelLooptijdMelding, false);
 if (toonLooptijdMelding) opslag.schrijf(sleutelLooptijdMelding, true);
 function bewaarKeuze() {
-  const { actieveTab, ...rest } = staat;
+  const { actieveTab, vervallenAkkoord, ...rest } = staat;
+  if (vervallenAkkoord) rest.akkoord = vervallenAkkoord;   // een vervallen akkoord blijft bewaard
   opslag.schrijf(sleutelKeuze, rest);
 }
 const inruilWaarde = () => (staat.inruil && staat.inruil.waarde > 0 ? staat.inruil.waarde : 0);
@@ -2691,6 +2722,17 @@ const momentopname = () => ({
 const prijsNaam = () => t(offerte.prijs.rijklaar ? 'rij.prijsRijklaar' : 'rij.prijsBtw');
 const teBetalen = () => prijs - inruilWaarde() + inlossingBedrag;
 const inruilIndicatief = () => !!staat.inruil && !staat.inruil.getaxeerd;
+// Netto inruil: inruilwaarde min inlossing (kan negatief zijn). Alleen bij een inruil én een inlossing; de totalen veranderen er niet door.
+const heeftNetto = () => inruilWaarde() > 0 && inlossingBedrag > 0;
+const nettoInruil = () => inruilWaarde() - inlossingBedrag;
+const fmtNetto = (n, f = fmtEuro) => (n < 0 ? '− ' : '') + f(Math.abs(n), 0);
+const nettoLabel = (indicatief = inruilIndicatief()) => t('inr.netto') + (indicatief ? ' ' + t('indicatief') : '');
+// Vergelijking bij een slottermijn: dezelfde lening, looptijd en rente, met slottermijn 0 (regel 2 onder het maandbedrag)
+// kort = zonder het eigen totaal (in het akkoordoverzicht staat dat al in de financieringsregel)
+function slotVergelijking(b, kort = false) {
+  const b0 = berekenFinanciering(financieringsBasis(), staat.aanbetaling, staat.looptijd, weergaveRente(), 0);
+  return t(kort ? 'slot.vergelijkKort' : 'slot.vergelijk', { totaal: fmtEuro(b.totaalTermijnen), maand0: fmtEuro(b0.maandbedrag), totaal0: fmtEuro(b0.totaalTermijnen) });
+}
 const inlossingUitleg = () => (offerte.inlossingDatum ? t('inl.uitleg', { datum: fmtDatum(offerte.inlossingDatum) }) : t('inl.uitlegZonder'));
 const naInruilLabel = () => t('ov.bijbetalen') + (inruilIndicatief() ? ' ' + t('indicatief') : '');
 // "U betaalt € …" (inruil beoordeeld of geen inruil), anders "Ongeveer € … (inruil nog niet beoordeeld)"
@@ -2818,6 +2860,10 @@ function renderFinanciering() {
   const ms = $('#maandSlot');
   ms.hidden = !metSlot;
   ms.textContent = metSlot ? t('slot.plusKaart', { bedrag: fmtEuro(b.slottermijn, 0), n: staat.looptijd }) : '';
+  // Regel 2 (vergelijking) alleen vóór het akkoord; regel 3 (autowaarde) blijft ook na het akkoord
+  $('#maandVergelijking').hidden = !metSlot || !!staat.akkoord;
+  $('#maandVergelijking').textContent = metSlot && !staat.akkoord ? slotVergelijking(b) : '';
+  $('#maandSlotRisico').hidden = !metSlot;
   $('#knopBelFin').hidden = !kanFinancieren;
   $('#ovKosten').textContent = kanFinancieren ? fmtEuro(b.kredietkosten) : '—';
   // "Te betalen na inruil" alleen met een inruil; zonder inruil is het gewoon de prijs
@@ -2827,6 +2873,12 @@ function renderFinanciering() {
   $('#inlossingBedrag').textContent = '+ ' + fmtEuro(inlossingBedrag, 0);
   $('#ovInlossing').textContent = '+ ' + fmtEuro(inlossingBedrag, 0);
   $('#inlossingUitleg').textContent = inlossingUitleg();
+  // Netto inruil (alleen bij inruil én inlossing), met een onderregel als het negatief is
+  const netto = heeftNetto(), nettoNeg = netto && nettoInruil() < 0;
+  $('#nettoRegel').hidden = $('#ovNettoRij').hidden = !netto;
+  $('#nettoUitleg').hidden = $('#ovNettoUitleg').hidden = !nettoNeg;
+  $('#nettoLabel').textContent = $('#ovNettoLabel').textContent = nettoLabel();
+  $('#nettoBedrag').textContent = $('#ovNetto').textContent = netto ? fmtNetto(nettoInruil()) : '';
   $('#ovBijTeBetalenLabel').textContent = naInruilLabel();
   $('#ovBijTeBetalen').textContent = fmtEuro(teBetalen(), 0);
   $('#ovJkpKort').textContent = kanFinancieren ? fmtGetal(b.jkp, 2) + '%' : '—';
@@ -2867,11 +2919,11 @@ function renderVoorstel() {
   const rijEl = $('#voorstelRij');
   rijEl.hidden = !voorstel || !!staat.akkoord;
   if (rijEl.hidden) return;
-  rijEl.innerHTML = opVoorstel()
-    ? `<span class="badge info">${t('vs.besproken')}</span>`
-    : `<span class="badge grijs">${t('vs.aangepast', { pct: fmtPct(voorstel.aanbetaling / prijs * 100), looptijd: voorstel.looptijd, slot: voorstelSlot() > 0 ? ' / ' + t('vs.slot', { bedrag: fmtEuro(voorstelSlot(), 0) }) : '' })}</span><button class="knop-link" type="button" id="knopVoorstel">${t('vs.terug')}</button>`;
-  const knop = $('#knopVoorstel');
-  if (knop) knop.onclick = herstelVoorstel;
+  const op = opVoorstel();
+  // Beide standen staan altijd in de pagina (de andere onzichtbaar), zodat de kop even hoog blijft en het maandbedrag niet verschuift
+  rijEl.innerHTML = `<div class="vs-stapel"><div class="voorstel-rij ${op ? '' : 'vs-uit'}" ${op ? '' : 'aria-hidden="true"'}><span class="badge info">${t('vs.besproken')}</span></div>`
+    + `<div class="voorstel-rij ${op ? 'vs-uit' : ''}" ${op ? 'aria-hidden="true"' : ''}><span class="badge grijs">${t('vs.aangepast', { pct: fmtPct(voorstel.aanbetaling / prijs * 100), looptijd: voorstel.looptijd, slot: voorstelSlot() > 0 ? ' / ' + t('vs.slot', { bedrag: fmtEuro(voorstelSlot(), 0) }) : '' })}</span><button class="knop-link" type="button" id="knopVoorstel" ${op ? 'tabindex="-1"' : ''}>${t('vs.terug')}</button></div></div>`;
+  $('#knopVoorstel').onclick = herstelVoorstel;
 }
 function herstelVoorstel() {
   staat.aanbetaling = Math.min(voorstel.aanbetaling, maxAanbetaling());
@@ -3116,25 +3168,9 @@ const DEKKINGEN = [['WA', 'vz.wa', 'vz.waSub'], ['WA+', 'vz.beperkt', 'vz.beperk
 const dekkingLabel = sleutel => { const d = DEKKINGEN.find(x => x[0] === sleutel); return d ? t(d[1]) : t('vz.geenVoorkeur'); };
 const schadevrijLabel = w => w === 'geen' ? t('vz.nooit') : w === '21+' ? t('vz.meer20') : t('vz.jaar', { n: w });
 
-function bouwVerzekeringsopties() {
-  const sel = $('#vzSchadevrij');
-  const gekozenSv = sel.value;
-  const gekozenKm = ($('[name=kilometers]:checked') || {}).value;
-  const gekozenDekking = ($('[name=dekking]:checked') || {}).value || 'Allrisk';
-  const waarden = [...Array(21).keys()].map(String).concat(['21+', 'geen']);
-  sel.innerHTML = `<option value="">${t('vz.kies')}</option>` + waarden.map(w => `<option value="${w}">${escapeHtml(schadevrijLabel(w))}</option>`).join('');
-  sel.value = gekozenSv;
-  $('#vzKm').innerHTML = KM_OPTIES.map(([w]) => `<label><input type="radio" name="kilometers" value="${w}" ${w === gekozenKm ? 'checked' : ''}><span>${kmLabel(w)}</span></label>`).join('');
-  $('#vzDekking').innerHTML = DEKKINGEN.map(([w, l, s]) => `<label><input type="radio" name="dekking" value="${w}" ${w === gekozenDekking ? 'checked' : ''}><span>${t(l)}<small>${t(s)}</small></span></label>`).join('');
-}
-(function grenzenGeboortedatum() {
-  const vandaag = new Date();
-  const max = new Date(vandaag.getFullYear() - 18, vandaag.getMonth(), vandaag.getDate()).toISOString().slice(0, 10);
-  $('#vzGeboortedatum').max = max; $('#vzGeboortedatum').min = '1920-01-01';
-})();
+// De velden geboortedatum, adres, schadevrije jaren, kilometers en dekking zijn vervallen (09-11-2026); de labels hierboven blijven voor oude aanvragen in de verkoperweergave.
 
-// Eén formulier: alles wat de klant invult blijft in zijn eigen browser bewaard (concept) en gaat pas
-// met zijn toestemming naar de verkoper. Compleet = genoeg voor een verzekeringsofferte.
+// Een contactverzoek: alleen de contactvoorkeur (en de toestemming) gaat met toestemming naar de verkoper. Naam, telefoon en e-mail staan al op de offerte.
 const vzForm = $('#vzFormulier');
 const VZ_AFDELING = { naam: 'Wittebrug Verzekeringen', email: 'verzekeringen@wittebrug.nl' };
 const VZ_VELDEN = [['geboortedatum', 'vzm.geboortedatum'], ['postcode', 'vzm.postcode'], ['huisnummer', 'vzm.huisnummer'], ['schadevrijeJaren', 'vzm.schadevrij'], ['kilometers', 'vzm.km']];
@@ -3146,21 +3182,14 @@ function openVerzekering() {
 }
 function vzGegevens() {
   const d = new FormData(vzForm);
-  const g = k => String(d.get(k) || '').trim();
-  return { geboortedatum: g('geboortedatum'), postcode: g('postcode').toUpperCase(), huisnummer: g('huisnummer'), toevoeging: g('toevoeging'),
-    schadevrijeJaren: g('schadevrijeJaren'), kilometers: g('kilometers'), dekking: g('dekking'), voorkeur: g('vzVoorkeur') };
+  return { voorkeur: String(d.get('vzVoorkeur') || '').trim() };
 }
+// Oude aanvragen (vóór 09-11-2026) hadden meer velden; alleen de verkoperweergave kent die nog
 const vzOntbreekt = g => VZ_VELDEN.filter(([k]) => !g[k]).map(([k]) => k);
-const vzVeldLabel = k => t((VZ_VELDEN.find(v => v[0] === k) || [k, k])[1]);
-function werkVzVoortgangBij() {
-  const ontbreekt = vzOntbreekt(vzGegevens());
-  $('#vzVoortgang').classList.toggle('compleet', !ontbreekt.length);
-  $('#vzVoortgang').innerHTML = ontbreekt.length ? t('vz.nogNodig', { velden: ontbreekt.map(vzVeldLabel).join(', ') }) : t('vz.compleet');
-}
+const vzOudeAanvraag = v => !!v && (typeof v.compleet === 'boolean' || !!(v.geboortedatum || v.postcode || v.schadevrijeJaren || v.kilometers || v.dekking));
 // Het concept blijft alleen in de eigen browser; pas bij versturen gaat het naar de verkoper
 function vzOpWijziging() {
   opslag.schrijf(sleutelVzConcept, vzGegevens());
-  werkVzVoortgangBij();
 }
 vzForm.addEventListener('input', vzOpWijziging);
 vzForm.addEventListener('change', vzOpWijziging);
@@ -3168,9 +3197,7 @@ function herstelVzConcept() {
   const c = staat.vzVoorstel || opslag.lees(sleutelVzConcept, null);
   if (!c) return;
   vzOpen = true;   // de klant was er al mee bezig
-  [['#vzGeboortedatum', 'geboortedatum'], ['#vzPostcode', 'postcode'], ['#vzHuisnummer', 'huisnummer'], ['#vzToevoeging', 'toevoeging'], ['#vzSchadevrij', 'schadevrijeJaren']]
-    .forEach(([id, k]) => { if (c[k]) $(id).value = c[k]; });
-  [['kilometers', 'kilometers'], ['dekking', 'dekking'], ['vzVoorkeur', 'voorkeur']].forEach(([naam, k]) => {
+  [['vzVoorkeur', 'voorkeur']].forEach(([naam, k]) => {
     const r = c[k] && $(`[name=${naam}][value="${c[k]}"]`);
     if (r) r.checked = true;
   });
@@ -3178,11 +3205,11 @@ function herstelVzConcept() {
 vzForm.addEventListener('submit', e => {
   e.preventDefault();
   if (!valideerVelden(vzForm)) return;
-  const g = vzGegevens(), ontbreekt = vzOntbreekt(g);
-  staat.vzVoorstel = { ...g, compleet: !ontbreekt.length, t: Date.now() };
+  const g = vzGegevens();
+  staat.vzVoorstel = { ...g, t: Date.now() };
   vzWijzigen = false;
   bewaarKeuze();
-  registreer('verzekering_aangevraagd', { ...g, compleet: !ontbreekt.length, ontbreekt });
+  registreer('verzekering_aangevraagd', { voorkeur: g.voorkeur });   // alleen de voorkeur (registreer voegt de taal toe)
   renderVzStart();
   renderAkkoordKaart();
   $('#vzKaart').scrollIntoView({ behavior: 'smooth', block: 'start' });
@@ -3196,17 +3223,12 @@ function renderVzStart() {
   $('#vzTeaser').hidden = !!v || vzOpen || vzWijzigen;
   $('#vzAangevraagdBlok').hidden = !v || vzWijzigen;
   $('#vzFormulierBlok').hidden = v ? !vzWijzigen : !vzOpen;
-  werkVzVoortgangBij();
   if (!v) return;
   $('#vzsTijd').textContent = t('vz.gestartOp', { datum: fmtDatum(v.t), tijd: fmtTijd(v.t) });
   $('#vzsStap1').textContent = t('vzs.stap1', { afdeling: VZ_AFDELING.naam, voorkeur: voorkeurLabel(v.voorkeur).toLowerCase() });
-  $('#vzsStap2').textContent = v.compleet ? t('vzs.stap2compleet') : t('vzs.stap2onvolledig', { velden: vzOntbreekt(v).map(vzVeldLabel).join(', ') });
+  $('#vzsStap2').textContent = t('vzs.stap2');
   $('#vzSamenvatting').innerHTML = `<table class="samenvatting-tabel">
     ${rij(t('rij.auto'), escapeHtml(`${offerte.voertuig.merk} ${offerte.voertuig.model}`))}
-    ${rij(t('rij.dekking'), escapeHtml(dekkingLabel(v.dekking)))}
-    ${v.schadevrijeJaren ? rij(t('rij.schadevrij'), escapeHtml(schadevrijLabel(v.schadevrijeJaren))) : ''}
-    ${v.kilometers ? rij(t('rij.km'), kmLabel(v.kilometers)) : ''}
-    ${v.postcode ? rij(t('rij.postcode'), escapeHtml(`${v.postcode} ${v.huisnummer}${v.toevoeging ? ' ' + v.toevoeging : ''}`)) : ''}
     ${rij(t('off.bwContact'), escapeHtml(voorkeurLabel(v.voorkeur)))}</table>`;
 }
 
@@ -3255,6 +3277,7 @@ function renderOfferteDocument() {
     : '';
 
   $('#offerteDocument').innerHTML = `
+    ${DEMO_LABEL ? `<div class="demo-label">${t('demo.strook')}</div>` : ''}
     <div class="doc-kop">
       <div><span class="logo">${LOGO_HTML}</span><h2>${t('off.titel')}</h2>${offerte.aanleiding && offerte.aanleiding.datum ? `<p class="doc-notitie">${t('off.aanleiding.' + aanleidingType(), { datum: fmtDatum(offerte.aanleiding.datum) })}</p>` : ''}</div>
       <div class="doc-meta">${t('off.nummer')} <strong>${escapeHtml(offerte.nummer)}</strong><br>${t('off.versie')} <strong>${offerteVersie}</strong><br>${t('off.datum')} <strong>${fmtDatum(offerte.datum)}</strong><br>${t('off.geldig')} <strong>${fmtDatum(offerte.geldigTot)}</strong></div>
@@ -3289,9 +3312,11 @@ function renderOfferteDocument() {
         ${offerte.prijs.bpm ? `<tr class="sub"><td>${t('off.bpm')}</td><td>${fmtEuro(offerte.prijs.bpm)}</td></tr>` : ''}
         ${inruilWaarde() ? `<tr><td>${t(i.getaxeerd ? 'off.inruilGetaxeerd' : 'off.inruilRegel', { auto: escapeHtml(`${i.merk} ${i.model}`) })}</td><td>− ${fmtEuro(inruilWaarde())}</td></tr>` : ''}
         ${inlossingBedrag > 0 ? `<tr><td>${t('inl.label')}</td><td>+ ${fmtEuro(inlossingBedrag)}</td></tr>` : ''}
+        ${heeftNetto() ? `<tr><td>${nettoLabel()}</td><td>${fmtNetto(nettoInruil())}</td></tr>` : ''}
         ${heeftNaInruil() ? `<tr><td><strong>${naInruilLabel()}</strong></td><td><strong>${fmtEuro(teBetalen())}</strong></td></tr>` : ''}
       </tbody></table>
       ${inlossingBedrag > 0 ? `<p class="doc-regel">${escapeHtml(inlossingUitleg())}</p>` : ''}
+      ${heeftNetto() && nettoInruil() < 0 ? `<p class="doc-regel">${t('inr.nettoNeg')}</p>` : ''}
       ${offerte.prijs.rijklaar ? `<p class="doc-regel">${t('off.rijklaar')}</p>` : ''}
       ${garantieZin() ? `<p class="doc-regel">${t('feit.garantieKort')}: <strong>${garantieZin()}</strong></p>` : ''}
       ${offerte.betalingswijze ? `<p class="doc-regel">${t('off.betaalwijze')}: <strong>${escapeHtml(tw(offerte.betalingswijze))}</strong></p>` : ''}
@@ -3312,14 +3337,15 @@ function renderAkkoordKaart() {
   const kaart = $('#akkoordKaart');
   const lead = aanleidingType() === 'lead';
   const reservering = INSTELLINGEN.akkoordVariant === 'reservering';
+  const dicht = offerteVerlopen || !!staat.vervallenAkkoord;   // geen akkoord meer te geven: offerte verlopen of akkoord vervallen
   kaart.classList.toggle('klaar', !!ak);
   // Stap 2: twee routes. Na het akkoord of als de auto aan een ander is gereserveerd valt de route "klaar om te kopen" weg; na het akkoord ook de route "eerst overleggen"
-  $('#routeKopen').hidden = !!ak || st.gereserveerd || offerteVerlopen;
+  $('#routeKopen').hidden = !!ak || st.gereserveerd || dicht;
   // Na het akkoord is stap 2 "Uw keuze" en geldt de waarschuwing bij het delen van de link zonder de zin over akkoord geven
   $('#stap2Titel').textContent = t(ak ? 'stap2.titelNa' : 'stap2.titel');
-  $('.deel-regel').textContent = t(ak || offerteVerlopen ? 'deel.regelNa' : 'deel.regel');
+  $('.deel-regel').textContent = t(ak || dicht ? 'deel.regelNa' : 'deel.regel');
   // Verlopen offerte: akkoord geven kan niet meer, dus geen zinnen die een akkoord in het vooruitzicht stellen
-  if (offerteVerlopen && !ak) {
+  if (dicht && !ak) {
     $('#knopNaarStap2 small').textContent = t('stap.volgendeKort');
     $('#bwIntro').textContent = t('bw.introVerlopen', { naam: verkoperVoornaam() });
   }
@@ -3327,20 +3353,30 @@ function renderAkkoordKaart() {
   $('#knopNaarStap2').hidden = !!ak;   // "Dit is nog geen koop" klopt na het akkoord niet meer; de stappenbalk blijft
   $('#routeKopenTitel').textContent = t(reservering ? 'route.reserveren' : 'route.kopen');
   $('#stap2AkkoordRegel').innerHTML = akkoordRegel();
-  $('#stap2AkkoordRegel').hidden = offerteVerlopen;
-  $('#mbKnop').hidden = (st.gereserveerd || offerteVerlopen) && !ak;
+  $('#stap2AkkoordRegel').hidden = dicht;
+  $('#mbKnop').hidden = (st.gereserveerd || dicht) && !ak;
   // Na een lead is "Plan een proefrit" de hoofdknop en het akkoord de tweede knop
-  $('#knopProefrit').hidden = !lead || offerteVerlopen || (st.gereserveerd && !ak);
+  $('#knopProefrit').hidden = !lead || dicht || (st.gereserveerd && !ak);
   kaart.innerHTML = ak
     ? `<div class="interesse-bevestiging">${icoon('i-vink')}<span>${st.bevestigdOp ? t('ak.bevestigdKort', { datum: fmtDatum(st.bevestigdOp) }) : t('ak.klaarKort', { datum: fmtDatum(ak.t) })} <button class="knop-link" type="button" data-open-akkoord="kaart">${t('ak.bekijkKort')}</button></span></div>`
     : st.gereserveerd
       ? `<button class="knop knop-primair knop-blok midden" type="button" disabled>${t('ak.gereserveerdKnop')}</button>`
-      : offerteVerlopen
-        ? `<button class="knop knop-primair knop-blok midden" type="button" disabled>${t('ak.verlopenKnop')}</button>`
-        : `<button class="knop ${lead ? 'knop-secundair' : 'knop-primair'} knop-blok midden" type="button" data-open-akkoord="kaart"><span>${t('ak.hoofdKnop')}</span> ${icoon('i-pen')}</button>${offerteVerlopen ? '' : `<p class="ak-regel">${akkoordRegel()}</p>`}`;
+      : dicht
+        ? (staat.vervallenAkkoord
+          ? `<div class="interesse-bevestiging">${icoon('i-vink')}<span><strong>${t('ak.vervallenStatus', { datum: fmtDatum(staat.vervallenAkkoord.t) })}</strong> ${t('ak.foutAl', { naam: escapeHtml(verkoperVoornaam()) })}</span></div>`
+          : `<button class="knop knop-primair knop-blok midden" type="button" disabled>${t('ak.verlopenKnop')}</button>`)
+        : `<button class="knop ${lead ? 'knop-secundair' : 'knop-primair'} knop-blok midden" type="button" data-open-akkoord="kaart"><span>${t('ak.hoofdKnop')}</span> ${icoon('i-pen')}</button>${dicht ? '' : `<p class="ak-regel">${akkoordRegel()}</p>`}`;
   renderMobieleBalk();
 }
 
+// Melding "akkoord vervallen" met de knoppen om een nieuwe offerte te vragen (WhatsApp met voorbereid bericht) of te bellen
+function vervallenMeldingHtml(ak) {
+  const vk = offerte.verkoper, v = offerte.voertuig, vNaam = escapeHtml(vk.naam.split(' ')[0]);
+  const tel = String(vk.telefoon || '').replace(/[^\d+]/g, ''), wa = String(vk.whatsapp || '').replace(/\D/g, '');
+  const bericht = t('ak.vervallen.wa', { voornaam: vk.naam.split(' ')[0], nummer: offerte.nummer, auto: `${v.merk} ${v.model}` });
+  return t('ak.melding.vervallen', { datum: fmtDatum(ak.t), naam: vNaam })
+    + `<div class="knoppen-rij"><a class="knop knop-wa" id="vervallenWa" href="https://wa.me/${wa}?text=${encodeURIComponent(bericht)}" target="_blank" rel="noopener">${icoon('i-whatsapp')}${t('ak.vervallen.vraag', { naam: vNaam })}</a>${tel ? `<a class="knop knop-secundair" id="vervallenBel" href="tel:${tel}">${icoon('i-telefoon')}${t('st.bel', { naam: vNaam })}</a>` : ''}</div>`;
+}
 // Melding boven de pagina (koop bevestigd, auto gereserveerd) of het scherm "niet meer geldig"
 function renderKlantStatus() {
   const st = klantStatus(), naam = escapeHtml(verkoperVoornaam());
@@ -3356,8 +3392,8 @@ function renderKlantStatus() {
   const melding = st.ingetrokken ? null
     : staat.akkoord ? (st.bevestigdOp
         ? ['groen', t('ak.bevestigdOp', { dealer: escapeHtml(INSTELLINGEN.dealer), datum: fmtDatum(st.bevestigdOp) })]
-        : termijnVerstreken(staat.akkoord) ? ['', t('ak.melding.nietBevestigd', { naam })]
         : ['groen', t(INSTELLINGEN.akkoordVariant === 'reservering' ? 'ak.melding.reservering' : 'ak.melding.koop', { datum: fmtDatum(staat.akkoord.t), naam, deadline: fmtMoment(staat.akkoord.bevestigUiterlijk || bevestigUiterlijk(staat.akkoord.t)) })])
+    : staat.vervallenAkkoord ? ['let', vervallenMeldingHtml(staat.vervallenAkkoord)]
     : st.gereserveerd ? ['let', t('st.gereserveerd', { naam })] : null;
   m.hidden = !melding;
   if (melding) { m.className = ('status-melding ' + melding[0]).trim(); m.innerHTML = melding[1]; }
@@ -3432,13 +3468,14 @@ async function sha256(tekst) {
 }
 const controlecodeVan = hash => hash ? hash.slice(0, 16).toUpperCase().match(/.{4}/g).join('-') : '';
 const opAfstand = () => aanleidingType() !== 'showroom';   // na een lead: koop op afstand, met herroepingsrecht
-const fmtMoment = d => t('moment', { dag: new Date(d).toLocaleDateString(loc(), { weekday: 'long', day: 'numeric', month: 'long' }), tijd: fmtTijd(d) });
+// Dag, datum en tijd in Nederlandse tijd (dezelfde als de termijn in de database)
+const fmtMoment = d => t('moment', { dag: new Date(d).toLocaleDateString(loc(), { weekday: 'long', day: 'numeric', month: 'long', timeZone: AMSTERDAM }), tijd: new Date(d).toLocaleTimeString(loc(), { hour: '2-digit', minute: '2-digit', timeZone: AMSTERDAM }) });
 const akkoordTekst = deadline => t('ak.tekst.' + (INSTELLINGEN.akkoordVariant === 'reservering' ? 'reservering' : 'voorbehoud'), { dealer: INSTELLINGEN.dealer, naam: verkoperVoornaam(), deadline: fmtMoment(deadline) });
-// Tekst bij een akkoord dat nog niet bevestigd is. Is de termijn verstreken (koop), dan zegt de pagina dat het akkoord blijft staan.
+// Tekst bij een akkoord dat nog niet bevestigd is. Is de termijn verstreken (koop), dan zegt de pagina dat het akkoord is vervallen.
 const termijnVerstreken = ak => INSTELLINGEN.akkoordVariant !== 'reservering' && Date.now() > (ak.bevestigUiterlijk || bevestigUiterlijk(ak.t));
 const akkoordVervolgRegel = ak => {
   const deadline = ak.bevestigUiterlijk || bevestigUiterlijk(ak.t);
-  if (termijnVerstreken(ak)) return t('ak.melding.nietBevestigd', { naam: escapeHtml(verkoperVoornaam()) });
+  if (termijnVerstreken(ak)) return t('ak.melding.vervallen', { datum: fmtDatum(ak.t), naam: escapeHtml(verkoperVoornaam()) });
   return INSTELLINGEN.akkoordVariant === 'reservering' ? t('ak.gereserveerdTot', { deadline: fmtMoment(deadline) }) : t('ak.bevestigingVolgt', { naam: escapeHtml(verkoperVoornaam()), deadline: fmtMoment(deadline) });
 };
 function maakVastlegging({ naam, betaalwijze, verzekeringsvoorstel, wijze, tijd }) {
@@ -3465,6 +3502,7 @@ let akkoordStap = 1;
 function openAkkoord() {
   if (staat.akkoord) { toonAkkoordStap(3); $('#dlgAkkoord').showModal(); return; }
   if (offerteVerlopen) { toonToast(t('verlopenToast')); return; }
+  if (staat.vervallenAkkoord) { toonToast(t('ak.foutAl', { naam: verkoperVoornaam() })); return; }
   const st = klantStatus();
   if (st.ingetrokken) return;
   if (st.gereserveerd) { toonToast(t('ak.gereserveerdToast')); return; }
@@ -3475,6 +3513,7 @@ function openAkkoord() {
     + rij(prijsNaam(), fmtEuro(prijs, 0))
     + (i ? rij(i.getaxeerd ? t('inr.label.getaxeerd') : t('rij.inruil'), (i.waarde ? '− ' + fmtEuro(i.waarde, 0) : t('inr.naTaxatie')) + (i.getaxeerd && i.taxatieGeldigTot ? ` <span style="color:var(--muted)">(${t('off.geldig').toLowerCase()} ${fmtDatum(i.taxatieGeldigTot)})</span>` : '')) : '')
     + (inlossingBedrag > 0 ? rij(t('inl.label'), '+ ' + fmtEuro(inlossingBedrag, 0)) + `<tr><td colspan="2" style="color:var(--muted);text-align:left">${escapeHtml(inlossingUitleg())}</td></tr>` : '')
+    + (heeftNetto() ? rij(nettoLabel(), fmtNetto(nettoInruil())) + (nettoInruil() < 0 ? `<tr><td colspan="2" style="color:var(--muted);text-align:left">${t('inr.nettoNeg')}</td></tr>` : '') : '')
     + (heeftNaInruil() ? rij(naInruilLabel(), fmtEuro(teBetalen(), 0)) : '')
     + (offerte.aflevering ? rij(t('rij.aflevering'), escapeHtml(hoofdBegin(tw(offerte.aflevering)))) : '')
     + (garantieZin() ? rij(t('feit.garantieKort'), `<span class="lang">${garantieZin()}</span>`) : '')
@@ -3488,7 +3527,7 @@ function openAkkoord() {
   // Alleen voorselecteren wat de klant zelf al koos; bij "weet ik nog niet" staat niets aangevinkt
   const voorkeurFin = kanFin && bwKeuze === 'financiering';
   $('#akBetaalwijze').innerHTML = (kanFin ? `
-    <label class="keuzekaart"><input type="radio" name="akBetaal" value="financiering" ${voorkeurFin ? 'checked' : ''}><span><span>${t('ak.metFin')} ${voorkeurFin ? `<span class="aanbevolen">· ${t('ak.aanbevolen')}</span>` : ''}<small class="krediet">${b.slottermijn > 0 ? escapeHtml(finRegelSlot({ ...b, aanbetaling: staat.aanbetaling, looptijd: staat.looptijd, rentePct: weergaveRente() })) : t('ak.metFinSub', { aanbetaling: fmtEuro(staat.aanbetaling), krediet: fmtEuro(b.hoofdsom), looptijd: staat.looptijd, maand: fmtEuro(b.maandbedrag), jkp: fmtGetal(b.jkp, 2) + '%', totaal: fmtEuro(b.totaalTermijnen), kosten: fmtEuro(b.kredietkosten) })}</small><small class="krediet"><strong>${t('krediet.waarschuwing')}</strong></small><small class="krediet">${t('ak.voorbehoudFin')}</small></span></span></label>` : `<p class="uitleg vast">${t('ak.nietFinancierbaar')}</p>`)
+    <label class="keuzekaart"><input type="radio" name="akBetaal" value="financiering" ${voorkeurFin ? 'checked' : ''}><span><span>${t('ak.metFin')} ${voorkeurFin ? `<span class="aanbevolen">· ${t('ak.aanbevolen')}</span>` : ''}<small class="krediet">${b.slottermijn > 0 ? escapeHtml(finRegelSlot({ ...b, aanbetaling: staat.aanbetaling, looptijd: staat.looptijd, rentePct: weergaveRente() })) : t('ak.metFinSub', { aanbetaling: fmtEuro(staat.aanbetaling), krediet: fmtEuro(b.hoofdsom), looptijd: staat.looptijd, maand: fmtEuro(b.maandbedrag), jkp: fmtGetal(b.jkp, 2) + '%', totaal: fmtEuro(b.totaalTermijnen), kosten: fmtEuro(b.kredietkosten) })}</small>${b.slottermijn > 0 ? `<small class="krediet">${slotVergelijking(b, true)}</small><small class="krediet">${t('slot.risico')}</small>` : ''}<small class="krediet"><strong>${t('krediet.waarschuwing')}</strong></small><small class="krediet">${t('ak.voorbehoudFin')}</small></span></span></label>` : `<p class="uitleg vast">${t('ak.nietFinancierbaar')}</p>`)
     + `<label class="keuzekaart"><input type="radio" name="akBetaal" value="zelf" ${!kanFin || bwKeuze === 'zelf' ? 'checked' : ''}><span><span>${t('ak.zelf')}<small>${t('ak.zelfSub')}</small></span><b>${fmtEuro(teBetalen(), 0)}${inruilIndicatief() ? ' ' + t('indicatief') : ''}</b></span></label>`;
   $('#akVzRij').hidden = !!staat.vzVoorstel;
   $('#akVerzekering').checked = false;   // niet vooraf aangevinkt: de klant kiest zelf
@@ -3536,7 +3575,7 @@ function vulAkkoordBevestiging() {
   const st = klantStatus(), naam = escapeHtml(verkoperVoornaam());
   $('#akBevestigingTijd').textContent = t('ak.ontvangenOp', { datum: fmtDatum(ak.t), tijd: fmtTijd(ak.t) });
   $('#akVastgelegd').innerHTML = (ak.controlecode ? t('ak.vastgelegd', { versie: ak.versie || offerteVersie, nummer: escapeHtml(offerte.nummer), code: escapeHtml(ak.controlecode) }) + '<br>' + t('ak.codeUitleg', { naam }) + '<br>' : '')
-    + (st.bevestigdOp ? t('ak.bevestigdOp', { dealer: escapeHtml(INSTELLINGEN.dealer), datum: fmtDatum(st.bevestigdOp) }) : akkoordVervolgRegel(ak));
+    + (st.bevestigdOp ? t('ak.bevestigdOp', { dealer: escapeHtml(INSTELLINGEN.dealer), datum: fmtDatum(st.bevestigdOp) }) : INSTELLINGEN.akkoordVariant === 'reservering' ? akkoordVervolgRegel(ak) : '');   // koop: de termijn staat al in de eerste stap hieronder (ak.na2d)
   let html = '';
   if (ak.betaalwijze === 'financiering') html += `<div class="samenvatting-blok">${t('ak.finVolgt', { naam })}</div>`;
   if (ak.verzekeringsvoorstel) html += `<div class="samenvatting-blok">${t('ak.vzVolgt', { afdeling: VZ_AFDELING.naam })}</div>`;
@@ -3545,7 +3584,7 @@ function vulAkkoordBevestiging() {
   const reservering = INSTELLINGEN.akkoordVariant === 'reservering';
   const stappen = reservering
     ? [t('ak.na.reservering1', { naam }), t('ak.na2r', { naam }), t('ak.na3')]
-    : [t('ak.na2d', { naam }), t('ak.na.voorbehoud1', { naam }), t('ak.na3')];   // koop: de bevestiging met kopie komt vóór het contact over de afleverdatum
+    : [t('ak.na2d', { naam, deadline: fmtMoment(ak.bevestigUiterlijk || bevestigUiterlijk(ak.t)) }), t('ak.na.voorbehoud1', { naam }), t('ak.na3')];   // koop: de bevestiging met kopie komt vóór het contact over de afleverdatum
   $('#akNa').innerHTML = stappen.map(x => `<li><span>${x}</span></li>`).join('');
 }
 function akkoordFoutTekst(fout) {
@@ -3553,7 +3592,7 @@ function akkoordFoutTekst(fout) {
   if (/gereserveerd/.test(m)) return t('ak.foutGereserveerd', { naam });
   if (/verlopen/.test(m)) return t('ak.foutVerlopen', { naam });
   if (/ingetrokken/.test(m)) return t('ak.foutIngetrokken', { naam });
-  if (/al akkoord/.test(m)) return t('ak.foutAl');
+  if (/al akkoord/.test(m)) return t('ak.foutAl', { naam });
   return t('ak.foutVerbinding');
 }
 function toonAkkoordFout(tekst) { const el = $('#akFout'); el.innerHTML = tekst; el.hidden = false; el.scrollIntoView({ behavior: 'smooth', block: 'center' }); }
@@ -3784,9 +3823,6 @@ function vulKlantpagina() {
   // Een verlopen offerte heeft een vervolg: een voorbereid WhatsApp-bericht aan de verkoper, of bellen
   verlopen.innerHTML = t('verlopen', { datum: fmtDatum(offerte.geldigTot), naam: vNaam })
     + `<div class="knoppen-rij"><a class="knop knop-wa" id="verlopenWa" href="https://wa.me/${vWaNummer}?text=${encodeURIComponent(vWaTekst)}" target="_blank" rel="noopener">${icoon('i-whatsapp')}${t('verlopen.vraag', { naam: vNaam })}</a>${vTel ? `<a class="knop knop-secundair" id="verlopenBel" href="tel:${vTel}">${icoon('i-telefoon')}${t('st.bel', { naam: vNaam })}</a>` : ''}</div>`;
-  // Adres staat meestal al op de offerte: alvast invullen
-  if (!$('#vzPostcode').value && k.postcode) $('#vzPostcode').value = k.postcode;
-  if (!$('#vzHuisnummer').value && k.huisnummer) $('#vzHuisnummer').value = k.huisnummer;
 
   const initialen = vk.naam.split(' ').filter(Boolean).map(w => w[0]).filter(c => c === c.toUpperCase()).slice(0, 2).join('');
   $$('[data-verkoper-initialen]').forEach(el => { el.innerHTML = vk.fotoUrl ? `<img src="${escapeHtml(vk.fotoUrl)}" alt="">` : escapeHtml(initialen); });
@@ -3854,7 +3890,6 @@ function pasTaalToe() {
   }));
   $$('[data-taal]').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.taal === taal)));
   vulKlantpagina();
-  bouwVerzekeringsopties();
   bouwLooptijdChips();
   renderFinanciering();
   renderInruil();
@@ -3890,7 +3925,7 @@ const verstuurdOp = (o, aangemaakt) => aangemaakt || (o.bron && o.bron.gecontrol
 // De verkoperweergave is altijd Nederlands, ook als de klant de Engelse versie gebruikt
 function metTaal(code, fn) { const oud = taal; taal = code; try { return fn(); } finally { taal = oud; } }
 const metNL = fn => metTaal('nl', fn);
-const fmtMomentNL = d => `${new Date(d).toLocaleDateString('nl-NL', { weekday: 'long', day: 'numeric', month: 'long' })} om ${new Date(d).toLocaleTimeString('nl-NL', { hour: '2-digit', minute: '2-digit' })}`;
+const fmtMomentNL = d => `${new Date(d).toLocaleDateString('nl-NL', { weekday: 'long', day: 'numeric', month: 'long', timeZone: AMSTERDAM })} om ${new Date(d).toLocaleTimeString('nl-NL', { hour: '2-digit', minute: '2-digit', timeZone: AMSTERDAM })}`;
 const datumKort = d => new Date(d).toLocaleDateString('nl-NL', { day: 'numeric', month: 'short' });
 const BW_LABEL = { financiering: 'Met financiering', zelf: 'Zelf betalen', twijfel: 'Weet het nog niet, wil advies' };
 
@@ -3925,8 +3960,10 @@ function berekenInzichten(evs, st = {}, o = offerte, aangemaakt = null) {
   const metTaal = keuzes.filter(e => e.taal);
   const verstuurd = verstuurdOp(o, aangemaakt);
   const opgevolgd = st.opgevolgdOp || 0;
-  const wilFinanciering = !!((bw && bw.keuze !== 'zelf') || terugbelFin || (ak && ak.betaalwijze === 'financiering'));
-  const vzGevraagd = !!(vz || (ak && ak.verzekeringsvoorstel));
+  // Een vervallen akkoord telt niet meer mee voor financiering en verzekering
+  const akVervallen = !!ak && !st.bevestigdOp && !st.ingetrokken && INSTELLINGEN.akkoordVariant !== 'reservering' && Date.now() > (ak.bevestigUiterlijk || bevestigUiterlijk(ak.t));
+  const wilFinanciering = !!((bw && bw.keuze !== 'zelf') || terugbelFin || (ak && !akVervallen && ak.betaalwijze === 'financiering'));
+  const vzGevraagd = !!(vz || (ak && !akVervallen && ak.verzekeringsvoorstel));
   const werkdagen = werkdagenSinds(verstuurd);
   return {
     keuzes, bw, vz, ak, contact, terugbelFin, inruil: laatsteInruil, st, verstuurd, werkdagen,
@@ -3936,7 +3973,9 @@ function berekenInzichten(evs, st = {}, o = offerte, aangemaakt = null) {
     finOpen: wilFinanciering && !st.fiDoorgezetOp && !st.ingetrokken,
     vzOpen: vzGevraagd && !st.vzDoorgezetOp && !st.ingetrokken,
     zelfOpen: !!(bw && bw.keuze === 'zelf' && !ak && bw.t > opgevolgd && !st.ingetrokken),
-    bevestigenOpen: !!ak && !st.bevestigdOp && !st.ingetrokken,
+    // Vervallen: de termijn is verstreken zonder bevestiging (koop). Dan is er niets meer te bevestigen; de verkoper krijgt een taak om de klant te informeren.
+    akkoordVervallen: akVervallen,
+    bevestigenOpen: !!ak && !st.bevestigdOp && !st.ingetrokken && !akVervallen,
     deadline: ak ? (ak.bevestigUiterlijk || bevestigUiterlijk(ak.t)) : null,
     // Herinnering op basis van de verzenddatum, niet van bezoeken of klikken
     herinnering: !keuzes.length && !st.ingetrokken && !opgevolgd && werkdagen >= INSTELLINGEN.herinneringNaWerkdagen,
@@ -3970,8 +4009,9 @@ function maakAdvies(inz) {
   if (inz.ak) {
     const ak = inz.ak;
     a.push(st.bevestigdOp ? 'Koop bevestigd. Plan de aflevering met de klant.'
+      : inz.akkoordVervallen ? `Het akkoord van ${datumNL(ak.t)} is vervallen: de termijn (${fmtMomentNL(inz.deadline)}) is verstreken zonder bevestiging. Laat de klant weten dat het akkoord is vervallen en maak zo nodig een nieuwe versie.`
       : `Klant gaf digitaal akkoord (${ak.betaalwijze === 'financiering' ? 'met financiering' : 'zelf betalen'}). Bevestig de koop uiterlijk ${fmtMomentNL(inz.deadline)}${Date.now() > inz.deadline ? '; die termijn is verstreken, bel de klant vandaag' : ''}.`);
-    if (ak.betaalwijze === 'zelf') a.push('Akkoord zonder financiering: bespreek bij het bevestigen alsnog verzekering en garantieverlenging.');
+    if (ak.betaalwijze === 'zelf' && !inz.akkoordVervallen) a.push('Akkoord zonder financiering: bespreek bij het bevestigen alsnog verzekering en garantieverlenging.');
   }
   const bw = inz.bw;
   if (bw && !inz.ak) {
@@ -3989,7 +4029,8 @@ function maakAdvies(inz) {
   }
   const vzv = inz.vz;
   if (inz.vzOpen) {
-    if (vzv && vzv.compleet) a.push(`Verzekeringsaanvraag is compleet (${dekkingLabel(vzv.dekking)}, ${schadevrijLabel(vzv.schadevrijeJaren)} schadevrij, ${kmLabel(vzv.kilometers)} km/jaar). Zet hem door naar ${VZ_AFDELING.naam}.`);
+    if (vzv && !vzOudeAanvraag(vzv)) a.push(`Klant vroeg een contactverzoek voor een verzekeringsofferte aan (contact ${String(vzv.voorkeur || '').toLowerCase()}). Zet het door naar ${VZ_AFDELING.naam}.`);
+    else if (vzv && vzv.compleet) a.push(`Verzekeringsaanvraag is compleet (${dekkingLabel(vzv.dekking)}, ${schadevrijLabel(vzv.schadevrijeJaren)} schadevrij, ${kmLabel(vzv.kilometers)} km/jaar). Zet hem door naar ${VZ_AFDELING.naam}.`);
     else if (vzv) a.push(`Klant vroeg een verzekeringsofferte aan, nog niet compleet (ontbreekt: ${vzOntbrekendNL(vzv)}). Zet hem door; ${VZ_AFDELING.naam} vraagt de rest na.`);
     else a.push(`Klant vroeg bij het akkoord om een verzekeringsofferte. Zet het door naar ${VZ_AFDELING.naam}.`);
   }
@@ -4005,6 +4046,7 @@ function maakAdvies(inz) {
 // Een openingszin voor het gesprek: over wat de klant zelf koos, nooit over wat de klant bekeek
 function maakOpening(inz) {
   const v = offerte.voertuig, bw = inz.bw;
+  if (inz.akkoordVervallen) return '';   // het juiste bericht staat in de taak "Laat de klant weten …"
   if (inz.ak) return inz.st.bevestigdOp
     ? `Uw koop van de ${v.merk} ${v.model} is bevestigd. Zullen we de aflevering inplannen? Welke dag komt u goed uit?`
     : `Dank voor uw akkoord op de ${v.merk} ${v.model}! Ik bevestig graag de koop en plan de aflevering met u in. Welke dag komt u goed uit?`;
@@ -4030,36 +4072,54 @@ const datumNL = d => d ? new Date(d).toLocaleDateString('nl-NL', { day: '2-digit
 function vzAanvraagTekst(inz) {
   const k = offerte.klant, v = offerte.voertuig, vk = offerte.verkoper;
   const vz = inz.vz || {}, ak = inz.ak;
-  const compleet = !!vz.compleet;
+  const toestemming = vz.t ? `ja, ${datumNL(vz.t)} ${fmtTijd(vz.t)}` : ak && ak.verzekeringsvoorstel ? `ja, bij akkoord op ${datumNL(ak.t)}` : '';
+  const voorkeur = vz.voorkeur || (inz.bw && inz.bw.voorkeur) || '';
+  // Oude aanvraag met de volle gegevens (van vóór 09-11-2026): het oude format
+  if (vzOudeAanvraag(vz)) {
+    return [
+      'VERZEKERINGSAANVRAAG · interactieve offerte (format 1)',
+      `Status: ${vz.compleet ? 'COMPLEET, klaar voor een offerte' : `ONVOLLEDIG, ontbreekt: ${vzOntbrekendNL(vz)}`}`,
+      '', 'KLANT',
+      regelTekst('Naam', klantNaam(offerte, false)),
+      regelTekst('Geboortedatum', datumNL(vz.geboortedatum)),
+      regelTekst('Adres', vz.postcode ? `${vz.postcode} ${vz.huisnummer}${vz.toevoeging ? ' ' + vz.toevoeging : ''}` : [k.postcode, k.huisnummer].filter(Boolean).join(' ')),
+      regelTekst('Telefoon', k.telefoon), regelTekst('E-mail', k.email), regelTekst('Contactvoorkeur', vz.voorkeur),
+      '', 'VERZEKERING',
+      regelTekst('Kenteken', v.kenteken),
+      regelTekst('Gewenste dekking', vz.dekking ? dekkingLabel(vz.dekking) : 'advies gewenst'),
+      regelTekst('Schadevrije jaren', vz.schadevrijeJaren ? schadevrijLabel(vz.schadevrijeJaren) : ''),
+      regelTekst('Km per jaar', vz.kilometers ? kmLabel(vz.kilometers) : ''),
+      regelTekst('Ingangsdatum', 'op de afleverdatum'),
+      regelTekst('Toestemming klant', toestemming),
+      '', 'OFFERTE',
+      regelTekst('Offertenummer', `${offerte.nummer} (versie ${offerteVersie})`),
+      regelTekst('Verkoper', `${vk.naam}${vk.telefoon ? ' · ' + vk.telefoon : ''}`),
+      regelTekst('Vestiging', vk.vestiging)
+    ].join('\n');
+  }
+  // Nu: een contactverzoek, met alleen wat de klant toestemming voor gaf te delen
   return [
-    'VERZEKERINGSAANVRAAG · interactieve offerte (format 1)',
-    `Status: ${compleet ? 'COMPLEET, klaar voor een offerte' : `ONVOLLEDIG, ontbreekt: ${vz.t ? vzOntbrekendNL(vz) : 'alle verzekeringsgegevens (gevraagd bij akkoord)'}`}`,
-    '',
-    'KLANT',
+    'VERZEKERING: CONTACTVERZOEK · interactieve offerte (format 2)',
+    'De klant vraagt of u contact opneemt over een verzekeringsofferte.',
+    '', 'KLANT',
     regelTekst('Naam', klantNaam(offerte, false)),
-    regelTekst('Geboortedatum', datumNL(vz.geboortedatum)),
-    regelTekst('Adres', vz.postcode ? `${vz.postcode} ${vz.huisnummer}${vz.toevoeging ? ' ' + vz.toevoeging : ''}` : [k.postcode, k.huisnummer].filter(Boolean).join(' ')),
     regelTekst('Telefoon', k.telefoon),
     regelTekst('E-mail', k.email),
-    regelTekst('Contactvoorkeur', vz.voorkeur),
-    '',
-    'VERZEKERING',
+    regelTekst('Contactvoorkeur', voorkeur),
+    '', 'AUTO',
+    regelTekst('Auto', `${v.merk} ${v.model} ${v.uitvoering || ''}`.trim()),
     regelTekst('Kenteken', v.kenteken),
-    regelTekst('Gewenste dekking', vz.dekking ? dekkingLabel(vz.dekking) : 'advies gewenst'),
-    regelTekst('Schadevrije jaren', vz.schadevrijeJaren ? schadevrijLabel(vz.schadevrijeJaren) : ''),
-    regelTekst('Km per jaar', vz.kilometers ? kmLabel(vz.kilometers) : ''),
-    regelTekst('Ingangsdatum', 'op de afleverdatum'),
-    regelTekst('Toestemming klant', vz.t ? `ja, ${datumNL(vz.t)} ${fmtTijd(vz.t)}` : ak && ak.verzekeringsvoorstel ? `ja, bij akkoord op ${datumNL(ak.t)}` : ''),
-    '',
-    'OFFERTE',
+    '', 'OFFERTE',
     regelTekst('Offertenummer', `${offerte.nummer} (versie ${offerteVersie})`),
     regelTekst('Verkoper', `${vk.naam}${vk.telefoon ? ' · ' + vk.telefoon : ''}`),
-    regelTekst('Vestiging', vk.vestiging)
+    regelTekst('Vestiging', vk.vestiging),
+    '', 'TOESTEMMING',
+    regelTekst('Toestemming klant', toestemming)
   ].join('\n');
 }
 function vzOverdrachtUrl(inz) {
   const v = offerte.voertuig, vz = inz.vz || {};
-  const onderwerp = `Verzekeringsaanvraag${vz.compleet ? '' : ' (onvolledig)'}${v.kenteken ? ' | ' + v.kenteken : ''} | ${klantNaam(offerte, false)}`;
+  const onderwerp = `${vzOudeAanvraag(vz) ? 'Verzekeringsaanvraag' + (vz.compleet ? '' : ' (onvolledig)') : 'Verzekering: contactverzoek'}${v.kenteken ? ' | ' + v.kenteken : ''} | ${klantNaam(offerte, false)}`;
   return `mailto:${VZ_AFDELING.email}?subject=${encodeURIComponent(onderwerp)}&body=${encodeURIComponent(vzAanvraagTekst(inz))}`;
 }
 // Financieringsaanvraag voor de F&I-desk: vast format, met de berekening van het moment waarop de klant koos
@@ -4118,6 +4178,7 @@ function akkoordKopieTekst(inz) {
   const wanneer = new Date(ak.t);
   return metTaal(inz.klantTaal, () => {
     const regels = [
+      ...(DEMO_LABEL ? [t('demo.kopie')] : []),
       en ? 'Copy of your acceptance' : 'Kopie van uw akkoord',
       en ? `Accepted on ${wanneer.toLocaleDateString(locale, { day: 'numeric', month: 'long', year: 'numeric' })} at ${wanneer.toLocaleTimeString(locale, { hour: '2-digit', minute: '2-digit' })} by ${ak.naam}`
          : `Akkoord gegeven op ${wanneer.toLocaleDateString(locale, { day: 'numeric', month: 'long', year: 'numeric' })} om ${wanneer.toLocaleTimeString(locale, { hour: '2-digit', minute: '2-digit' })} door ${ak.naam}`,
@@ -4130,6 +4191,10 @@ function akkoordKopieTekst(inz) {
       const dat = vl.inlossingDatum ? new Date(vl.inlossingDatum).toLocaleDateString(locale, { day: 'numeric', month: 'long', year: 'numeric' }) : '';
       regels.push(`${t('inl.label')}: + ${eur(inlossingV)}`);
       regels.push(dat ? t('inl.uitleg', { datum: dat }) : t('inl.uitlegZonder'));
+    }
+    if (inruilV > 0 && inlossingV > 0) {
+      regels.push(`${t('inr.netto')}${getaxeerd ? '' : ' ' + t('indicatief')}: ${inruilV - inlossingV < 0 ? '− ' : ''}${eur(Math.abs(inruilV - inlossingV))}`);
+      if (inruilV - inlossingV < 0) regels.push(t('inr.nettoNeg'));
     }
     if (inruilV > 0 || inlossingV > 0) regels.push(`${t('ov.bijbetalen')}${getaxeerd || inruilV <= 0 ? '' : ' ' + t('indicatief')}: ${eur(prijsV - inruilV + inlossingV)}`);
     if (ak.betaalwijze === 'financiering') {
@@ -4173,6 +4238,11 @@ function verloopBerichtTekst(inz) {
   return `${aanhef}, ${kern}\n\n${groet}\n\n${klantLinkNu()}`;
 }
 
+// Bericht aan de klant als het akkoord is vervallen, in de taal van de klant (de tekst staat in NL en EN)
+function vervallenBerichtTekst(inz) {
+  return metTaal(inz.klantTaal, () => t('vk.vervallen.bericht', { aanhef: aanhefTekst(), nummer: offerte.nummer, verkoper: offerte.verkoper.naam, dealer: INSTELLINGEN.dealer }));
+}
+
 // Leesbare omschrijving per keuze of actie voor de tijdlijn (Nederlands, intern)
 function omschrijfEvent(e) {
   const s = e.stand;
@@ -4184,7 +4254,8 @@ function omschrijfEvent(e) {
     case 'betaalwijze_gekozen': return { tekst: `Betaalwijze gekozen: ${(BW_LABEL[e.keuze] || 'onbekend').toLowerCase()}`, sub: `contact ${String(e.voorkeur || '').toLowerCase()}${e.keuze !== 'zelf' && s ? ' · ' + mnd(s) : ''}`, cat: 'fin sterk' };
     case 'inruil_toegevoegd': return { tekst: `Inruil toegevoegd: ${e.omschrijving}`, sub: `${e.kenteken} · ${fmtGetal(e.km)} km${e.waarde ? ` · verwacht ${fmtEuro(e.waarde, 0)}` : ''}${e.taxatie ? ' · taxatie gevraagd' : ''}`, cat: 'fin sterk' };
     case 'inruil_verwijderd': return { tekst: 'Inruil verwijderd', sub: '', cat: 'fin' };
-    case 'verzekering_aangevraagd': return { tekst: e.compleet ? 'Verzekeringsofferte aangevraagd (compleet)' : 'Verzekeringsofferte aangevraagd (nog niet compleet)', sub: e.gewist ? 'doorgezet; persoonsgegevens hier gewist' : `${e.dekking ? dekkingLabel(e.dekking) + ' · ' : ''}contact ${String(e.voorkeur || '').toLowerCase()}${e.compleet ? '' : ` · ontbreekt: ${vzOntbrekendNL(e)}`}`, cat: 'vz sterk' };
+    case 'verzekering_aangevraagd': if (!vzOudeAanvraag(e)) return { tekst: 'Verzekeringsofferte gevraagd (contactverzoek)', sub: e.gewist ? 'doorgezet' : `contact ${String(e.voorkeur || '').toLowerCase()}`, cat: 'vz sterk' };
+      return { tekst: e.compleet ? 'Verzekeringsofferte aangevraagd (compleet)' : 'Verzekeringsofferte aangevraagd (nog niet compleet)', sub: e.gewist ? 'doorgezet; persoonsgegevens hier gewist' : `${e.dekking ? dekkingLabel(e.dekking) + ' · ' : ''}contact ${String(e.voorkeur || '').toLowerCase()}${e.compleet ? '' : ` · ontbreekt: ${vzOntbrekendNL(e)}`}`, cat: 'vz sterk' };
     case 'akkoord_gegeven': return { tekst: 'Digitaal akkoord gegeven', sub: [e.betaalwijze === 'financiering' ? 'met financiering' + (s ? ' · ' + mnd(s) : '') : 'zelf betalen', e.verzekeringsvoorstel ? 'wil verzekeringsofferte' : '', e.versie ? 'versie ' + e.versie : '', e.controlecode ? 'code ' + e.controlecode : ''].filter(Boolean).join(' · '), cat: 'off sterk' };
     case 'contact_verstuurd': return {
       tekst: e.onderwerp === 'financiering' ? 'Wil gebeld worden over de financiering' : { bericht: 'Bericht verstuurd', afspraak: `Afspraakverzoek verstuurd${e.soort ? ` (${e.soort})` : ''}`, terugbellen: 'Terugbelverzoek verstuurd' }[e.modus] || 'Contactverzoek',
@@ -4244,7 +4315,7 @@ function renderVerkoperNL() {
     `<span class="chip">${aanleidingType() === 'showroom' ? 'Na showroombezoek' : `Na lead${offerte.aanleiding && offerte.aanleiding.kanaal ? ' via ' + escapeHtml(offerte.aanleiding.kanaal) : ''}`}${offerte.aanleiding && offerte.aanleiding.datum ? ' · ' + datumKort(offerte.aanleiding.datum) : ''}</span>`,
     `<span class="badge info">Versie ${offerteVersie}${inz.ak ? ' · vastgezet' : ''}</span>`,
     st.ingetrokken ? '<span class="badge grijs">Ingetrokken</span>' : '',
-    !st.ingetrokken && st.bevestigdOp ? '<span class="badge">Verkocht</span>' : !st.ingetrokken && inz.ak ? '<span class="badge oranje">Auto gereserveerd voor deze klant</span>' : '',
+    !st.ingetrokken && st.bevestigdOp ? '<span class="badge">Verkocht</span>' : !st.ingetrokken && inz.akkoordVervallen ? '<span class="badge rood">Akkoord vervallen</span>' : !st.ingetrokken && inz.ak ? '<span class="badge oranje">Auto gereserveerd voor deze klant</span>' : '',
     gereserveerd ? '<span class="badge rood">Auto gereserveerd door een andere klant</span>' : '',
     inz.wilFinanciering ? '<span class="badge fi">F&amp;I-kans</span>' : '',
     inz.klantTaal === 'en' ? '<span class="chip">Klant gebruikt Engels</span>' : '',
@@ -4260,9 +4331,9 @@ function renderVerkoperNL() {
     inz.bw ? cel('Betaalwijze', `${datumKort(inz.bw.t)} · ${{ financiering: 'financiering', zelf: 'zelf betalen', twijfel: 'wil advies' }[inz.bw.keuze]}`, 'klaar')
       : inz.ak ? cel('Betaalwijze', `${datumKort(inz.ak.t)} · ${inz.ak.betaalwijze === 'financiering' ? 'financiering' : 'zelf betalen'}`, 'klaar')
       : cel('Betaalwijze', 'nog niet gekozen', inz.herinnering ? 'let' : ''),
-    inz.vz ? cel('Verzekering', `${datumKort(inz.vz.t)} · ${inz.vz.compleet ? 'compleet' : 'aangevraagd'}`, 'klaar') : cel('Verzekering', vzBijAkkoord ? 'gevraagd bij akkoord' : 'nog niet', vzBijAkkoord ? 'klaar' : ''),
-    inz.ak ? cel('Akkoord', `${datumKort(inz.ak.t)} · ${fmtTijd(inz.ak.t)}`, 'klaar') : cel('Akkoord', 'nog niet'),
-    st.bevestigdOp ? cel('Bevestigd', datumKort(st.bevestigdOp), 'klaar') : cel('Bevestigd', inz.ak ? `uiterlijk ${datumKort(inz.deadline)} 17:00` : '—', inz.bevestigenOpen ? 'let' : '')
+    inz.vz ? cel('Verzekering', `${datumKort(inz.vz.t)} · ${vzOudeAanvraag(inz.vz) && inz.vz.compleet ? 'compleet' : 'aangevraagd'}`, 'klaar') : cel('Verzekering', vzBijAkkoord ? 'gevraagd bij akkoord' : 'nog niet', vzBijAkkoord ? 'klaar' : ''),
+    inz.akkoordVervallen ? cel('Akkoord', `${datumKort(inz.ak.t)} · vervallen`, 'let') : inz.ak ? cel('Akkoord', `${datumKort(inz.ak.t)} · ${fmtTijd(inz.ak.t)}`, 'klaar') : cel('Akkoord', 'nog niet'),
+    st.bevestigdOp ? cel('Bevestigd', datumKort(st.bevestigdOp), 'klaar') : cel('Bevestigd', inz.ak && !inz.akkoordVervallen ? `uiterlijk ${datumKort(inz.deadline)} 17:00` : '—', inz.bevestigenOpen ? 'let' : '')
   ].join('');
 
   // Wat de klant koos, met de berekening van het moment van kiezen
@@ -4278,12 +4349,13 @@ function renderVerkoperNL() {
     offerte.inlossing > 0 ? regel('Inlossing lening inruilauto', `${fmtEuro(offerte.inlossing, 0)}${offerte.inlossingDatum ? ` <small>(opgave van ${fmtDatum(offerte.inlossingDatum)})</small>` : ''}`) : '',
     regel('Contact', escapeHtml(contactVoorkeur || '—')),
     regel('Inruil', getaxeerd ? escapeHtml(`${getaxeerd.merk} ${getaxeerd.model} · getaxeerd ${fmtEuro(getaxeerd.waarde, 0)}`) : inz.inruil ? escapeHtml(`${inz.inruil.omschrijving} · verwacht ${inz.inruil.waarde ? fmtEuro(inz.inruil.waarde, 0) : '—'}`) : '—'),
-    regel('Verzekeringsofferte', inz.vz ? (inz.vz.gewist ? 'Doorgezet, gegevens gewist' : inz.vz.compleet ? `Compleet · ${escapeHtml(dekkingLabel(inz.vz.dekking))}` : `Onvolledig · ontbreekt ${escapeHtml(vzOntbrekendNL(inz.vz))}`) : vzBijAkkoord ? 'Gevraagd bij akkoord' : '—'),
+    regel('Verzekeringsofferte', inz.vz ? (inz.vz.gewist ? (vzOudeAanvraag(inz.vz) ? 'Doorgezet, gegevens gewist' : 'Doorgezet') : !vzOudeAanvraag(inz.vz) ? `Contactverzoek · ${escapeHtml(String(inz.vz.voorkeur || '').toLowerCase())}` : inz.vz.compleet ? `Compleet · ${escapeHtml(dekkingLabel(inz.vz.dekking))}` : `Onvolledig · ontbreekt ${escapeHtml(vzOntbrekendNL(inz.vz))}`) : vzBijAkkoord ? 'Gevraagd bij akkoord' : '—'),
     inz.ak ? regel('Akkoord', `${fmtDatum(inz.ak.t)} ${fmtTijd(inz.ak.t)}${inz.ak.controlecode ? ` · <span class="controlecode">${escapeHtml(inz.ak.controlecode)}</span>` : ''}`) : ''
   ].join('');
   $('#vkAdvies').innerHTML = maakAdvies(inz).map(tekst => `<li><span>${escapeHtml(tekst)}</span></li>`).join('');
   const opening = maakOpening(inz);
-  $('#vkOpening').hidden = false;
+  $('#vkOpening').hidden = !opening;
+  $('#vkActies').hidden = !opening;
   $('#vkOpening').textContent = `"${opening}"`;
   $('#vkActies').innerHTML = `<a class="knop knop-wa knop-klein" href="https://wa.me/${waNummer(k.telefoon)}?text=${encodeURIComponent(opening)}" target="_blank" rel="noopener">${icoon('i-whatsapp')}Stuur als WhatsApp</a>`
     + `<button class="knop knop-stil knop-klein" type="button" id="kopieerOpening">Kopieer openingszin</button>`;
@@ -4317,19 +4389,22 @@ function takenHtml(inz, opening) {
   if (st.ingetrokken) taken.push(taak('Link ingetrokken', 'De klant ziet dat deze offerte niet meer geldig is.', '', 'klaar'));
   // De klantpagina belooft een bevestiging van de koop met een kopie van het akkoord: één taak, die blijft staan tot de koop bevestigd is. Daarna staan de knoppen om te mailen of te appen in de taak hieronder.
   if (inz.bevestigenOpen) taken.push(taak('Bevestig de koop en stuur de klant de bevestiging met een kopie van het akkoord', `Uiterlijk ${fmtMomentNL(inz.deadline)}${Date.now() > inz.deadline ? ' · termijn verstreken' : ''}. Klik eerst op Bevestigen; daarna verschijnen hier de knoppen om de bevestiging te mailen of te appen. In die tekst staat al een kopie van het akkoord (datum en tijd, auto, prijs, betaalkeuze, versie en controlecode).`, knop('Bevestigen', 'data-vk-actie="bevestigen"', 'knop-primair'), 'belangrijk'));
+  if (inz.akkoordVervallen) taken.push(taak('Laat de klant weten dat het akkoord is vervallen', `De termijn om te bevestigen (${fmtMomentNL(inz.deadline)}) is verstreken zonder bevestiging. Het akkoord is vervallen en de auto is niet meer vastgehouden. Stuur de klant het voorbereide bericht; een nieuwe offerte maak je als nieuwe versie met een nieuwe link.`,
+    `<a class="knop knop-wa knop-klein" href="https://wa.me/${waNummer(k.telefoon)}?text=${encodeURIComponent(vervallenBerichtTekst(inz))}" target="_blank" rel="noopener">${icoon('i-whatsapp')}App bericht</a>${knop('Kopieer bericht', 'data-kopieer="vervallen"')}${knop('Nieuwe versie', 'data-vk-actie="nieuwe_versie"', 'knop-primair')}`, 'belangrijk'));
   if (inz.ak && st.bevestigdOp) {
     const tekst = bevestigingTekst(inz), onderwerp = `${inz.klantTaal === 'en' ? 'Confirmation of your purchase' : 'Bevestiging van uw koop'}: ${offerte.voertuig.merk} ${offerte.voertuig.model}`;
     taken.push(taak(`Koop bevestigd op ${fmtDatum(st.bevestigdOp)}`, 'Stuur de klant de bevestiging van de koop, met een kopie van het akkoord, als je dat nog niet deed.',
       `<a class="knop knop-secundair knop-klein" href="mailto:${escapeHtml(k.email || '')}?subject=${encodeURIComponent(onderwerp)}&body=${encodeURIComponent(tekst)}">Mail bevestiging</a><a class="knop knop-wa knop-klein" href="https://wa.me/${waNummer(k.telefoon)}?text=${encodeURIComponent(tekst)}" target="_blank" rel="noopener">${icoon('i-whatsapp')}App bevestiging</a>`, 'klaar'));
   }
   if (inz.finOpen) {
-    const reden = inz.ak ? 'Klant gaf akkoord met financiering' : inz.bw && inz.bw.keuze === 'financiering' ? 'Klant wil financieren' : inz.bw && inz.bw.keuze === 'twijfel' ? 'Klant wil advies over betalen' : 'Klant wil gebeld worden over de financiering';
+    const reden = inz.ak && !inz.akkoordVervallen ? 'Klant gaf akkoord met financiering' : inz.bw && inz.bw.keuze === 'financiering' ? 'Klant wil financieren' : inz.bw && inz.bw.keuze === 'twijfel' ? 'Klant wil advies over betalen' : 'Klant wil gebeld worden over de financiering';
     taken.push(taak('Financiering regelen', `${reden}. Zet de aanvraag door naar ${escapeHtml(INSTELLINGEN.fiDesk.naam)}, altijd in hetzelfde format.`,
       `<a class="knop knop-fi knop-klein" href="${escapeHtml(fiOverdrachtUrl(inz))}" data-na-mail="fi_doorgezet">${icoon('i-euro')}Doorzetten naar ${escapeHtml(INSTELLINGEN.fiDesk.naam)}</a>${knop('Kopieer aanvraag', 'data-kopieer="fi"')}`));
   } else if (inz.wilFinanciering && st.fiDoorgezetOp) taken.push(taak(`Financiering doorgezet op ${fmtDatum(st.fiDoorgezetOp)}`, `${escapeHtml(INSTELLINGEN.fiDesk.naam)} neemt het over.`, '', 'klaar'));
-  if (inz.vzOpen) taken.push(taak(inz.vz && inz.vz.compleet ? 'Verzekeringsofferte compleet' : 'Verzekeringsofferte aangevraagd', `Zet de aanvraag door naar ${escapeHtml(VZ_AFDELING.naam)}. Daarna wis je de persoonsgegevens hier.`,
-    `<a class="knop knop-fi knop-klein" href="${escapeHtml(vzOverdrachtUrl(inz))}">${icoon('i-schild')}Doorzetten naar ${escapeHtml(VZ_AFDELING.naam)}</a>${knop('Kopieer aanvraag', 'data-kopieer="vz"')}${knop('Doorgezet: gegevens wissen', 'data-vk-actie="vz_doorgezet"')}`));
-  else if (inz.vzGevraagd && st.vzDoorgezetOp) taken.push(taak(`Verzekeringsofferte doorgezet op ${fmtDatum(st.vzDoorgezetOp)}`, 'Geboortedatum, adres, schadevrije jaren en kilometers zijn hier gewist.', '', 'klaar'));
+  const vzOud = vzOudeAanvraag(inz.vz);   // oude aanvragen hebben persoonsgegevens die na het doorzetten gewist worden
+  if (inz.vzOpen) taken.push(taak(!vzOud ? 'Verzekeringsofferte gevraagd (contactverzoek)' : inz.vz && inz.vz.compleet ? 'Verzekeringsofferte compleet' : 'Verzekeringsofferte aangevraagd', `Zet het contactverzoek door naar ${escapeHtml(VZ_AFDELING.naam)}.${vzOud ? ' Daarna wis je de persoonsgegevens hier.' : ''}`,
+    `<a class="knop knop-fi knop-klein" href="${escapeHtml(vzOverdrachtUrl(inz))}">${icoon('i-schild')}Doorzetten naar ${escapeHtml(VZ_AFDELING.naam)}</a>${knop('Kopieer aanvraag', 'data-kopieer="vz"')}${knop(vzOud ? 'Doorgezet: gegevens wissen' : 'Doorgezet', 'data-vk-actie="vz_doorgezet"')}`));
+  else if (inz.vzGevraagd && st.vzDoorgezetOp) taken.push(taak(`Verzekeringsofferte doorgezet op ${fmtDatum(st.vzDoorgezetOp)}`, vzOud ? 'Geboortedatum, adres, schadevrije jaren en kilometers zijn hier gewist.' : 'Het contactverzoek is doorgezet.', '', 'klaar'));
   inz.openContact.forEach(c => {
     const om = omschrijfEvent(c);
     const tel = String(c.telefoon || '').replace(/[^\d+]/g, '');
@@ -4364,6 +4439,8 @@ async function voerActieUit(actie, id = online ? serverOfferteId : offerte.id) {
     if (id === serverOfferteId) await laadVerkoperData();
   } else {
     if (actie === 'bevestigen' && !laatste(lokaleEvents(id), 'akkoord_gegeven')) throw new Error('nog geen akkoord');
+    // Na de termijn kan een onbevestigd akkoord niet meer bevestigd worden (zoals in de database)
+    if (actie === 'bevestigen' && INSTELLINGEN.akkoordVariant !== 'reservering') { const ak = laatste(lokaleEvents(id), 'akkoord_gegeven'); if (!lokaleStatus(id).bevestigdOp && Date.now() > (ak.bevestigUiterlijk || bevestigUiterlijk(ak.t))) throw new Error('akkoord vervallen'); }
     if (actie === 'vz_doorgezet') {
       const sleutel = `${OPSLAG_PREFIX}:${id}:events`;
       opslag.schrijf(sleutel, lokaleEvents(id).map(e => e.type !== 'verzekering_aangevraagd' ? e
@@ -4377,7 +4454,7 @@ $('#vkTaken').addEventListener('click', async e => {
   if (!el || !huidigeInzichten) return;
   const inz = huidigeInzichten;
   if (el.dataset.kopieer) {
-    const [maakTekst, melding] = { fi: [fiAanvraagTekst, 'Financieringsaanvraag gekopieerd'], vz: [vzAanvraagTekst, 'Verzekeringsaanvraag gekopieerd'], verloop: [verloopBerichtTekst, 'Bericht gekopieerd'] }[el.dataset.kopieer];
+    const [maakTekst, melding] = { fi: [fiAanvraagTekst, 'Financieringsaanvraag gekopieerd'], vz: [vzAanvraagTekst, 'Verzekeringsaanvraag gekopieerd'], verloop: [verloopBerichtTekst, 'Bericht gekopieerd'], vervallen: [vervallenBerichtTekst, 'Bericht gekopieerd'] }[el.dataset.kopieer];
     kopieer(metNL(() => maakTekst(inz)), melding);
     return;
   }
@@ -4393,7 +4470,7 @@ $('#vkTaken').addEventListener('click', async e => {
   delete el.dataset.zeker;
   el.disabled = true;
   try { await voerActieUit(actie); toonToast(ACTIE_MELDING[actie]); }
-  catch (fout) { toonToast(/akkoord/.test(fout.message) ? 'Er is nog geen akkoord om te bevestigen' : 'Dat is niet gelukt. Probeer het opnieuw.'); }
+  catch (fout) { toonToast(/vervallen/.test(fout.message) ? 'Het akkoord is vervallen: bevestigen kan niet meer' : /akkoord/.test(fout.message) ? 'Er is nog geen akkoord om te bevestigen' : 'Dat is niet gelukt. Probeer het opnieuw.'); }
   renderVerkoper();
 });
 
@@ -4445,7 +4522,7 @@ function renderAccountEnBeheer() {
   const instellingen = [
     ['Klikgedrag meten', 'uit: alleen keuzes van de klant'],
     ['Akkoord van de klant', INSTELLINGEN.akkoordVariant === 'reservering' ? 'kosteloze reservering' : 'koop onder voorbehoud van bevestiging'],
-    ['Bevestigen door de verkoper', 'uiterlijk de volgende werkdag om 17:00'],
+    ['Bevestigen door de verkoper', 'uiterlijk 17:00 op de tweede werkdag na het akkoord; daarna vervalt het akkoord'],
     ['Herinnering als de klant niets kiest', `na ${INSTELLINGEN.herinneringNaWerkdagen} werkdagen`],
     ['Seintje voordat een offerte verloopt', INSTELLINGEN.verloopSeinDagen === 0 ? 'op de laatste dag (zonder akkoord)' : `${INSTELLINGEN.verloopSeinDagen} ${INSTELLINGEN.verloopSeinDagen === 1 ? 'dag' : 'dagen'} voor de einddatum (zonder akkoord)`],
     ['Offertes en keuzes bewaren', `tot ${INSTELLINGEN.bewaarMaanden} maanden na de geldigheid${online ? ', daarna automatisch gewist' : ''}`],
@@ -5244,6 +5321,7 @@ function meldingenGezienTot() {
   return start;
 }
 function meldingTekst(e) {
+  if (e.type === 'verzekering_aangevraagd' && !vzOudeAanvraag(e)) return { tekst: 'Verzekeringsofferte gevraagd', sub: `Contactverzoek, contact ${String(e.voorkeur || '').toLowerCase()}. Klaar om door te zetten naar ${VZ_AFDELING.naam}`, belangrijk: true };
   if (e.type === 'verzekering_aangevraagd') return e.compleet
     ? { tekst: 'Verzekeringsaanvraag compleet', sub: `Klaar om door te zetten naar ${VZ_AFDELING.naam}`, belangrijk: true }
     : { tekst: 'Verzekeringsofferte gevraagd', sub: `Nog niet compleet, ontbreekt: ${vzOntbrekendNL(e)}` };
@@ -5301,11 +5379,12 @@ function renderMeldingen() {
 const hoofdletter = s => s.charAt(0).toUpperCase() + s.slice(1);
 function offerteStatus(inz) {
   const st = inz.st;
-  const basis = { fi: inz.wilFinanciering, vzCompleet: !!(inz.vz && inz.vz.compleet && inz.vzOpen), laatsteKeuze: inz.laatsteKeuze };
+  const basis = { fi: inz.wilFinanciering, vzCompleet: !!(inz.vz && vzOudeAanvraag(inz.vz) && inz.vz.compleet && inz.vzOpen), laatsteKeuze: inz.laatsteKeuze };
   if (st.ingetrokken) return { ...basis, status: 'Ingetrokken', kleur: 'grijs', prio: 0, advies: 'Geen actie nodig' };
+  if (inz.akkoordVervallen) return { ...basis, status: 'Akkoord vervallen', kleur: 'rood', prio: 4, advies: 'Laat de klant weten dat het akkoord is vervallen' };
   if (inz.bevestigenOpen) return { ...basis, status: 'Akkoord: bevestigen', kleur: 'rood', prio: 4, advies: `Bevestig de koop uiterlijk ${fmtMomentNL(inz.deadline)}` };
   const open = [];
-  if (inz.finOpen) open.push(inz.ak ? 'zet de financiering door' : { financiering: 'regel de financiering', twijfel: 'leg de betaalopties uit' }[(inz.bw || {}).keuze] || 'bel over de financiering');
+  if (inz.finOpen) open.push(inz.ak && !inz.akkoordVervallen ? 'zet de financiering door' : { financiering: 'regel de financiering', twijfel: 'leg de betaalopties uit' }[(inz.bw || {}).keuze] || 'bel over de financiering');
   if (inz.vzOpen) open.push(`zet de verzekering door naar ${VZ_AFDELING.naam}`);
   if (inz.openContact.some(c => c.onderwerp !== 'financiering')) open.push('reageer op het bericht van de klant');
   if (inz.zelfOpen) open.push('neem contact op over de afronding');
@@ -5587,6 +5666,7 @@ if (online) {
   $('.privacy-noot').textContent = 'De PDF wordt in je eigen browser uitgelezen. Alleen de gegevens die je hieronder controleert, worden opgeslagen (in de EU).';
 }
 verzamelStatischeTeksten();
+$('#demoStrook').hidden = !DEMO_LABEL;   // label "Demo" alleen in de online versies
 sliderAanb.min = fin.minPct; sliderAanb.max = fin.maxPct;
 sliderAanb.value = Math.round(aanbetalingPct());
 pasTaalToe();
